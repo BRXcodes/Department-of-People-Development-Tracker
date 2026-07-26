@@ -6,7 +6,7 @@
 
 .main {
   flex: 1;
-  padding: 24px 20px;
+  padding: 28px 24px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
@@ -16,4 +16,39 @@
   .main {
     padding: 16px 12px;
   }
+}
+
+.app-loading, .app-error {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--gray-500);
+  font-size: 14px;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--blue-mid);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.app-error button {
+  margin-top: 8px;
+  padding: 8px 20px;
+  background: var(--blue-mid);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
 }

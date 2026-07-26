@@ -29,31 +29,60 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
     <div className="dashboard">
       <div className="stats-row">
         <div className="stat-card">
+          <div className="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
           <span className="stat-value">{members.length}</span>
           <span className="stat-label">Team Members</span>
         </div>
         <div className="stat-card">
+          <div className="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
           <span className="stat-value">{totalTasks}</span>
           <span className="stat-label">Tasks This Week</span>
         </div>
         <div className="stat-card">
+          <div className="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
           <span className="stat-value">{overallPct}%</span>
           <span className="stat-label">Overall Completion</span>
         </div>
       </div>
 
-      <div className="members-grid">
-        {members.map(member => (
-          <MemberCard
-            key={member.id}
-            member={member}
-            tasks={tasks.filter(t => t.memberId === member.id)}
-            onToggle={onToggle}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ))}
-      </div>
+      {members.length === 0 ? (
+        <div className="empty-state">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{color:'var(--gray-300)'}}>
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <p>No team members yet.</p>
+          <p>Click "Team" in the header to add your first member.</p>
+        </div>
+      ) : (
+        <div className="members-grid">
+          {members.map(member => (
+            <MemberCard
+              key={member.id}
+              member={member}
+              tasks={tasks.filter(t => t.memberId === member.id)}
+              onToggle={onToggle}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

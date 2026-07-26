@@ -1,44 +1,90 @@
 .dashboard {}
 
 .stats-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  margin-bottom: 28px;
 }
 
 .stat-card {
   background: white;
   border-radius: var(--radius);
-  padding: 16px 24px;
+  padding: 20px 24px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  min-width: 120px;
-  border-top: 4px solid var(--blue-mid);
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue-mid), var(--blue-accent));
+}
+
+.stat-card:nth-child(2)::before {
+  background: linear-gradient(90deg, var(--green), var(--green-light));
+}
+
+.stat-card:nth-child(3)::before {
+  background: linear-gradient(90deg, #7C3AED, #A78BFA);
+}
+
+.stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.stat-card:nth-child(1) .stat-icon { background: var(--blue-pale); color: var(--blue-mid); }
+.stat-card:nth-child(2) .stat-icon { background: var(--green-pale); color: var(--green); }
+.stat-card:nth-child(3) .stat-icon { background: #F5F3FF; color: #7C3AED; }
+
 .stat-value {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
-  color: var(--blue-dark);
+  color: var(--gray-900);
+  letter-spacing: -1px;
+  line-height: 1;
 }
 
 .stat-label {
-  font-size: 13px;
-  color: var(--gray-400);
+  font-size: 12.5px;
+  color: var(--gray-500);
   font-weight: 500;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
 }
 
 .members-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 16px;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 700px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
   .members-grid {
     grid-template-columns: 1fr;
   }
