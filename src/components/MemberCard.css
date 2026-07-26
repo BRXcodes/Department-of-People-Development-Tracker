@@ -1,0 +1,191 @@
+.member-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.member-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.member-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  display: block;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-task-count {
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+.member-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  width: 60px;
+  height: 6px;
+  background: var(--gray-200);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-mid), var(--green));
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.progress-pct {
+  font-size: 12px;
+  color: var(--gray-600);
+  font-weight: 600;
+  width: 30px;
+  text-align: right;
+}
+
+.expand-icon {
+  font-size: 10px;
+  color: var(--gray-400);
+}
+
+.member-tasks {
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.no-tasks {
+  text-align: center;
+  color: var(--gray-400);
+  font-size: 13px;
+  padding: 12px;
+}
+
+.task-row {
+  background: var(--gray-100);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.task-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.task-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gray-900);
+}
+
+.task-row-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+  background: var(--gray-200);
+}
+
+.task-desc {
+  font-size: 12px;
+  color: var(--gray-600);
+  margin-bottom: 8px;
+}
+
+.task-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.day-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-600);
+  transition: all 0.15s;
+}
+
+.day-chip:hover {
+  border-color: var(--blue-mid);
+  color: var(--blue-mid);
+}
+
+.day-chip.done {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.check {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.task-completion-label {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-top: 6px;
+}

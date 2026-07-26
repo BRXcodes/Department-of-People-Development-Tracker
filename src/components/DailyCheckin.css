@@ -1,0 +1,211 @@
+.daily {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.daily-header {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  border-top: 4px solid var(--blue-mid);
+}
+
+.daily-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--blue-dark);
+  margin-bottom: 12px;
+}
+
+.daily-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.daily-count {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.daily-bar {
+  flex: 1;
+  height: 10px;
+  background: var(--gray-200);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.daily-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-mid), var(--green));
+  border-radius: 5px;
+  transition: width 0.4s;
+}
+
+.daily-pct {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-dark);
+  width: 36px;
+  text-align: right;
+}
+
+.daily-member {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.daily-member-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--blue-pale);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.daily-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.daily-member-name {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+  color: var(--blue-dark);
+}
+
+.daily-member-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+.daily-tasks {
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.daily-task {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
+  transition: all 0.2s;
+  background: white;
+}
+
+.daily-task.done {
+  background: var(--green-pale);
+  border-color: var(--green-light);
+}
+
+.check-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-200);
+  background: white;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.daily-task.done .check-circle {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.check-circle:hover {
+  border-color: var(--green);
+  transform: scale(1.1);
+}
+
+.daily-task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.daily-task-name {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gray-900);
+}
+
+.daily-task.done .daily-task-name {
+  text-decoration: line-through;
+  color: var(--gray-400);
+}
+
+.daily-task-desc {
+  display: block;
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-top: 2px;
+}
+
+.daily-task-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.4;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+  background: var(--gray-200);
+}
+
+.daily-empty {
+  background: white;
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--gray-400);
+  box-shadow: var(--shadow-sm);
+}
+
+.daily-empty p:first-child {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.daily-empty p:last-child {
+  font-size: 13px;
+}
