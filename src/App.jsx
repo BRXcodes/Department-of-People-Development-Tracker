@@ -18,11 +18,26 @@ export default function App() {
   const [membersModal, setMembersModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isManager, setIsManager] = useState(() => sessionStorage.getItem('mgr') === '1')
 
   // Load all data on mount
   useEffect(() => {
     loadAll()
   }, [])
+
+  function loginManager(password) {
+    if (password === import.meta.env.VITE_MANAGER_PASSWORD) {
+      sessionStorage.setItem('mgr', '1')
+      setIsManager(true)
+      return true
+    }
+    return false
+  }
+
+  function logoutManager() {
+    sessionStorage.removeItem('mgr')
+    setIsManager(false)
+  }
 
   async function loadAll() {
     setLoading(true)
@@ -165,6 +180,9 @@ export default function App() {
         onOpenAssign={() => { setEditTask(null); setAssignModal(true) }}
         onOpenMembers={() => setMembersModal(true)}
         onResetWeek={resetWeek}
+        isManager={isManager}
+        onLogin={loginManager}
+        onLogout={logoutManager}
       />
       <main className="main">
         <Dashboard
@@ -175,6 +193,7 @@ export default function App() {
           onToggle={toggleComplete}
           onEdit={(task) => { setEditTask(task); setAssignModal(true) }}
           onDelete={deleteTask}
+          isManager={isManager}
         />
       </main>
       {assignModal && (

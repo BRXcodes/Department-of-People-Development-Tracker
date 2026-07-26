@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { DAYS } from '../store'
 import './MemberCard.css'
 
-export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete }) {
+export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager }) {
   const [expanded, setExpanded] = useState(true)
 
   const totalSlots = tasks.reduce((a, t) => a + (t.days ? t.days.length : 0), 0)
@@ -40,7 +40,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete }
             <p className="no-tasks">No tasks assigned yet.</p>
           )}
           {tasks.map(task => (
-            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} />
+            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
           ))}
         </div>
       )}
@@ -48,7 +48,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete }
   )
 }
 
-function TaskRow({ task, onToggle, onEdit, onDelete }) {
+function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
   const completedCount = DAYS.filter(d => task.days?.includes(d) && task.completions?.[d]).length
   const total = task.days?.length || 0
 
@@ -57,18 +57,22 @@ function TaskRow({ task, onToggle, onEdit, onDelete }) {
       <div className="task-row-top">
         <span className="task-name">{task.name}</span>
         <div className="task-row-actions">
-          <button className="icon-btn" onClick={() => onEdit(task)} aria-label="Edit task">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </button>
-          <button className="icon-btn delete" onClick={() => onDelete(task.id)} aria-label="Delete task">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-              <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-            </svg>
-          </button>
+          {isManager && (
+            <>
+              <button className="icon-btn" onClick={() => onEdit(task)} aria-label="Edit task">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button className="icon-btn delete" onClick={() => onDelete(task.id)} aria-label="Delete task">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </button>
+            </>
+          )}
         </div>
       </div>
       {task.description && <p className="task-desc">{task.description}</p>}

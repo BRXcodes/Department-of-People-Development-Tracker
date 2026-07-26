@@ -4,7 +4,7 @@ import MemberCard from './MemberCard'
 import DailyCheckin from './DailyCheckin'
 import './Dashboard.css'
 
-export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete }) {
+export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete, isManager }) {
   if (view === 'daily') {
     return (
       <DailyCheckin
@@ -14,6 +14,7 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
         onToggle={onToggle}
         onEdit={onEdit}
         onDelete={onDelete}
+        isManager={isManager}
       />
     )
   }
@@ -79,6 +80,7 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
               onToggle={onToggle}
               onEdit={onEdit}
               onDelete={onDelete}
+              isManager={isManager}
             />
           ))}
         </div>

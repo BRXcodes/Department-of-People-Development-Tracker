@@ -21,7 +21,7 @@ const CheckIcon = () => (
   </svg>
 )
 
-export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, onDelete }) {
+export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, onDelete, isManager }) {
   const dayTasks = tasks.filter(t => t.days?.includes(day))
 
   const totalDay = dayTasks.length
@@ -71,8 +71,12 @@ export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, on
                       {task.description && <span className="daily-task-desc">{task.description}</span>}
                     </div>
                     <div className="daily-task-actions">
-                      <button className="icon-btn" onClick={() => onEdit(task)} aria-label="Edit"><EditIcon /></button>
-                      <button className="icon-btn delete" onClick={() => onDelete(task.id)} aria-label="Delete"><TrashIcon /></button>
+                      {isManager && (
+                        <>
+                          <button className="icon-btn" onClick={() => onEdit(task)} aria-label="Edit"><EditIcon /></button>
+                          <button className="icon-btn delete" onClick={() => onDelete(task.id)} aria-label="Delete"><TrashIcon /></button>
+                        </>
+                      )}
                     </div>
                   </div>
                 )
