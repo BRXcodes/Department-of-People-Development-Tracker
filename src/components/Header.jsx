@@ -1,11 +1,17 @@
 import React, { useState } from 'react'
 import { DAYS } from '../store'
 import './Header.css'
+import './Modal.css'
 
 export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onResetWeek }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  function handleResetClick() { setConfirmReset(true); setMenuOpen(false) }
+  function handleResetConfirm() { onResetWeek(); setConfirmReset(false) }
 
   return (
+  <>
     <header className="header">
       <div className="header-inner">
         <div className="header-top">
@@ -32,7 +38,7 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
               </svg>
               Team
             </button>
-            <button className="btn btn-ghost" onClick={onResetWeek}>
+            <button className="btn btn-ghost" onClick={handleResetClick}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -57,7 +63,7 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
         {menuOpen && (
           <div className="mobile-menu">
             <button className="btn btn-ghost" onClick={() => { onOpenMembers(); setMenuOpen(false) }}>Team</button>
-            <button className="btn btn-ghost" onClick={() => { onResetWeek(); setMenuOpen(false) }}>New Week</button>
+            <button className="btn btn-ghost" onClick={handleResetClick}>New Week</button>
             <button className="btn btn-primary" onClick={() => { onOpenAssign(); setMenuOpen(false) }}>+ Assign Task</button>
           </div>
         )}
@@ -99,5 +105,25 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
         )}
       </div>
     </header>
+    {confirmReset && (
+      <div className="modal-overlay" onClick={() => setConfirmReset(false)}>
+        <div className="modal" style={{ maxWidth: 400 }} onClick={e => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>Start New Week?</h2>
+            <button className="modal-close" onClick={() => setConfirmReset(false)}>✕</button>
+          </div>
+          <div className="modal-body">
+            <p style={{ fontSize: 14, color: 'var(--gray-600)', lineHeight: 1.6 }}>
+              This will clear all completion records for the current week. Tasks and team members won't be affected.
+            </p>
+          </div>
+          <div className="modal-footer">
+            <button className="btn-cancel" onClick={() => setConfirmReset(false)}>Cancel</button>
+            <button className="btn-confirm" onClick={handleResetConfirm}>Yes, Start New Week</button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   )
 }
