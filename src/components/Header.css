@@ -127,6 +127,102 @@
   border-color: rgba(255,255,255,0.3);
 }
 
+/* Team Tabs */
+.team-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 0;
+}
+
+.team-tab {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.07);
+  border-radius: 6px 6px 0 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-bottom: none;
+  transition: background 0.15s;
+}
+
+.team-tab.active {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.22);
+}
+
+.team-tab-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.55);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.team-tab.active .team-tab-btn {
+  color: white;
+}
+
+.team-tab-btn:hover {
+  color: rgba(255,255,255,0.9);
+}
+
+.team-tab-rename {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  padding: 0 8px 0 0;
+  line-height: 0;
+  transition: color 0.15s;
+}
+
+.team-tab-rename:hover {
+  color: rgba(255,255,255,0.85);
+}
+
+.team-tab-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px dashed rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.45);
+  padding: 7px 12px;
+  border-radius: 6px 6px 0 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.team-tab-add:hover {
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.07);
+}
+
+.team-rename-form {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.team-rename-input {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  color: white;
+  font-size: 13px;
+  padding: 3px 7px;
+  width: 130px;
+  outline: none;
+}
+
 /* View Toggle Tabs */
 .view-toggle {
   display: flex;

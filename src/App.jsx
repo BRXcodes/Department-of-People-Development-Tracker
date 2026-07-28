@@ -8,6 +8,8 @@ import MembersModal from './components/MembersModal'
 import './App.css'
 
 export default function App() {
+  const [teams, setTeams] = useState([])
+  const [activeTeamId, setActiveTeamId] = useState(null)
   const [members, setMembers] = useState([])
   const [tasks, setTasks] = useState([])
   const [weekLabel, setWeekLabel] = useState(getCurrentWeekLabel())
@@ -43,18 +45,23 @@ export default function App() {
     setLoading(true)
     setError(null)
     try {
-      const [{ data: membersData, error: mErr }, { data: tasksData, error: tErr }, { data: completionsData, error: cErr }] =
-        await Promise.all([
-          supabase.from('members').select('*').order('name'),
-          supabase.from('tasks').select('*'),
-          supabase.from('completions').select('*'),
-        ])
+      const [
+        { data: teamsData, error: teamErr },
+        { data: membersData, error: mErr },
+        { data: tasksData, error: tErr },
+        { data: completionsData, error: cErr },
+      ] = await Promise.all([
+        supabase.from('teams').select('*').order('name'),
+        supabase.from('members').select('*').order('name'),
+        supabase.from('tasks').select('*'),
+        supabase.from('completions').select('*'),
+      ])
 
+      if (teamErr) throw teamErr
       if (mErr) throw mErr
       if (tErr) throw tErr
       if (cErr) throw cErr
 
-      // Attach completions to tasks as { [day]: true }
       const tasksWithCompletions = (tasksData || []).map(t => ({
         ...t,
         memberId: t.member_id,
@@ -66,6 +73,12 @@ export default function App() {
         if (task) task.completions[c.day] = true
       }
 
+      const loadedTeams = teamsData || []
+      setTeams(loadedTeams)
+      setActiveTeamId(prev => {
+        if (prev && loadedTeams.find(t => t.id === prev)) return prev
+        return loadedTeams[0]?.id ?? null
+      })
       setMembers(membersData || [])
       setTasks(tasksWithCompletions)
     } catch (err) {
@@ -128,9 +141,11 @@ export default function App() {
 
   async function updateMembers(updatedMembers) {
     // Upsert all members, delete removed ones
-    const removedIds = members.filter(m => !updatedMembers.find(u => u.id === m.id)).map(m => m.id)
+    const removedIds = members
+      .filter(m => m.team_id === activeTeamId && !updatedMembers.find(u => u.id === m.id))
+      .map(m => m.id)
 
-    const upserts = updatedMembers.map(m => ({ id: m.id, name: m.name, color: m.color }))
+    const upserts = updatedMembers.map(m => ({ id: m.id, name: m.name, color: m.color, team_id: activeTeamId }))
     const { error: uErr } = await supabase.from('members').upsert(upserts)
     if (uErr) { console.error(uErr); return }
 
@@ -139,9 +154,25 @@ export default function App() {
       if (dErr) { console.error(dErr); return }
     }
 
-    setMembers(updatedMembers)
-    // Remove tasks for deleted members
+    setMembers(prev => [
+      ...prev.filter(m => m.team_id !== activeTeamId),
+      ...updatedMembers.map(m => ({ ...m, team_id: activeTeamId })),
+    ])
     setTasks(prev => prev.filter(t => !removedIds.includes(t.memberId)))
+  }
+
+  async function addTeam(name) {
+    const id = uid()
+    const { error } = await supabase.from('teams').insert({ id, name })
+    if (error) { console.error(error); return }
+    setTeams(prev => [...prev, { id, name }])
+    setActiveTeamId(id)
+  }
+
+  async function renameTeam(id, name) {
+    const { error } = await supabase.from('teams').update({ name }).eq('id', id)
+    if (error) { console.error(error); return }
+    setTeams(prev => prev.map(t => t.id === id ? { ...t, name } : t))
   }
 
   async function resetWeek() {
@@ -169,6 +200,10 @@ export default function App() {
     )
   }
 
+  const activeMembers = members.filter(m => m.team_id === activeTeamId)
+  const activeMemberIds = new Set(activeMembers.map(m => m.id))
+  const activeTasks = tasks.filter(t => activeMemberIds.has(t.memberId))
+
   return (
     <div className="app">
       <Header
@@ -183,11 +218,16 @@ export default function App() {
         isManager={isManager}
         onLogin={loginManager}
         onLogout={logoutManager}
+        teams={teams}
+        activeTeamId={activeTeamId}
+        onSelectTeam={setActiveTeamId}
+        onAddTeam={addTeam}
+        onRenameTeam={renameTeam}
       />
       <main className="main">
         <Dashboard
-          members={members}
-          tasks={tasks}
+          members={activeMembers}
+          tasks={activeTasks}
           view={view}
           selectedDay={selectedDay}
           onToggle={toggleComplete}
@@ -198,7 +238,7 @@ export default function App() {
       </main>
       {assignModal && (
         <AssignModal
-          members={members}
+          members={activeMembers}
           task={editTask}
           onSave={editTask ? updateTask : addTask}
           onClose={() => setAssignModal(false)}
@@ -206,7 +246,7 @@ export default function App() {
       )}
       {membersModal && (
         <MembersModal
-          members={members}
+          members={activeMembers}
           onSave={updateMembers}
           onClose={() => setMembersModal(false)}
         />

@@ -3,12 +3,37 @@ import { DAYS } from '../store'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onResetWeek, isManager, onLogin, onLogout }) {
+export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState(false)
+  const [addTeamModal, setAddTeamModal] = useState(false)
+  const [newTeamName, setNewTeamName] = useState('')
+  const [renamingTeamId, setRenamingTeamId] = useState(null)
+  const [renameValue, setRenameValue] = useState('')
+
+  function handleAddTeam(e) {
+    e.preventDefault()
+    const name = newTeamName.trim()
+    if (!name) return
+    onAddTeam(name)
+    setNewTeamName('')
+    setAddTeamModal(false)
+  }
+
+  function startRename(team) {
+    setRenamingTeamId(team.id)
+    setRenameValue(team.name)
+  }
+
+  function handleRename(e) {
+    e.preventDefault()
+    const name = renameValue.trim()
+    if (name) onRenameTeam(renamingTeamId, name)
+    setRenamingTeamId(null)
+  }
 
   function handleResetClick() { setConfirmReset(true); setMenuOpen(false) }
   function handleResetConfirm() { onResetWeek(); setConfirmReset(false) }
@@ -108,6 +133,46 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
           </div>
         )}
 
+        <div className="team-tabs">
+          {teams.map(team => (
+            <div key={team.id} className={`team-tab ${team.id === activeTeamId ? 'active' : ''}`}>
+              {renamingTeamId === team.id ? (
+                <form onSubmit={handleRename} className="team-rename-form">
+                  <input
+                    className="team-rename-input"
+                    value={renameValue}
+                    onChange={e => setRenameValue(e.target.value)}
+                    autoFocus
+                    onBlur={handleRename}
+                  />
+                </form>
+              ) : (
+                <>
+                  <button className="team-tab-btn" onClick={() => onSelectTeam(team.id)}>
+                    {team.name}
+                  </button>
+                  {isManager && team.id === activeTeamId && (
+                    <button className="team-tab-rename" onClick={() => startRename(team)} title="Rename team">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
+          {isManager && (
+            <button className="team-tab-add" onClick={() => setAddTeamModal(true)} title="Add team">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              New Team
+            </button>
+          )}
+        </div>
+
         <div className="view-toggle">
           <button className={`toggle-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -179,6 +244,34 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
             <div className="modal-footer">
               <button type="button" className="btn-cancel" onClick={() => { setLoginModal(false); setPassword(''); setLoginError(false) }}>Cancel</button>
               <button type="submit" className="btn-confirm">Unlock</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+
+    {addTeamModal && (
+      <div className="modal-overlay" onClick={() => { setAddTeamModal(false); setNewTeamName('') }}>
+        <div className="modal" style={{ maxWidth: 360 }} onClick={e => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>Add New Team</h2>
+            <button className="modal-close" onClick={() => { setAddTeamModal(false); setNewTeamName('') }}>✕</button>
+          </div>
+          <form onSubmit={handleAddTeam}>
+            <div className="modal-body">
+              <label className="field-label">Team Name</label>
+              <input
+                className="field-input"
+                type="text"
+                value={newTeamName}
+                onChange={e => setNewTeamName(e.target.value)}
+                placeholder="e.g. Sales Team"
+                autoFocus
+              />
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn-cancel" onClick={() => { setAddTeamModal(false); setNewTeamName('') }}>Cancel</button>
+              <button type="submit" className="btn-confirm">Create Team</button>
             </div>
           </form>
         </div>
