@@ -3,7 +3,7 @@ import { DAYS } from '../store'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam }) {
+export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
@@ -78,8 +78,9 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                   </svg>
-                  Team
+                  {isTruckTeam ? 'Trucks' : 'Team'}
                 </button>
+                {!isTruckTeam && (
                 <button className="btn btn-ghost" onClick={handleResetClick}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
@@ -87,11 +88,12 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
                   </svg>
                   New Week
                 </button>
+                )}
                 <button className="btn btn-primary" onClick={onOpenAssign}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                   </svg>
-                  Assign Task
+                  {isTruckTeam ? 'Log Issue' : 'Assign Task'}
                 </button>
                 <button className="btn btn-ghost btn-icon" onClick={onLogout} title="Lock manager">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -133,8 +135,7 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
           </div>
         )}
 
-        <div className="team-tabs">
-          {teams.map(team => (
+        <div className="team-tabs">          {teams.map(team => (
             <div key={team.id} className={`team-tab ${team.id === activeTeamId ? 'active' : ''}`}>
               {renamingTeamId === team.id ? (
                 <form onSubmit={handleRename} className="team-rename-form">
@@ -173,6 +174,7 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
           )}
         </div>
 
+        {!isTruckTeam && (
         <div className="view-toggle">
           <button className={`toggle-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -188,8 +190,9 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
             Daily Check-in
           </button>
         </div>
+        )}
 
-        {view === 'daily' && (
+        {!isTruckTeam && view === 'daily' && (
           <div className="day-picker">
             {DAYS.map(day => (
               <button key={day} className={`day-btn ${selectedDay === day ? 'active' : ''}`} onClick={() => setSelectedDay(day)}>

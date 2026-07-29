@@ -1,11 +1,12 @@
 import React from 'react'
 import { DAYS } from '../store'
 import MemberCard from './MemberCard'
+import TruckCard from './TruckCard'
 import DailyCheckin from './DailyCheckin'
 import './Dashboard.css'
 
-export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete, isManager }) {
-  if (view === 'daily') {
+export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete, onResolve, isManager, isTruckTeam }) {
+  if (!isTruckTeam && view === 'daily') {
     return (
       <DailyCheckin
         members={members}
@@ -37,7 +38,7 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
             </svg>
           </div>
           <span className="stat-value">{members.length}</span>
-          <span className="stat-label">Team Members</span>
+          <span className="stat-label">{isTruckTeam ? 'Trucks' : 'Team Members'}</span>
         </div>
         <div className="stat-card">
           <div className="stat-icon">
@@ -47,8 +48,10 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
               <polyline points="10 9 9 9 8 9"/>
             </svg>
           </div>
-          <span className="stat-value">{totalTasks}</span>
-          <span className="stat-label">Tasks This Week</span>
+          <span className="stat-value">
+            {isTruckTeam ? tasks.filter(t => !t.resolved_at).length : tasks.length}
+          </span>
+          <span className="stat-label">{isTruckTeam ? 'Open Issues' : 'Tasks This Week'}</span>
         </div>
         <div className="stat-card">
           <div className="stat-icon">
@@ -56,8 +59,12 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
             </svg>
           </div>
-          <span className="stat-value">{overallPct}%</span>
-          <span className="stat-label">Overall Completion</span>
+          <span className="stat-value">
+            {isTruckTeam
+              ? tasks.filter(t => t.resolved_at).length
+              : `${totalPossible > 0 ? Math.round((totalCompletions / totalPossible) * 100) : 0}%`}
+          </span>
+          <span className="stat-label">{isTruckTeam ? 'Resolved' : 'Overall Completion'}</span>
         </div>
       </div>
 
@@ -67,8 +74,22 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
-          <p>No team members yet.</p>
-          <p>Click "Team" in the header to add your first member.</p>
+          <p>{isTruckTeam ? 'No trucks yet.' : 'No team members yet.'}</p>
+          <p>Click "{isTruckTeam ? 'Trucks' : 'Team'}" in the header to add your first {isTruckTeam ? 'truck' : 'member'}.</p>
+        </div>
+      ) : isTruckTeam ? (
+        <div className="members-grid">
+          {members.map(member => (
+            <TruckCard
+              key={member.id}
+              member={member}
+              tasks={tasks.filter(t => t.memberId === member.id)}
+              onResolve={onResolve}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              isManager={isManager}
+            />
+          ))}
         </div>
       ) : (
         <div className="members-grid">

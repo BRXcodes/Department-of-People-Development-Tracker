@@ -4,8 +4,11 @@ import { supabase } from './supabase'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
 import AssignModal from './components/AssignModal'
+import TruckIssueModal from './components/TruckIssueModal'
 import MembersModal from './components/MembersModal'
 import './App.css'
+
+const TRUCK_TEAM_NAME = 'Truck Maintenance'
 
 export default function App() {
   const [teams, setTeams] = useState([])
@@ -97,6 +100,8 @@ export default function App() {
       description: task.description || '',
       member_id: task.memberId,
       days: task.days,
+      priority: task.priority || null,
+      due_date: task.due_date || null,
     })
     if (error) { console.error(error); return }
     setTasks(prev => [...prev, { ...task, id, completions: {} }])
@@ -108,6 +113,8 @@ export default function App() {
       description: updated.description || '',
       member_id: updated.memberId,
       days: updated.days,
+      priority: updated.priority || null,
+      due_date: updated.due_date || null,
     }).eq('id', updated.id)
     if (error) { console.error(error); return }
     setTasks(prev => prev.map(t => t.id === updated.id ? { ...t, ...updated } : t))
@@ -175,6 +182,13 @@ export default function App() {
     setTeams(prev => prev.map(t => t.id === id ? { ...t, name } : t))
   }
 
+  async function resolveIssue(taskId, resolve) {
+    const resolved_at = resolve ? new Date().toISOString() : null
+    const { error } = await supabase.from('tasks').update({ resolved_at }).eq('id', taskId)
+    if (error) { console.error(error); return }
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, resolved_at } : t))
+  }
+
   async function resetWeek() {
     const { error } = await supabase.from('completions').delete().neq('task_id', '')
     if (error) { console.error(error); return }
@@ -203,6 +217,8 @@ export default function App() {
   const activeMembers = members.filter(m => m.team_id === activeTeamId)
   const activeMemberIds = new Set(activeMembers.map(m => m.id))
   const activeTasks = tasks.filter(t => activeMemberIds.has(t.memberId))
+  const activeTeam = teams.find(t => t.id === activeTeamId)
+  const isTruckTeam = activeTeam?.name === TRUCK_TEAM_NAME
 
   return (
     <div className="app">
@@ -223,6 +239,7 @@ export default function App() {
         onSelectTeam={setActiveTeamId}
         onAddTeam={addTeam}
         onRenameTeam={renameTeam}
+        isTruckTeam={isTruckTeam}
       />
       <main className="main">
         <Dashboard
@@ -233,16 +250,27 @@ export default function App() {
           onToggle={toggleComplete}
           onEdit={(task) => { setEditTask(task); setAssignModal(true) }}
           onDelete={deleteTask}
+          onResolve={resolveIssue}
           isManager={isManager}
+          isTruckTeam={isTruckTeam}
         />
       </main>
       {assignModal && (
-        <AssignModal
-          members={activeMembers}
-          task={editTask}
-          onSave={editTask ? updateTask : addTask}
-          onClose={() => setAssignModal(false)}
-        />
+        isTruckTeam ? (
+          <TruckIssueModal
+            members={activeMembers}
+            task={editTask}
+            onSave={editTask ? updateTask : addTask}
+            onClose={() => setAssignModal(false)}
+          />
+        ) : (
+          <AssignModal
+            members={activeMembers}
+            task={editTask}
+            onSave={editTask ? updateTask : addTask}
+            onClose={() => setAssignModal(false)}
+          />
+        )
       )}
       {membersModal && (
         <MembersModal
