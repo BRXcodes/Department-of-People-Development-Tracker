@@ -76,14 +76,26 @@
 
 .members-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
 }
 
 @media (max-width: 700px) {
   .stats-row {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .stat-card {
+    padding: 14px 12px;
+  }
+  .stat-value {
+    font-size: 24px;
+  }
+  .stat-label {
+    font-size: 10px;
+  }
+  .stat-icon {
+    display: none;
   }
   .members-grid {
     grid-template-columns: 1fr;

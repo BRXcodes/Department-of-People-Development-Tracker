@@ -5,33 +5,38 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  width: 100%;
 }
 
 .header-inner {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
 }
 
 .header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 0 16px;
+  padding: 14px 0 12px;
+  gap: 12px;
+  min-width: 0;
 }
 
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
 }
 
 .brand-icon {
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 10px;
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,27 +48,33 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .brand-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: white;
   letter-spacing: -0.3px;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-week {
-  font-size: 12px;
+  font-size: 11px;
   color: rgba(255,255,255,0.55);
   font-weight: 400;
   letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 .header-actions {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .hamburger {
@@ -74,6 +85,7 @@
   padding: 8px 10px;
   border-radius: 8px;
   line-height: 0;
+  flex-shrink: 0;
 }
 
 .hamburger:hover {
@@ -134,7 +146,13 @@
   gap: 4px;
   padding: 10px 0 0;
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  margin-bottom: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.team-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .team-tab {
@@ -145,6 +163,7 @@
   border: 1px solid rgba(255,255,255,0.1);
   border-bottom: none;
   transition: background 0.15s;
+  flex-shrink: 0;
 }
 
 .team-tab.active {
@@ -156,7 +175,7 @@
   background: none;
   border: none;
   color: rgba(255,255,255,0.55);
-  padding: 8px 14px;
+  padding: 8px 12px;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.1px;
@@ -198,6 +217,7 @@
   font-weight: 500;
   transition: all 0.15s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .team-tab-add:hover {
@@ -219,7 +239,7 @@
   color: white;
   font-size: 13px;
   padding: 3px 7px;
-  width: 130px;
+  width: 120px;
   outline: none;
 }
 
@@ -237,14 +257,15 @@
   background: transparent;
   border: none;
   color: rgba(255,255,255,0.5);
-  padding: 11px 16px;
-  font-size: 13.5px;
+  padding: 11px 14px;
+  font-size: 13px;
   font-weight: 500;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   transition: all 0.15s ease;
   border-radius: 6px 6px 0 0;
   letter-spacing: 0.1px;
+  white-space: nowrap;
 }
 
 .toggle-btn:hover {
@@ -262,9 +283,10 @@
 .day-picker {
   display: flex;
   gap: 6px;
-  padding: 12px 0;
+  padding: 10px 0;
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .day-picker::-webkit-scrollbar {
@@ -275,13 +297,14 @@
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
   color: rgba(255,255,255,0.7);
-  padding: 5px 16px;
+  padding: 5px 14px;
   border-radius: 20px;
   font-size: 12.5px;
   font-weight: 500;
   white-space: nowrap;
   transition: all 0.15s;
   letter-spacing: 0.3px;
+  flex-shrink: 0;
 }
 
 .day-btn:hover {
@@ -299,7 +322,7 @@
 
 @media (max-width: 720px) {
   .header-inner {
-    padding: 0 16px;
+    padding: 0 14px;
   }
   .header-actions {
     display: none;
@@ -309,7 +332,13 @@
     align-items: center;
     justify-content: center;
   }
+}
+
+@media (max-width: 400px) {
+  .brand-icon {
+    display: none;
+  }
   .brand-title {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
