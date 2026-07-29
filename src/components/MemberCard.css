@@ -159,13 +159,8 @@
   padding: 4px 6px;
   border-radius: 6px;
   color: var(--gray-400);
-  opacity: 0;
   transition: all 0.15s;
   line-height: 0;
-}
-
-.task-row:hover .icon-btn {
-  opacity: 1;
 }
 
 .icon-btn:hover {
