@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard'
 import AssignModal from './components/AssignModal'
 import TruckIssueModal from './components/TruckIssueModal'
 import MembersModal from './components/MembersModal'
+import NotifyModal from './components/NotifyModal'
 import './App.css'
 
 const TRUCK_TEAM_NAME = 'Truck Maintenance'
@@ -21,6 +22,7 @@ export default function App() {
   const [assignModal, setAssignModal] = useState(false)
   const [editTask, setEditTask] = useState(null)
   const [membersModal, setMembersModal] = useState(false)
+  const [notifyModal, setNotifyModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isManager, setIsManager] = useState(() => sessionStorage.getItem('mgr') === '1')
@@ -102,6 +104,7 @@ export default function App() {
       days: task.days,
       priority: task.priority || null,
       due_date: task.due_date || null,
+      reminder_time: task.reminder_time || null,
     })
     if (error) { console.error(error); return }
     setTasks(prev => [...prev, { ...task, id, completions: {} }])
@@ -115,6 +118,7 @@ export default function App() {
       days: updated.days,
       priority: updated.priority || null,
       due_date: updated.due_date || null,
+      reminder_time: updated.reminder_time || null,
     }).eq('id', updated.id)
     if (error) { console.error(error); return }
     setTasks(prev => prev.map(t => t.id === updated.id ? { ...t, ...updated } : t))
@@ -230,6 +234,7 @@ export default function App() {
         setSelectedDay={setSelectedDay}
         onOpenAssign={() => { setEditTask(null); setAssignModal(true) }}
         onOpenMembers={() => setMembersModal(true)}
+        onOpenNotify={() => setNotifyModal(true)}
         onResetWeek={resetWeek}
         isManager={isManager}
         onLogin={loginManager}
@@ -277,6 +282,12 @@ export default function App() {
           members={activeMembers}
           onSave={updateMembers}
           onClose={() => setMembersModal(false)}
+        />
+      )}
+      {notifyModal && (
+        <NotifyModal
+          members={members}
+          onClose={() => setNotifyModal(false)}
         />
       )}
     </div>

@@ -2,14 +2,21 @@ import React, { useState } from 'react'
 import { DAYS, getCurrentWeekDates } from '../store'
 import './Modal.css'
 
+const REMINDER_OPTIONS = [
+  { value: '', label: 'No Reminder' },
+  { value: '06:00', label: '6:00 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '18:00', label: '6:00 PM' },
+]
+
 export default function AssignModal({ members, task, onSave, onClose }) {
   const [name, setName] = useState(task?.name || '')
   const [description, setDescription] = useState(task?.description || '')
-  // editing: single member; creating: multi-select
   const [memberIds, setMemberIds] = useState(
     task ? [task.memberId] : []
   )
   const [days, setDays] = useState(task?.days || [])
+  const [reminderTime, setReminderTime] = useState(task?.reminder_time || '')
   const weekDates = getCurrentWeekDates()
 
   const isEditing = !!task
@@ -28,10 +35,10 @@ export default function AssignModal({ members, task, onSave, onClose }) {
   function handleSave() {
     if (!name.trim() || memberIds.length === 0 || days.length === 0) return
     if (isEditing) {
-      onSave({ ...task, name: name.trim(), description: description.trim(), memberId: memberIds[0], days })
+      onSave({ ...task, name: name.trim(), description: description.trim(), memberId: memberIds[0], days, reminder_time: reminderTime || null })
     } else {
       memberIds.forEach(memberId => {
-        onSave({ name: name.trim(), description: description.trim(), memberId, days })
+        onSave({ name: name.trim(), description: description.trim(), memberId, days, reminder_time: reminderTime || null })
       })
     }
     onClose()
@@ -116,6 +123,20 @@ export default function AssignModal({ members, task, onSave, onClose }) {
                 onClick={() => toggleDay(day)}
               >
                 {weekDates[day]} {day.slice(0, 3)}
+              </button>
+            ))}
+          </div>
+
+          <label className="field-label">Reminder</label>
+          <div className="day-selector">
+            {REMINDER_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`day-select-btn ${reminderTime === opt.value ? 'selected' : ''}`}
+                onClick={() => setReminderTime(opt.value)}
+              >
+                {opt.label}
               </button>
             ))}
           </div>
