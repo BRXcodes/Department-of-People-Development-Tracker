@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { DAYS } from '../store'
+import { DAYS, getCurrentWeekDates } from '../store'
 import './Modal.css'
 
 export default function AssignModal({ members, task, onSave, onClose }) {
@@ -10,6 +10,7 @@ export default function AssignModal({ members, task, onSave, onClose }) {
     task ? [task.memberId] : []
   )
   const [days, setDays] = useState(task?.days || [])
+  const weekDates = getCurrentWeekDates()
 
   const isEditing = !!task
 
@@ -114,7 +115,7 @@ export default function AssignModal({ members, task, onSave, onClose }) {
                 className={`day-select-btn ${days.includes(day) ? 'selected' : ''}`}
                 onClick={() => toggleDay(day)}
               >
-                {day.slice(0, 3)}
+                {weekDates[day]} {day.slice(0, 3)}
               </button>
             ))}
           </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { DAYS } from '../store'
+import { DAYS, getCurrentWeekDates } from '../store'
 import './Header.css'
 import './Modal.css'
 
@@ -240,11 +240,14 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
 
         {!isTruckTeam && view === 'daily' && (
           <div className="day-picker">
-            {DAYS.map(day => (
-              <button key={day} className={`day-btn ${selectedDay === day ? 'active' : ''}`} onClick={() => setSelectedDay(day)}>
-                {day.slice(0, 3)}
-              </button>
-            ))}
+            {DAYS.map(day => {
+              const weekDates = getCurrentWeekDates()
+              return (
+                <button key={day} className={`day-btn ${selectedDay === day ? 'active' : ''}`} onClick={() => setSelectedDay(day)}>
+                  {weekDates[day]} {day.slice(0, 3)}
+                </button>
+              )
+            })}
           </div>
         )}
       </div>

@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { DAYS } from '../store'
+import { DAYS, getCurrentWeekDates } from '../store'
 import './MemberCard.css'
 
 export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager }) {
   const [expanded, setExpanded] = useState(true)
+  const weekDates = getCurrentWeekDates()
 
   const totalSlots = tasks.reduce((a, t) => a + (t.days ? t.days.length : 0), 0)
   const completed = tasks.reduce((a, t) => a + DAYS.filter(d => t.days?.includes(d) && t.completions?.[d]).length, 0)
@@ -18,7 +19,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
           {initials}
         </div>
         <div className="member-info">
-          <span className="member-name">{member.name}</span>
+          <span className="member-name">{member.name}</span>i 
           <span className="member-task-count">{tasks.length} task{tasks.length !== 1 ? 's' : ''} assigned</span>
         </div>
         <div className="member-progress-wrap">
@@ -40,7 +41,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
             <p className="no-tasks">No tasks assigned yet.</p>
           )}
           {tasks.map(task => (
-            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
+            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} weekDates={weekDates} />
           ))}
         </div>
       )}
@@ -48,7 +49,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
   )
 }
 
-function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
+function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekDates }) {
   const completedCount = DAYS.filter(d => task.days?.includes(d) && task.completions?.[d]).length
   const total = task.days?.length || 0
 
@@ -88,7 +89,7 @@ function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
               onClick={() => onToggle(task.id, day)}
               aria-label={`${day}: ${done ? 'completed' : 'incomplete'}`}
             >
-              <span>{day.slice(0, 3)}</span>
+              <span>{weekDates[day]} {day.slice(0, 3)}</span>
               {done && <span className="check">✓</span>}
             </button>
           )
