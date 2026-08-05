@@ -286,7 +286,16 @@ export default function App() {
       )}
       {notifyModal && (
         <NotifyModal
-          members={members}
+          members={(() => {
+            const truckTeamId = teams.find(t => t.name === TRUCK_TEAM_NAME)?.id
+            const nonTruck = members.filter(m => m.team_id !== truckTeamId)
+            const seen = new Set()
+            return nonTruck.filter(m => {
+              if (seen.has(m.name)) return false
+              seen.add(m.name)
+              return true
+            })
+          })()}
           onClose={() => setNotifyModal(false)}
         />
       )}
