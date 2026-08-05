@@ -21,7 +21,8 @@ export default function NotifyModal({ members, onClose }) {
       setStatus('idle')
       if (result.reason === 'denied') setError('Notification permission was denied. Please allow in your browser settings.')
       else if (result.reason === 'not-supported') setError('Push notifications are not supported on this browser.')
-      else setError('Failed to enable notifications. Please try again.')
+      else if (result.reason === 'config-error') setError('Push notification configuration error. Contact your manager.')
+      else setError('Something went wrong. Please try again.')
     }
   }
 

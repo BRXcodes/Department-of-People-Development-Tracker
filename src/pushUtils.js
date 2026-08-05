@@ -18,34 +18,44 @@ export function isPushSupported() {
 export async function registerPush(memberId) {
   if (!isPushSupported()) return { ok: false, reason: 'not-supported' }
 
-  const permission = await Notification.requestPermission()
-  if (permission !== 'granted') return { ok: false, reason: 'denied' }
+  try {
+    const permission = await Notification.requestPermission()
+    if (permission !== 'granted') return { ok: false, reason: 'denied' }
 
-  const registration = await navigator.serviceWorker.register('/sw.js')
-  await navigator.serviceWorker.ready
+    if (!VAPID_PUBLIC_KEY) {
+      console.error('VAPID_PUBLIC_KEY not set')
+      return { ok: false, reason: 'config-error' }
+    }
 
-  let subscription = await registration.pushManager.getSubscription()
-  if (!subscription) {
-    subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    const registration = await navigator.serviceWorker.register('/sw.js')
+    await navigator.serviceWorker.ready
+
+    let subscription = await registration.pushManager.getSubscription()
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      })
+    }
+
+    // Save to Supabase
+    const subJson = subscription.toJSON()
+    const { error } = await supabase.from('push_subscriptions').upsert({
+      id: `${memberId}_${subJson.endpoint.slice(-20)}`,
+      member_id: memberId,
+      subscription: subJson,
     })
+
+    if (error) {
+      console.error('Failed to save push subscription:', error)
+      return { ok: false, reason: 'save-failed' }
+    }
+
+    return { ok: true }
+  } catch (err) {
+    console.error('Push registration error:', err)
+    return { ok: false, reason: 'error' }
   }
-
-  // Save to Supabase
-  const subJson = subscription.toJSON()
-  const { error } = await supabase.from('push_subscriptions').upsert({
-    id: `${memberId}_${subJson.endpoint.slice(-20)}`,
-    member_id: memberId,
-    subscription: subJson,
-  })
-
-  if (error) {
-    console.error('Failed to save push subscription:', error)
-    return { ok: false, reason: 'save-failed' }
-  }
-
-  return { ok: true }
 }
 
 export function getSubscribedMemberId() {
