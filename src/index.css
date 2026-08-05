@@ -7,41 +7,59 @@
 }
 
 :root {
-  --blue-dark: #0f172a;
-  --blue-mid: #3b82f6;
-  --blue-light: #60a5fa;
-  --blue-accent: #818cf8;
+  --bg-primary: #0c1222;
+  --bg-card: #141d2f;
+  --bg-elevated: #1a2540;
+  --border: #1e2d4a;
+  --border-subtle: #162038;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --accent-muted: rgba(99,102,241,0.12);
+  --success: #10b981;
+  --success-muted: rgba(16,185,129,0.12);
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-faint: #475569;
+
+  --blue-dark: #0c1222;
+  --blue-mid: #6366f1;
+  --blue-light: #818cf8;
+  --blue-accent: #a5b4fc;
   --green: #10b981;
   --green-light: #34d399;
   --green-pale: rgba(16,185,129,0.1);
-  --blue-pale: rgba(59,130,246,0.1);
-  --white: #ffffff;
-  --gray-50: #1e293b;
-  --gray-100: #1e293b;
-  --gray-200: #334155;
-  --gray-300: #475569;
+  --blue-pale: rgba(99,102,241,0.08);
+  --white: #f1f5f9;
+  --gray-50: #141d2f;
+  --gray-100: #1a2540;
+  --gray-200: #1e2d4a;
+  --gray-300: #2d3f5f;
   --gray-400: #64748b;
   --gray-500: #94a3b8;
   --gray-600: #cbd5e1;
   --gray-700: #e2e8f0;
-  --gray-900: #f8fafc;
+  --gray-900: #f1f5f9;
   --complete: #10b981;
-  --incomplete: #334155;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
-  --shadow-lg: 0 10px 40px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.4);
-  --radius: 14px;
-  --radius-sm: 10px;
+  --incomplete: #1e2d4a;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.6);
+  --radius: 12px;
+  --radius-sm: 8px;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #0f172a;
-  color: #f8fafc;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
 button {
