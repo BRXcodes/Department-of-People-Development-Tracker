@@ -194,9 +194,21 @@ export default function App() {
   }
 
   async function resetWeek() {
-    const { error } = await supabase.from('completions').delete().neq('task_id', '')
+    // Only reset completions for tasks belonging to the active team's members
+    const teamMembers = members.filter(m => m.team_id === activeTeamId)
+    const teamMemberIds = teamMembers.map(m => m.id)
+    const teamTaskIds = tasks
+      .filter(t => teamMemberIds.includes(t.memberId))
+      .map(t => t.id)
+
+    if (teamTaskIds.length === 0) return
+
+    const { error } = await supabase.from('completions').delete().in('task_id', teamTaskIds)
     if (error) { console.error(error); return }
-    setTasks(prev => prev.map(t => ({ ...t, completions: {} })))
+
+    setTasks(prev => prev.map(t =>
+      teamTaskIds.includes(t.id) ? { ...t, completions: {} } : t
+    ))
     setWeekLabel(getCurrentWeekLabel())
   }
 
