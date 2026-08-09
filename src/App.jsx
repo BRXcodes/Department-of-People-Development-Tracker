@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { DAYS, uid, getCurrentWeekLabel, setWeekStart } from './store'
+import { DAYS, uid, getCurrentWeekLabel, getWeekStartForTeam, setWeekStartForTeam } from './store'
 import { supabase } from './supabase'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
@@ -16,7 +16,7 @@ export default function App() {
   const [activeTeamId, setActiveTeamId] = useState(null)
   const [members, setMembers] = useState([])
   const [tasks, setTasks] = useState([])
-  const [weekLabel, setWeekLabel] = useState(getCurrentWeekLabel())
+  const [weekLabel, setWeekLabel] = useState('')
   const [view, setView] = useState('dashboard')
   const [selectedDay, setSelectedDay] = useState(DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1])
   const [assignModal, setAssignModal] = useState(false)
@@ -31,6 +31,14 @@ export default function App() {
   useEffect(() => {
     loadAll()
   }, [])
+
+  // Update week label when active team changes
+  useEffect(() => {
+    if (activeTeamId) {
+      const start = getWeekStartForTeam(activeTeamId)
+      setWeekLabel(getCurrentWeekLabel(start))
+    }
+  }, [activeTeamId])
 
   function loginManager(password) {
     if (password === import.meta.env.VITE_MANAGER_PASSWORD) {
@@ -214,7 +222,7 @@ export default function App() {
     setTasks(prev => prev.filter(t => !teamTaskIds.includes(t.id)))
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    setWeekStart(today)
+    setWeekStartForTeam(activeTeamId, today)
     setWeekLabel(getCurrentWeekLabel(today))
   }
 
