@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { DAYS, uid, getCurrentWeekLabel } from './store'
+import { DAYS, uid, getCurrentWeekLabel, setWeekStart } from './store'
 import { supabase } from './supabase'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
@@ -212,7 +212,10 @@ export default function App() {
     if (tErr) { console.error(tErr); return }
 
     setTasks(prev => prev.filter(t => !teamTaskIds.includes(t.id)))
-    setWeekLabel(getCurrentWeekLabel())
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    setWeekStart(today)
+    setWeekLabel(getCurrentWeekLabel(today))
   }
 
   if (loading) {
