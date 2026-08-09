@@ -22,7 +22,7 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
 
   const totalTasks = tasks.length
   const totalCompletions = tasks.reduce((acc, t) => {
-    return acc + DAYS.filter(d => t.days.includes(d) && t.completions[d]).length
+    return acc + DAYS.filter(d => t.days.includes(d) && t.completions[d] === 'done').length
   }, 0)
   const totalPossible = tasks.reduce((acc, t) => acc + (t.days ? t.days.length : 0), 0)
   const overallPct = totalPossible > 0 ? Math.round((totalCompletions / totalPossible) * 100) : 0

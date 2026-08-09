@@ -25,7 +25,7 @@ export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, on
   const dayTasks = tasks.filter(t => t.days?.includes(day))
 
   const totalDay = dayTasks.length
-  const completedDay = dayTasks.filter(t => t.completions?.[day]).length
+  const completedDay = dayTasks.filter(t => t.completions?.[day] === 'done').length
   const pct = totalDay > 0 ? Math.round((completedDay / totalDay) * 100) : 0
 
   return (
@@ -45,7 +45,7 @@ export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, on
         const mTasks = dayTasks.filter(t => t.memberId === member.id)
         if (mTasks.length === 0) return null
         const initials = member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-        const mDone = mTasks.filter(t => t.completions?.[day]).length
+        const mDone = mTasks.filter(t => t.completions?.[day] === 'done').length
 
         return (
           <div key={member.id} className="daily-member">
@@ -58,7 +58,7 @@ export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, on
               {mTasks.map(task => {
                 const done = task.completions?.[day]
                 return (
-                  <div key={task.id} className={`daily-task ${done ? 'done' : ''}`}>
+                  <div key={task.id} className={`daily-task ${done === 'done' ? 'done' : done === 'missed' ? 'missed' : ''}`}>
                     <button
                       className="check-circle"
                       onClick={() => onToggle(task.id, day)}

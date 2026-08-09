@@ -83,7 +83,7 @@ export default function App() {
 
       for (const c of completionsData || []) {
         const task = tasksWithCompletions.find(t => t.id === c.task_id)
-        if (task) task.completions[c.day] = true
+        if (task) task.completions[c.day] = c.status || 'done'
       }
 
       const loadedTeams = teamsData || []
@@ -141,21 +141,31 @@ export default function App() {
   async function toggleComplete(taskId, day) {
     const task = tasks.find(t => t.id === taskId)
     if (!task) return
-    const isDone = task.completions?.[day]
+    const current = task.completions?.[day] // undefined, 'done', or 'missed'
 
-    if (isDone) {
+    if (!current) {
+      // neutral → done
+      const { error } = await supabase.from('completions').insert({ task_id: taskId, day, status: 'done' })
+      if (error) { console.error(error); return }
+      setTasks(prev => prev.map(t => t.id !== taskId ? t : { ...t, completions: { ...t.completions, [day]: 'done' } }))
+    } else if (current === 'done') {
+      // done → missed
+      const { error } = await supabase.from('completions').update({ status: 'missed' })
+        .eq('task_id', taskId).eq('day', day)
+      if (error) { console.error(error); return }
+      setTasks(prev => prev.map(t => t.id !== taskId ? t : { ...t, completions: { ...t.completions, [day]: 'missed' } }))
+    } else {
+      // missed → neutral (delete)
       const { error } = await supabase.from('completions').delete()
         .eq('task_id', taskId).eq('day', day)
       if (error) { console.error(error); return }
-    } else {
-      const { error } = await supabase.from('completions').insert({ task_id: taskId, day })
-      if (error) { console.error(error); return }
+      setTasks(prev => prev.map(t => {
+        if (t.id !== taskId) return t
+        const newCompletions = { ...t.completions }
+        delete newCompletions[day]
+        return { ...t, completions: newCompletions }
+      }))
     }
-
-    setTasks(prev => prev.map(t => {
-      if (t.id !== taskId) return t
-      return { ...t, completions: { ...t.completions, [day]: !isDone } }
-    }))
   }
 
   async function updateMembers(updatedMembers) {

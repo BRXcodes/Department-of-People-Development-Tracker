@@ -7,7 +7,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
   const weekDates = getCurrentWeekDates()
 
   const totalSlots = tasks.reduce((a, t) => a + (t.days ? t.days.length : 0), 0)
-  const completed = tasks.reduce((a, t) => a + DAYS.filter(d => t.days?.includes(d) && t.completions?.[d]).length, 0)
+  const completed = tasks.reduce((a, t) => a + DAYS.filter(d => t.days?.includes(d) && t.completions?.[d] === 'done').length, 0)
   const pct = totalSlots > 0 ? Math.round((completed / totalSlots) * 100) : 0
 
   const initials = member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -50,7 +50,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
 }
 
 function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekDates }) {
-  const completedCount = DAYS.filter(d => task.days?.includes(d) && task.completions?.[d]).length
+  const completedCount = DAYS.filter(d => task.days?.includes(d) && task.completions?.[d] === 'done').length
   const total = task.days?.length || 0
 
   return (
@@ -80,17 +80,18 @@ function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekDates }) {
       <div className="task-days">
         {DAYS.map(day => {
           const assigned = task.days?.includes(day)
-          const done = task.completions?.[day]
+          const status = task.completions?.[day] // undefined, 'done', or 'missed'
           if (!assigned) return null
           return (
             <button
               key={day}
-              className={`day-chip ${done ? 'done' : ''}`}
+              className={`day-chip ${status === 'done' ? 'done' : status === 'missed' ? 'missed' : ''}`}
               onClick={() => onToggle(task.id, day)}
-              aria-label={`${day}: ${done ? 'completed' : 'incomplete'}`}
+              aria-label={`${day}: ${status === 'done' ? 'completed' : status === 'missed' ? 'incomplete' : 'unset'}`}
             >
               <span>{weekDates[day]} {day.slice(0, 3)}</span>
-              {done && <span className="check">✓</span>}
+              {status === 'done' && <span className="check">✓</span>}
+              {status === 'missed' && <span className="check">✗</span>}
             </button>
           )
         })}
