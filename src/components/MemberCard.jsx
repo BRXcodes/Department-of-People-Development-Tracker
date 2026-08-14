@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { DAYS, getCurrentWeekDates } from '../store'
 import './MemberCard.css'
 
-export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager }) {
+export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager, weekStart }) {
   const [expanded, setExpanded] = useState(true)
-  const weekDates = getCurrentWeekDates()
+  const weekDates = getCurrentWeekDates(weekStart)
 
   const totalSlots = tasks.reduce((a, t) => a + (t.days ? t.days.length : 0), 0)
   const completed = tasks.reduce((a, t) => a + DAYS.filter(d => t.days?.includes(d) && t.completions?.[d] === 'done').length, 0)

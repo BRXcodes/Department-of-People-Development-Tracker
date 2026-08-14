@@ -230,10 +230,14 @@ export default function App() {
     if (tErr) { console.error(tErr); return }
 
     setTasks(prev => prev.filter(t => !teamTaskIds.includes(t.id)))
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    setWeekStartForTeam(activeTeamId, today)
-    setWeekLabel(getCurrentWeekLabel(today))
+    // Set week start to Monday of the current week
+    const now = new Date()
+    const day = now.getDay()
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+    const monday = new Date(now.getFullYear(), now.getMonth(), diff)
+    monday.setHours(0, 0, 0, 0)
+    setWeekStartForTeam(activeTeamId, monday)
+    setWeekLabel(getCurrentWeekLabel(monday))
   }
 
   if (loading) {
@@ -281,6 +285,7 @@ export default function App() {
         onAddTeam={addTeam}
         onRenameTeam={renameTeam}
         isTruckTeam={isTruckTeam}
+        weekStart={getWeekStartForTeam(activeTeamId)}
       />
       <main className="main">
         <Dashboard
@@ -294,6 +299,7 @@ export default function App() {
           onResolve={resolveIssue}
           isManager={isManager}
           isTruckTeam={isTruckTeam}
+          weekStart={getWeekStartForTeam(activeTeamId)}
         />
       </main>
       {assignModal && (
@@ -310,6 +316,7 @@ export default function App() {
             task={editTask}
             onSave={editTask ? updateTask : addTask}
             onClose={() => setAssignModal(false)}
+            weekStart={getWeekStartForTeam(activeTeamId)}
           />
         )
       )}

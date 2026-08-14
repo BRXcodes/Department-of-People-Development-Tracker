@@ -31,7 +31,13 @@ function getDefaultWeekStart() {
 
 export function getWeekStartForTeam(teamId) {
   const saved = localStorage.getItem(`week_start_${teamId}`)
-  if (saved) return new Date(saved)
+  if (saved) {
+    const date = new Date(saved)
+    // Normalize to Monday of that week in case a non-Monday was stored
+    const day = date.getDay()
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1)
+    return new Date(date.getFullYear(), date.getMonth(), diff)
+  }
   return getDefaultWeekStart()
 }
 

@@ -3,7 +3,7 @@ import { DAYS, getCurrentWeekDates } from '../store'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam }) {
+export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
@@ -248,7 +248,7 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
         {!isTruckTeam && view === 'daily' && (
           <div className="day-picker">
             {DAYS.map(day => {
-              const weekDates = getCurrentWeekDates()
+              const weekDates = getCurrentWeekDates(weekStart)
               return (
                 <button key={day} className={`day-btn ${selectedDay === day ? 'active' : ''}`} onClick={() => setSelectedDay(day)}>
                   {weekDates[day]} {day.slice(0, 3)}

@@ -9,7 +9,7 @@ const REMINDER_OPTIONS = [
   { value: '18:00', label: '6:00 PM' },
 ]
 
-export default function AssignModal({ members, task, onSave, onClose }) {
+export default function AssignModal({ members, task, onSave, onClose, weekStart }) {
   const [name, setName] = useState(task?.name || '')
   const [description, setDescription] = useState(task?.description || '')
   const [memberIds, setMemberIds] = useState(
@@ -17,7 +17,7 @@ export default function AssignModal({ members, task, onSave, onClose }) {
   )
   const [days, setDays] = useState(task?.days || [])
   const [reminderTime, setReminderTime] = useState(task?.reminder_time || '')
-  const weekDates = getCurrentWeekDates()
+  const weekDates = getCurrentWeekDates(weekStart)
 
   const isEditing = !!task
 
