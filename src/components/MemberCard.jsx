@@ -2,7 +2,21 @@ import React, { useState } from 'react'
 import { DAYS } from '../store'
 import './MemberCard.css'
 
-export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager }) {
+function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = n % 100
+  return n + (s[(v - 20) % 10] || s[v] || s[0])
+}
+
+function getDayDate(dayName, weekStart) {
+  const idx = DAYS.indexOf(dayName)
+  if (idx === -1 || !weekStart) return null
+  const d = new Date(weekStart)
+  d.setDate(d.getDate() + idx)
+  return d
+}
+
+export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager, weekStart }) {
   const [expanded, setExpanded] = useState(true)
 
   const totalSlots = tasks.reduce((a, t) => a + (t.days ? t.days.length : 0), 0)
@@ -40,7 +54,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
             <p className="no-tasks">No tasks assigned yet.</p>
           )}
           {tasks.map(task => (
-            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
+            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} weekStart={weekStart} />
           ))}
         </div>
       )}
@@ -48,7 +62,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
   )
 }
 
-function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
+function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekStart }) {
   const completedCount = DAYS.filter(d => task.days?.includes(d) && task.completions?.[d] === 'done').length
   const total = task.days?.length || 0
 
@@ -79,8 +93,10 @@ function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
       <div className="task-days">
         {DAYS.map(day => {
           const assigned = task.days?.includes(day)
-          const status = task.completions?.[day] // undefined, 'done', or 'missed'
+          const status = task.completions?.[day]
           if (!assigned) return null
+          const date = getDayDate(day, weekStart)
+          const label = date ? `${day.slice(0, 3)} ${ordinal(date.getDate())}` : day.slice(0, 3)
           return (
             <button
               key={day}
@@ -88,7 +104,7 @@ function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
               onClick={() => onToggle(task.id, day)}
               aria-label={`${day}: ${status === 'done' ? 'completed' : status === 'missed' ? 'incomplete' : 'unset'}`}
             >
-              <span>{day.slice(0, 3)}</span>
+              <span>{label}</span>
               {status === 'done' && <span className="check">✓</span>}
               {status === 'missed' && <span className="check">✗</span>}
             </button>

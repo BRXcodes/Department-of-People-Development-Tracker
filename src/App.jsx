@@ -287,6 +287,7 @@ export default function App() {
           onResolve={resolveIssue}
           isManager={isManager}
           isTruckTeam={isTruckTeam}
+          weekStart={getWeekStartForTeam(activeTeamId)}
         />
       </main>
       {assignModal && (
