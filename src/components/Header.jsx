@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { DAYS, getCurrentWeekDates } from '../store'
+import { DAYS } from '../store'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ weekLabel, view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart }) {
+export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
@@ -66,7 +66,6 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
             </div>
             <div className="brand-text">
               <h1 className="brand-title">People Development</h1>
-              <span className="brand-week">Week of {weekLabel}</span>
             </div>
           </div>
 
@@ -248,10 +247,9 @@ export default function Header({ weekLabel, view, setView, selectedDay, setSelec
         {!isTruckTeam && view === 'daily' && (
           <div className="day-picker">
             {DAYS.map(day => {
-              const weekDates = getCurrentWeekDates(weekStart)
               return (
                 <button key={day} className={`day-btn ${selectedDay === day ? 'active' : ''}`} onClick={() => setSelectedDay(day)}>
-                  {weekDates[day]} {day.slice(0, 3)}
+                  {day.slice(0, 3)}
                 </button>
               )
             })}

@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
-import { DAYS, getCurrentWeekDates } from '../store'
+import { DAYS } from '../store'
 import './MemberCard.css'
 
-export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager, weekStart }) {
+export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager }) {
   const [expanded, setExpanded] = useState(true)
-  const weekDates = getCurrentWeekDates(weekStart)
 
   const totalSlots = tasks.reduce((a, t) => a + (t.days ? t.days.length : 0), 0)
   const completed = tasks.reduce((a, t) => a + DAYS.filter(d => t.days?.includes(d) && t.completions?.[d] === 'done').length, 0)
@@ -41,7 +40,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
             <p className="no-tasks">No tasks assigned yet.</p>
           )}
           {tasks.map(task => (
-            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} weekDates={weekDates} />
+            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
           ))}
         </div>
       )}
@@ -49,7 +48,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
   )
 }
 
-function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekDates }) {
+function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
   const completedCount = DAYS.filter(d => task.days?.includes(d) && task.completions?.[d] === 'done').length
   const total = task.days?.length || 0
 
@@ -89,7 +88,7 @@ function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekDates }) {
               onClick={() => onToggle(task.id, day)}
               aria-label={`${day}: ${status === 'done' ? 'completed' : status === 'missed' ? 'incomplete' : 'unset'}`}
             >
-              <span>{weekDates[day]} {day.slice(0, 3)}</span>
+              <span>{day.slice(0, 3)}</span>
               {status === 'done' && <span className="check">✓</span>}
               {status === 'missed' && <span className="check">✗</span>}
             </button>

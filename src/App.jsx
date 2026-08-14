@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { DAYS, uid, getCurrentWeekLabel, getWeekStartForTeam, setWeekStartForTeam } from './store'
+import { DAYS, uid, getWeekStartForTeam, setWeekStartForTeam } from './store'
 import { supabase } from './supabase'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
@@ -16,7 +16,6 @@ export default function App() {
   const [activeTeamId, setActiveTeamId] = useState(null)
   const [members, setMembers] = useState([])
   const [tasks, setTasks] = useState([])
-  const [weekLabel, setWeekLabel] = useState('')
   const [view, setView] = useState('dashboard')
   const [selectedDay, setSelectedDay] = useState(DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1])
   const [assignModal, setAssignModal] = useState(false)
@@ -31,14 +30,6 @@ export default function App() {
   useEffect(() => {
     loadAll()
   }, [])
-
-  // Update week label when active team changes
-  useEffect(() => {
-    if (activeTeamId) {
-      const start = getWeekStartForTeam(activeTeamId)
-      setWeekLabel(getCurrentWeekLabel(start))
-    }
-  }, [activeTeamId])
 
   function loginManager(password) {
     if (password === import.meta.env.VITE_MANAGER_PASSWORD) {
@@ -219,7 +210,7 @@ export default function App() {
       .filter(t => teamMemberIds.includes(t.memberId))
       .map(t => t.id)
 
-    if (teamTaskIds.length === 0) { setWeekLabel(getCurrentWeekLabel()); return }
+    if (teamTaskIds.length === 0) return
 
     // Delete completions for these tasks
     const { error: cErr } = await supabase.from('completions').delete().in('task_id', teamTaskIds)
@@ -237,7 +228,6 @@ export default function App() {
     const monday = new Date(now.getFullYear(), now.getMonth(), diff)
     monday.setHours(0, 0, 0, 0)
     setWeekStartForTeam(activeTeamId, monday)
-    setWeekLabel(getCurrentWeekLabel(monday))
   }
 
   if (loading) {
@@ -267,7 +257,6 @@ export default function App() {
   return (
     <div className="app">
       <Header
-        weekLabel={weekLabel}
         view={view}
         setView={setView}
         selectedDay={selectedDay}
@@ -285,7 +274,6 @@ export default function App() {
         onAddTeam={addTeam}
         onRenameTeam={renameTeam}
         isTruckTeam={isTruckTeam}
-        weekStart={getWeekStartForTeam(activeTeamId)}
       />
       <main className="main">
         <Dashboard
@@ -299,7 +287,6 @@ export default function App() {
           onResolve={resolveIssue}
           isManager={isManager}
           isTruckTeam={isTruckTeam}
-          weekStart={getWeekStartForTeam(activeTeamId)}
         />
       </main>
       {assignModal && (

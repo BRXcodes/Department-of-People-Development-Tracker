@@ -5,7 +5,7 @@ import TruckCard from './TruckCard'
 import DailyCheckin from './DailyCheckin'
 import './Dashboard.css'
 
-export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete, onResolve, isManager, isTruckTeam, weekStart }) {
+export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete, onResolve, isManager, isTruckTeam }) {
   if (!isTruckTeam && view === 'daily') {
     return (
       <DailyCheckin
@@ -102,7 +102,6 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
               onEdit={onEdit}
               onDelete={onDelete}
               isManager={isManager}
-              weekStart={weekStart}
             />
           ))}
         </div>
