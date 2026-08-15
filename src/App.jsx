@@ -3,6 +3,7 @@ import { DAYS, uid, getWeekStartForTeam, setWeekStartForTeam } from './store'
 import { supabase } from './supabase'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
+import Attendance from './components/Attendance'
 import AssignModal from './components/AssignModal'
 import TruckIssueModal from './components/TruckIssueModal'
 import MembersModal from './components/MembersModal'
@@ -276,19 +277,23 @@ export default function App() {
         isTruckTeam={isTruckTeam}
       />
       <main className="main">
-        <Dashboard
-          members={activeMembers}
-          tasks={activeTasks}
-          view={view}
-          selectedDay={selectedDay}
-          onToggle={toggleComplete}
-          onEdit={(task) => { setEditTask(task); setAssignModal(true) }}
-          onDelete={deleteTask}
-          onResolve={resolveIssue}
-          isManager={isManager}
-          isTruckTeam={isTruckTeam}
-          weekStart={getWeekStartForTeam(activeTeamId)}
-        />
+        {view === 'attendance' ? (
+          <Attendance isManager={isManager} />
+        ) : (
+          <Dashboard
+            members={activeMembers}
+            tasks={activeTasks}
+            view={view}
+            selectedDay={selectedDay}
+            onToggle={toggleComplete}
+            onEdit={(task) => { setEditTask(task); setAssignModal(true) }}
+            onDelete={deleteTask}
+            onResolve={resolveIssue}
+            isManager={isManager}
+            isTruckTeam={isTruckTeam}
+            weekStart={getWeekStartForTeam(activeTeamId)}
+          />
+        )}
       </main>
       {assignModal && (
         isTruckTeam ? (
