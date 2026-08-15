@@ -118,7 +118,7 @@ export default function Attendance({ isManager }) {
       return true
     })
     .filter(emp => emp.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    .sort((a, b) => b.points - a.points)
+    .sort((a, b) => a.name.localeCompare(b.name))
 
   const stats = {
     total: employees.length,
