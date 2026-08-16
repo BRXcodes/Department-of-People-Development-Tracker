@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart }) {
+export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, activeTeamName, weekStart }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
@@ -200,7 +200,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
                 </form>
               ) : (
                 <>
-                  <button className="team-tab-btn" onClick={() => { onSelectTeam(team.id); if (view === 'attendance') setView('dashboard') }}>
+                  <button className="team-tab-btn" onClick={() => { onSelectTeam(team.id); if (view === 'attendance' || view === 'scenarios') setView('dashboard') }}>
                     {team.name}
                   </button>
                   {isManager && team.id === activeTeamId && view !== 'attendance' && (
@@ -245,12 +245,14 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
             </svg>
             Daily Check-in
           </button>
+          {activeTeamName.toLowerCase().includes('development') && (
           <button className={`toggle-btn ${view === 'scenarios' ? 'active' : ''}`} onClick={() => setView('scenarios')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
             </svg>
             Scenarios
           </button>
+          )}
         </div>
         )}
 
