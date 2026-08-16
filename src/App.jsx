@@ -279,7 +279,6 @@ export default function App() {
         onAddTeam={addTeam}
         onRenameTeam={renameTeam}
         isTruckTeam={isTruckTeam}
-        activeTeamName={activeTeam?.name || ''}
         weekStart={getWeekStartForTeam(activeTeamId)}
       />
       <main className="main">
