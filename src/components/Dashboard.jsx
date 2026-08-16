@@ -1,11 +1,10 @@
 import React from 'react'
-import { DAYS } from '../store'
 import MemberCard from './MemberCard'
 import TruckCard from './TruckCard'
 import DailyCheckin from './DailyCheckin'
 import './Dashboard.css'
 
-export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete, onResolve, isManager, isTruckTeam, weekStart }) {
+export default function Dashboard({ members, tasks, view, selectedDay, onToggle, onEdit, onDelete, onResolve, isManager, isTruckTeam }) {
   if (!isTruckTeam && view === 'daily') {
     return (
       <DailyCheckin
@@ -20,9 +19,8 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
     )
   }
 
-  const totalTasks = tasks.length
   const totalCompletions = tasks.reduce((acc, t) => {
-    return acc + DAYS.filter(d => t.days.includes(d) && t.completions[d] === 'done').length
+    return acc + (t.days || []).filter(d => t.completions[d] === 'done').length
   }, 0)
   const totalPossible = tasks.reduce((acc, t) => acc + (t.days ? t.days.length : 0), 0)
   const overallPct = totalPossible > 0 ? Math.round((totalCompletions / totalPossible) * 100) : 0
@@ -102,7 +100,6 @@ export default function Dashboard({ members, tasks, view, selectedDay, onToggle,
               onEdit={onEdit}
               onDelete={onDelete}
               isManager={isManager}
-              weekStart={weekStart}
             />
           ))}
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { DAYS, uid, getWeekStartForTeam, setWeekStartForTeam } from './store'
+import { uid, getWeekStartForTeam, setWeekStartForTeam } from './store'
 import { supabase } from './supabase'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
@@ -18,7 +18,10 @@ export default function App() {
   const [members, setMembers] = useState([])
   const [tasks, setTasks] = useState([])
   const [view, setView] = useState('dashboard')
-  const [selectedDay, setSelectedDay] = useState(DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1])
+  const [selectedDay, setSelectedDay] = useState(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  })
   const [assignModal, setAssignModal] = useState(false)
   const [editTask, setEditTask] = useState(null)
   const [membersModal, setMembersModal] = useState(false)
@@ -275,6 +278,7 @@ export default function App() {
         onAddTeam={addTeam}
         onRenameTeam={renameTeam}
         isTruckTeam={isTruckTeam}
+        weekStart={getWeekStartForTeam(activeTeamId)}
       />
       <main className="main">
         {view === 'attendance' ? (
@@ -291,7 +295,6 @@ export default function App() {
             onResolve={resolveIssue}
             isManager={isManager}
             isTruckTeam={isTruckTeam}
-            weekStart={getWeekStartForTeam(activeTeamId)}
           />
         )}
       </main>

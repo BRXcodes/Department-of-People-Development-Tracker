@@ -21,6 +21,15 @@ const CheckIcon = () => (
   </svg>
 )
 
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+function formatDayTitle(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00')
+  const dayName = DAY_NAMES[d.getDay()]
+  const month = d.toLocaleDateString('en-US', { month: 'short' })
+  return `${dayName}, ${month} ${d.getDate()}`
+}
+
 export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, onDelete, isManager }) {
   const dayTasks = tasks.filter(t => t.days?.includes(day))
 
@@ -31,7 +40,7 @@ export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, on
   return (
     <div className="daily">
       <div className="daily-header">
-        <h2 className="daily-title">{day} Check-in</h2>
+        <h2 className="daily-title">{formatDayTitle(day)} Check-in</h2>
         <div className="daily-summary">
           <span className="daily-count">{completedDay}/{totalDay} tasks complete</span>
           <div className="daily-bar">
@@ -94,7 +103,7 @@ export default function DailyCheckin({ members, tasks, day, onToggle, onEdit, on
               <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
           </div>
-          <p>No tasks scheduled for {day}</p>
+          <p>No tasks scheduled for {formatDayTitle(day)}</p>
           <p>Use "Assign Task" to add tasks to this day.</p>
         </div>
       )}

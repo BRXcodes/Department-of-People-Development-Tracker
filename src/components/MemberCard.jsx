@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { DAYS } from '../store'
 import './MemberCard.css'
+
+const DAY_ABBREVS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 function ordinal(n) {
   const s = ['th', 'st', 'nd', 'rd']
@@ -8,19 +9,19 @@ function ordinal(n) {
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
 
-function getDayDate(dayName, weekStart) {
-  const idx = DAYS.indexOf(dayName)
-  if (idx === -1 || !weekStart) return null
-  const d = new Date(weekStart)
-  d.setDate(d.getDate() + idx)
-  return d
+function formatDateLabel(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00')
+  const dayAbbr = DAY_ABBREVS[d.getDay()]
+  return `${dayAbbr} ${ordinal(d.getDate())}`
 }
 
-export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager, weekStart }) {
+export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager }) {
   const [expanded, setExpanded] = useState(true)
 
   const totalSlots = tasks.reduce((a, t) => a + (t.days ? t.days.length : 0), 0)
-  const completed = tasks.reduce((a, t) => a + DAYS.filter(d => t.days?.includes(d) && t.completions?.[d] === 'done').length, 0)
+  const completed = tasks.reduce((a, t) => {
+    return a + (t.days || []).filter(d => t.completions?.[d] === 'done').length
+  }, 0)
   const pct = totalSlots > 0 ? Math.round((completed / totalSlots) * 100) : 0
 
   const initials = member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -32,7 +33,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
           {initials}
         </div>
         <div className="member-info">
-          <span className="member-name">{member.name}</span>i 
+          <span className="member-name">{member.name}</span>
           <span className="member-task-count">{tasks.length} task{tasks.length !== 1 ? 's' : ''} assigned</span>
         </div>
         <div className="member-progress-wrap">
@@ -54,7 +55,7 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
             <p className="no-tasks">No tasks assigned yet.</p>
           )}
           {tasks.map(task => (
-            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} weekStart={weekStart} />
+            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
           ))}
         </div>
       )}
@@ -62,9 +63,10 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
   )
 }
 
-function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekStart }) {
-  const completedCount = DAYS.filter(d => task.days?.includes(d) && task.completions?.[d] === 'done').length
-  const total = task.days?.length || 0
+function TaskRow({ task, onToggle, onEdit, onDelete, isManager }) {
+  const days = task.days || []
+  const completedCount = days.filter(d => task.completions?.[d] === 'done').length
+  const total = days.length
 
   return (
     <div className="task-row">
@@ -91,18 +93,15 @@ function TaskRow({ task, onToggle, onEdit, onDelete, isManager, weekStart }) {
       </div>
       {task.description && <p className="task-desc">{task.description}</p>}
       <div className="task-days">
-        {DAYS.map(day => {
-          const assigned = task.days?.includes(day)
+        {days.map(day => {
           const status = task.completions?.[day]
-          if (!assigned) return null
-          const date = getDayDate(day, weekStart)
-          const label = date ? `${day.slice(0, 3)} ${ordinal(date.getDate())}` : day.slice(0, 3)
+          const label = formatDateLabel(day)
           return (
             <button
               key={day}
               className={`day-chip ${status === 'done' ? 'done' : status === 'missed' ? 'missed' : ''}`}
               onClick={() => onToggle(task.id, day)}
-              aria-label={`${day}: ${status === 'done' ? 'completed' : status === 'missed' ? 'incomplete' : 'unset'}`}
+              aria-label={`${label}: ${status === 'done' ? 'completed' : status === 'missed' ? 'incomplete' : 'unset'}`}
             >
               <span>{label}</span>
               {status === 'done' && <span className="check">✓</span>}

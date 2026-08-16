@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { DAYS } from '../store'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam }) {
+export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
@@ -251,10 +250,14 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
 
         {!isTruckTeam && view === 'daily' && (
           <div className="day-picker">
-            {DAYS.map(day => {
+            {Array.from({ length: 7 }, (_, i) => {
+              const d = new Date(weekStart)
+              d.setDate(d.getDate() + i)
+              const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+              const dayAbbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
               return (
-                <button key={day} className={`day-btn ${selectedDay === day ? 'active' : ''}`} onClick={() => setSelectedDay(day)}>
-                  {day.slice(0, 3)}
+                <button key={dateStr} className={`day-btn ${selectedDay === dateStr ? 'active' : ''}`} onClick={() => setSelectedDay(dateStr)}>
+                  {dayAbbr} {d.getDate()}
                 </button>
               )
             })}

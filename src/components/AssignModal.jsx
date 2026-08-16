@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { DAYS } from '../store'
 import './Modal.css'
 
 const REMINDER_OPTIONS = [
@@ -14,10 +13,8 @@ function MiniCalendar({ selectedDates, onToggleDate, weekStart }) {
   const [viewMonth, setViewMonth] = useState(start.getMonth())
   const [viewYear, setViewYear] = useState(start.getFullYear())
 
-  // Build calendar grid for the viewed month
   const firstDay = new Date(viewYear, viewMonth, 1)
   const lastDay = new Date(viewYear, viewMonth + 1, 0)
-  // Monday = 0, Sunday = 6
   let startOffset = firstDay.getDay() - 1
   if (startOffset < 0) startOffset = 6
 
@@ -37,10 +34,13 @@ function MiniCalendar({ selectedDates, onToggleDate, weekStart }) {
     weeks.push(week)
   }
 
+  function toDateStr(day) {
+    return `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+  }
+
   function isSelected(day) {
     if (!day) return false
-    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    return selectedDates.includes(dateStr)
+    return selectedDates.includes(toDateStr(day))
   }
 
   function isToday(day) {
@@ -51,8 +51,7 @@ function MiniCalendar({ selectedDates, onToggleDate, weekStart }) {
 
   function handleClick(day) {
     if (!day) return
-    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    onToggleDate(dateStr)
+    onToggleDate(toDateStr(day))
   }
 
   function prevMonth() {
@@ -100,41 +99,20 @@ function MiniCalendar({ selectedDates, onToggleDate, weekStart }) {
   )
 }
 
-/** Convert a date string "YYYY-MM-DD" to its day name */
-function dateToDayName(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00')
-  return DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1]
-}
-
-/** Convert day names to date strings for the given week start */
-function dayNamesToDates(dayNames, weekStart) {
-  const start = weekStart ? new Date(weekStart) : new Date()
-  return dayNames.map(name => {
-    const idx = DAYS.indexOf(name)
-    if (idx === -1) return null
-    const d = new Date(start)
-    d.setDate(start.getDate() + idx)
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-  }).filter(Boolean)
-}
-
 export default function AssignModal({ members, task, onSave, onClose, weekStart }) {
   const [name, setName] = useState(task?.name || '')
   const [description, setDescription] = useState(task?.description || '')
   const [memberIds, setMemberIds] = useState(
     task ? [task.memberId] : []
   )
-  // Store selected dates as "YYYY-MM-DD" strings
+  // Store selected dates as "YYYY-MM-DD" strings directly
   const [selectedDates, setSelectedDates] = useState(() => {
-    if (task?.days) return dayNamesToDates(task.days, weekStart)
+    if (task?.days) return [...task.days].sort()
     return []
   })
   const [reminderTime, setReminderTime] = useState(task?.reminder_time || '')
 
   const isEditing = !!task
-
-  // Derive day names from selected dates for saving
-  const days = selectedDates.map(dateToDayName)
 
   function toggleMember(id) {
     if (isEditing) return
@@ -150,18 +128,18 @@ export default function AssignModal({ members, task, onSave, onClose, weekStart 
   }
 
   function handleSave() {
-    if (!name.trim() || memberIds.length === 0 || days.length === 0) return
+    if (!name.trim() || memberIds.length === 0 || selectedDates.length === 0) return
     if (isEditing) {
-      onSave({ ...task, name: name.trim(), description: description.trim(), memberId: memberIds[0], days, reminder_time: reminderTime || null })
+      onSave({ ...task, name: name.trim(), description: description.trim(), memberId: memberIds[0], days: selectedDates, reminder_time: reminderTime || null })
     } else {
       memberIds.forEach(memberId => {
-        onSave({ name: name.trim(), description: description.trim(), memberId, days, reminder_time: reminderTime || null })
+        onSave({ name: name.trim(), description: description.trim(), memberId, days: selectedDates, reminder_time: reminderTime || null })
       })
     }
     onClose()
   }
 
-  const valid = name.trim() && memberIds.length > 0 && days.length > 0
+  const valid = name.trim() && memberIds.length > 0 && selectedDates.length > 0
 
   return (
     <div className="modal-overlay" onClick={onClose}>
