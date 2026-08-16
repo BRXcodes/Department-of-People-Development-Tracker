@@ -285,7 +285,7 @@ export default function App() {
         {view === 'attendance' ? (
           <Attendance isManager={isManager} />
         ) : view === 'scenarios' ? (
-          <ScenarioTracker isManager={isManager} />
+          <ScenarioTracker isManager={true} />
         ) : (
           <Dashboard
             members={activeMembers}
