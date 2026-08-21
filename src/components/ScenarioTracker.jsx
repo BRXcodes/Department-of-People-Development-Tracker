@@ -50,6 +50,7 @@ export default function ScenarioTracker({ isManager }) {
   const [schedMemberId, setSchedMemberId] = useState('')
   const [schedScenario, setSchedScenario] = useState('1')
   const [schedDates, setSchedDates] = useState([])
+  const [allEmployees, setAllEmployees] = useState([])
 
   useEffect(() => {
     loadAll()
@@ -60,14 +61,18 @@ export default function ScenarioTracker({ isManager }) {
     const [
       { data: memData, error: memErr },
       { data: schedData, error: schedErr },
+      { data: empData, error: empErr },
     ] = await Promise.all([
       supabase.from('scenario_members').select('*').order('name'),
       supabase.from('scenario_schedule').select('*').order('date'),
+      supabase.from('attendance_members').select('*').order('name'),
     ])
     if (memErr) console.error(memErr)
     if (schedErr) console.error(schedErr)
+    if (empErr) console.error(empErr)
     setMembers(memData || [])
     setSchedule(schedData || [])
+    setAllEmployees(empData || [])
     setLoading(false)
   }
 
@@ -357,7 +362,7 @@ export default function ScenarioTracker({ isManager }) {
                     <span className="schedule-day-empty">—</span>
                   )}
                   {dayEntries.map(entry => {
-                    const member = members.find(m => m.id === entry.member_id)
+                    const member = members.find(m => m.id === entry.member_id) || allEmployees.find(m => m.id === entry.member_id)
                     return (
                       <div key={entry.id} className={`schedule-entry s-${entry.scenario.replace('.', '-')}`}>
                         <span className="schedule-entry-name">{member?.name || 'Unknown'}</span>
@@ -390,7 +395,7 @@ export default function ScenarioTracker({ isManager }) {
                   onChange={e => setSchedMemberId(e.target.value)}
                 >
                   <option value="">Select a member...</option>
-                  {members.map(m => (
+                  {allEmployees.map(m => (
                     <option key={m.id} value={m.id}>{m.name}</option>
                   ))}
                 </select>
