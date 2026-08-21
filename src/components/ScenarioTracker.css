@@ -133,6 +133,7 @@
 .scenario-card.scenario-3-1 { border-left-color: #F59E0B; }
 .scenario-card.scenario-3-2 { border-left-color: #F97316; }
 .scenario-card.scenario-3-3 { border-left-color: #EF4444; }
+.scenario-card.scenario-none { border-left-color: var(--gray-300); }
 
 .scenario-card-main {
   flex: 1;
@@ -170,6 +171,7 @@
 .scenario-badge.s-3-1 { background: #FFFBEB; color: #D97706; }
 .scenario-badge.s-3-2 { background: #FFF7ED; color: #C2410C; }
 .scenario-badge.s-3-3 { background: #FEF2F2; color: #DC2626; }
+.scenario-badge.s-none { background: var(--gray-100); color: var(--gray-400); }
 
 .scenario-card-notes {
   font-size: 12.5px;

@@ -58,54 +58,55 @@ export default function ScenarioTracker({ isManager }) {
   async function loadAll() {
     setLoading(true)
     const [
-      { data: memData, error: memErr },
+      { data: attData, error: attErr },
+      { data: scenData, error: scenErr },
       { data: schedData, error: schedErr },
     ] = await Promise.all([
-      supabase.from('scenario_members').select('*').order('name'),
+      supabase.from('attendance_members').select('*').order('name'),
+      supabase.from('scenario_members').select('*'),
       supabase.from('scenario_schedule').select('*').order('date'),
     ])
-    if (memErr) console.error(memErr)
+    if (attErr) console.error(attErr)
+    if (scenErr) console.error(scenErr)
     if (schedErr) console.error(schedErr)
-    setMembers(memData || [])
+    // Merge attendance members with their scenario data
+    const scenarioMap = {}
+    for (const s of (scenData || [])) {
+      scenarioMap[s.id] = s
+    }
+    const merged = (attData || []).map(m => ({
+      id: m.id,
+      name: m.name,
+      scenario: scenarioMap[m.id]?.scenario || null,
+      notes: scenarioMap[m.id]?.notes || null,
+    }))
+    setMembers(merged)
     setSchedule(schedData || [])
     setLoading(false)
   }
 
   async function addMember(e) {
+    // No longer used — members come from attendance
     e.preventDefault()
-    const name = addName.trim()
-    if (!name) return
-    const id = uid()
-    const { error } = await supabase.from('scenario_members').insert({
-      id,
-      name,
-      scenario: addScenario,
-      notes: addNotes.trim() || null,
-    })
-    if (error) { console.error(error); return }
-    setMembers(prev => [...prev, { id, name, scenario: addScenario, notes: addNotes.trim() || null }].sort((a, b) => a.name.localeCompare(b.name)))
-    setAddName('')
-    setAddScenario('1')
-    setAddNotes('')
-    setAddModal(false)
   }
 
   async function updateMember(e) {
     e.preventDefault()
     if (!editModal) return
-    const { error } = await supabase.from('scenario_members').update({
+    // Upsert into scenario_members using the attendance member's ID
+    const { error } = await supabase.from('scenario_members').upsert({
+      id: editModal.id,
+      name: editModal.name,
       scenario: editScenario,
       notes: editNotes.trim() || null,
-    }).eq('id', editModal.id)
+    })
     if (error) { console.error(error); return }
     setMembers(prev => prev.map(m => m.id === editModal.id ? { ...m, scenario: editScenario, notes: editNotes.trim() || null } : m))
     setEditModal(null)
   }
 
   async function removeMember(id) {
-    const { error } = await supabase.from('scenario_members').delete().eq('id', id)
-    if (error) { console.error(error); return }
-    setMembers(prev => prev.filter(m => m.id !== id))
+    // No longer used — members come from attendance
   }
 
   async function addScheduleEntry(e) {
@@ -150,6 +151,7 @@ export default function ScenarioTracker({ isManager }) {
     acc[s] = members.filter(m => m.scenario === s).length
     return acc
   }, {})
+  const unassignedCount = members.filter(m => !m.scenario).length
 
   if (loading) {
     return <div className="scenario-loading"><div className="loading-spinner" /><p>Loading scenarios...</p></div>
@@ -160,16 +162,8 @@ export default function ScenarioTracker({ isManager }) {
       <div className="scenario-header-row">
         <div>
           <h2 className="scenario-title">Scenario Tracker</h2>
-          <p className="scenario-subtitle">{members.length} CEL members</p>
+          <p className="scenario-subtitle">{members.length} team members</p>
         </div>
-        {isManager && (
-          <button className="btn btn-primary" onClick={() => setAddModal(true)}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            Add Member
-          </button>
-        )}
       </div>
 
       {/* Scenario filter pills */}
@@ -216,78 +210,28 @@ export default function ScenarioTracker({ isManager }) {
           </div>
         )}
         {filtered.map(member => (
-          <div key={member.id} className={`scenario-card scenario-${member.scenario.replace('.', '-')}`}>
+          <div key={member.id} className={`scenario-card ${member.scenario ? `scenario-${member.scenario.replace('.', '-')}` : 'scenario-none'}`}>
             <div className="scenario-card-main">
               <div className="scenario-card-info">
                 <span className="scenario-card-name">{member.name}</span>
-                <span className={`scenario-badge s-${member.scenario.replace('.', '-')}`}>
-                  {scenarioLabel(member.scenario)}
-                </span>
+                {member.scenario ? (
+                  <span className={`scenario-badge s-${member.scenario.replace('.', '-')}`}>
+                    {scenarioLabel(member.scenario)}
+                  </span>
+                ) : (
+                  <span className="scenario-badge s-none">Not Set</span>
+                )}
               </div>
               {member.notes && (
                 <p className="scenario-card-notes">{member.notes}</p>
               )}
             </div>
-            {isManager && (
-              <div className="scenario-card-actions">
-                <button className="scenario-edit-btn" onClick={() => openEdit(member)}>Edit</button>
-                <button className="scenario-remove-btn" onClick={() => removeMember(member.id)}>✕</button>
-              </div>
-            )}
+            <div className="scenario-card-actions">
+              <button className="scenario-edit-btn" onClick={() => openEdit(member)}>Edit</button>
+            </div>
           </div>
         ))}
       </div>
-
-      {/* Add Modal */}
-      {addModal && (
-        <div className="modal-overlay" onClick={() => setAddModal(false)}>
-          <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Add CEL Member</h2>
-              <button className="modal-close" onClick={() => setAddModal(false)}>✕</button>
-            </div>
-            <form onSubmit={addMember}>
-              <div className="modal-body">
-                <label className="field-label">Name *</label>
-                <input
-                  className="field-input"
-                  value={addName}
-                  onChange={e => setAddName(e.target.value)}
-                  placeholder="Full name"
-                  autoFocus
-                />
-
-                <label className="field-label">Current Scenario *</label>
-                <div className="scenario-select-grid">
-                  {SCENARIOS.map(s => (
-                    <button
-                      key={s}
-                      type="button"
-                      className={`scenario-select-btn ${addScenario === s ? 'selected' : ''}`}
-                      onClick={() => setAddScenario(s)}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-
-                <label className="field-label">Notes (what to work on)</label>
-                <textarea
-                  className="field-input"
-                  value={addNotes}
-                  onChange={e => setAddNotes(e.target.value)}
-                  placeholder="Areas to improve, focus points..."
-                  rows={3}
-                />
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn-cancel" onClick={() => setAddModal(false)}>Cancel</button>
-                <button type="submit" className="btn-confirm" disabled={!addName.trim()}>Add Member</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Edit Modal */}
       {editModal && (
