@@ -3,11 +3,16 @@ import { supabase } from '../supabase'
 import { uid } from '../store'
 import './ScenarioTracker.css'
 
-const SCENARIOS = ['1', '2', '3.1', '3.2', '3.3']
+const SCENARIOS = ['1', '2', '3.1', '3.2', '3.3', 'BTL 3.3']
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 function scenarioLabel(s) {
+  if (s === 'BTL 3.3') return 'BTL 3.3'
   return `Scenario ${s}`
+}
+
+function scenarioClass(s) {
+  return s.replace(/[\s.]/g, '-').toLowerCase()
 }
 
 function getWeekDates() {
@@ -265,11 +270,11 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
           </div>
         )}
         {filtered.map(member => (
-          <div key={member.id} className={`scenario-card scenario-${member.scenario.replace('.', '-')}`}>
+          <div key={member.id} className={`scenario-card scenario-${scenarioClass(member.scenario)}`}>
             <div className="scenario-card-main">
               <div className="scenario-card-info">
                 <span className="scenario-card-name">{member.name}</span>
-                <span className={`scenario-badge s-${member.scenario.replace('.', '-')}`}>
+                <span className={`scenario-badge s-${scenarioClass(member.scenario)}`}>
                   {scenarioLabel(member.scenario)}
                 </span>
               </div>
@@ -408,7 +413,7 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
                   {dayEntries.map(entry => {
                     const member = members.find(m => m.id === entry.member_id) || allEmployees.find(m => m.id === entry.member_id)
                     return (
-                      <div key={entry.id} className={`schedule-entry s-${entry.scenario.replace('.', '-')}`}>
+                      <div key={entry.id} className={`schedule-entry s-${scenarioClass(entry.scenario)}`}>
                         <span className="schedule-entry-name">{member?.name || 'Unknown'}</span>
                         <span className="schedule-entry-scenario">{scenarioLabel(entry.scenario)}</span>
                         <button className="schedule-entry-remove" onClick={() => removeScheduleEntry(entry.id)} aria-label="Remove">✕</button>
