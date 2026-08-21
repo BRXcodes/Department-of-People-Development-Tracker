@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS scenario_members (
 
 CREATE TABLE IF NOT EXISTS scenario_schedule (
   id TEXT PRIMARY KEY,
-  member_id TEXT NOT NULL REFERENCES scenario_members(id) ON DELETE CASCADE,
+  member_id TEXT NOT NULL,
   scenario TEXT NOT NULL DEFAULT '1',
   date DATE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()

@@ -135,8 +135,10 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
       date,
     }))
     const { error } = await supabase.from('scenario_schedule').insert(entries)
-    if (error) { console.error(error); return }
-    setSchedule(prev => [...prev, ...entries].sort((a, b) => a.date.localeCompare(b.date)))
+    if (error) console.error(error)
+    if (!error) {
+      setSchedule(prev => [...prev, ...entries].sort((a, b) => a.date.localeCompare(b.date)))
+    }
 
     // Also create a task under the People Development assignee if one is selected
     if (schedAssigneeId) {
