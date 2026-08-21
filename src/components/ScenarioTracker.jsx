@@ -16,17 +16,17 @@ function scenarioClass(s) {
 }
 
 function getWeekDates() {
+  // Start on today's date and show 7 days forward
   const now = new Date()
-  const day = now.getDay()
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1)
-  const monday = new Date(now.getFullYear(), now.getMonth(), diff)
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday)
-    d.setDate(monday.getDate() + i)
+    const d = new Date(start)
+    d.setDate(start.getDate() + i)
+    const dayAbbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
     return {
       date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
-      label: `${DAY_NAMES[i]} ${d.getDate()}`,
-      isToday: d.toDateString() === now.toDateString(),
+      label: `${dayAbbr} ${d.getDate()}`,
+      isToday: i === 0,
     }
   })
 }
