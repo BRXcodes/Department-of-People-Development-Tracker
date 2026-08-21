@@ -19,7 +19,7 @@ function getWeekDates() {
   // Start on today's date and show 7 days forward
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  return Array.from({ length: 7 }, (_, i) => {
+  return Array.from({ length: 10 }, (_, i) => {
     const d = new Date(start)
     d.setDate(start.getDate() + i)
     const dayAbbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
