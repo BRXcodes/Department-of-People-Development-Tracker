@@ -51,6 +51,7 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
   const [schedScenario, setSchedScenario] = useState('1')
   const [schedDates, setSchedDates] = useState([])
   const [schedAssigneeId, setSchedAssigneeId] = useState('')
+  const [schedAssignee2Id, setSchedAssignee2Id] = useState('')
   const [allEmployees, setAllEmployees] = useState([])
 
   // Get People Development team members (non-truck teams)
@@ -149,11 +150,29 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
       if (taskErr) console.error(taskErr)
     }
 
+    // Create task for second assignee if selected
+    if (schedAssignee2Id) {
+      const employeeName = allEmployees.find(e => e.id === schedMemberId)?.name || 'Team member'
+      const taskId2 = uid()
+      const { error: taskErr2 } = await supabase.from('tasks').insert({
+        id: taskId2,
+        name: `Scenario ${schedScenario} — ${employeeName}`,
+        description: `Run Scenario ${schedScenario} with ${employeeName}`,
+        member_id: schedAssignee2Id,
+        days: schedDates,
+        priority: null,
+        due_date: null,
+        reminder_time: null,
+      })
+      if (taskErr2) console.error(taskErr2)
+    }
+
     setScheduleModal(false)
     setSchedMemberId('')
     setSchedScenario('1')
     setSchedDates([])
     setSchedAssigneeId('')
+    setSchedAssignee2Id('')
   }
 
   async function removeScheduleEntry(id) {
@@ -461,6 +480,18 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
                 >
                   <option value="">None — don't create a task</option>
                   {pdMembers.map(m => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
+
+                <label className="field-label">2nd Assignee (optional)</label>
+                <select
+                  className="field-input"
+                  value={schedAssignee2Id}
+                  onChange={e => setSchedAssignee2Id(e.target.value)}
+                >
+                  <option value="">None</option>
+                  {pdMembers.filter(m => m.id !== schedAssigneeId).map(m => (
                     <option key={m.id} value={m.id}>{m.name}</option>
                   ))}
                 </select>
