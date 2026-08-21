@@ -4,16 +4,41 @@ import { uid } from '../store'
 import './ScenarioTracker.css'
 
 const SCENARIOS = ['1', '2', '3.1', '3.2', '3.3']
+const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 function scenarioLabel(s) {
   return `Scenario ${s}`
 }
 
+function getWeekDates() {
+  const now = new Date()
+  const day = now.getDay()
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+  const monday = new Date(now.getFullYear(), now.getMonth(), diff)
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    return {
+      date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
+      label: `${DAY_NAMES[i]} ${d.getDate()}`,
+      isToday: d.toDateString() === now.toDateString(),
+    }
+  })
+}
+
+function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = n % 100
+  return n + (s[(v - 20) % 10] || s[v] || s[0])
+}
+
 export default function ScenarioTracker({ isManager }) {
   const [members, setMembers] = useState([])
+  const [schedule, setSchedule] = useState([])
   const [loading, setLoading] = useState(true)
   const [addModal, setAddModal] = useState(false)
   const [editModal, setEditModal] = useState(null)
+  const [scheduleModal, setScheduleModal] = useState(false)
   const [addName, setAddName] = useState('')
   const [addScenario, setAddScenario] = useState('1')
   const [addNotes, setAddNotes] = useState('')
@@ -21,19 +46,28 @@ export default function ScenarioTracker({ isManager }) {
   const [editNotes, setEditNotes] = useState('')
   const [filterScenario, setFilterScenario] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  // Schedule modal state
+  const [schedMemberId, setSchedMemberId] = useState('')
+  const [schedScenario, setSchedScenario] = useState('1')
+  const [schedDates, setSchedDates] = useState([])
 
   useEffect(() => {
-    loadMembers()
+    loadAll()
   }, [])
 
-  async function loadMembers() {
+  async function loadAll() {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('scenario_members')
-      .select('*')
-      .order('name')
-    if (error) console.error(error)
-    setMembers(data || [])
+    const [
+      { data: memData, error: memErr },
+      { data: schedData, error: schedErr },
+    ] = await Promise.all([
+      supabase.from('scenario_members').select('*').order('name'),
+      supabase.from('scenario_schedule').select('*').order('date'),
+    ])
+    if (memErr) console.error(memErr)
+    if (schedErr) console.error(schedErr)
+    setMembers(memData || [])
+    setSchedule(schedData || [])
     setLoading(false)
   }
 
@@ -72,6 +106,34 @@ export default function ScenarioTracker({ isManager }) {
     const { error } = await supabase.from('scenario_members').delete().eq('id', id)
     if (error) { console.error(error); return }
     setMembers(prev => prev.filter(m => m.id !== id))
+  }
+
+  async function addScheduleEntry(e) {
+    e.preventDefault()
+    if (!schedMemberId || schedDates.length === 0) return
+    const entries = schedDates.map(date => ({
+      id: uid(),
+      member_id: schedMemberId,
+      scenario: schedScenario,
+      date,
+    }))
+    const { error } = await supabase.from('scenario_schedule').insert(entries)
+    if (error) { console.error(error); return }
+    setSchedule(prev => [...prev, ...entries].sort((a, b) => a.date.localeCompare(b.date)))
+    setScheduleModal(false)
+    setSchedMemberId('')
+    setSchedScenario('1')
+    setSchedDates([])
+  }
+
+  async function removeScheduleEntry(id) {
+    const { error } = await supabase.from('scenario_schedule').delete().eq('id', id)
+    if (error) { console.error(error); return }
+    setSchedule(prev => prev.filter(s => s.id !== id))
+  }
+
+  function toggleSchedDate(date) {
+    setSchedDates(prev => prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date].sort())
   }
 
   function openEdit(member) {
@@ -263,6 +325,107 @@ export default function ScenarioTracker({ isManager }) {
               <div className="modal-footer">
                 <button type="button" className="btn-cancel" onClick={() => setEditModal(null)}>Cancel</button>
                 <button type="submit" className="btn-confirm">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Scenarios Schedule */}
+      <div className="schedule-section">
+        <div className="schedule-header-row">
+          <h3 className="schedule-title">Upcoming Scenarios</h3>
+          <button className="btn btn-primary" onClick={() => setScheduleModal(true)}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Schedule
+          </button>
+        </div>
+
+        <div className="schedule-week">
+          {getWeekDates().map(({ date, label, isToday }) => {
+            const dayEntries = schedule.filter(s => s.date === date)
+            return (
+              <div key={date} className={`schedule-day ${isToday ? 'today' : ''}`}>
+                <div className="schedule-day-header">
+                  <span className="schedule-day-label">{label}</span>
+                  {isToday && <span className="schedule-today-badge">Today</span>}
+                </div>
+                <div className="schedule-day-entries">
+                  {dayEntries.length === 0 && (
+                    <span className="schedule-day-empty">—</span>
+                  )}
+                  {dayEntries.map(entry => {
+                    const member = members.find(m => m.id === entry.member_id)
+                    return (
+                      <div key={entry.id} className={`schedule-entry s-${entry.scenario.replace('.', '-')}`}>
+                        <span className="schedule-entry-name">{member?.name || 'Unknown'}</span>
+                        <span className="schedule-entry-scenario">{scenarioLabel(entry.scenario)}</span>
+                        <button className="schedule-entry-remove" onClick={() => removeScheduleEntry(entry.id)} aria-label="Remove">✕</button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Schedule Modal */}
+      {scheduleModal && (
+        <div className="modal-overlay" onClick={() => setScheduleModal(false)}>
+          <div className="modal" style={{ maxWidth: 440 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Schedule Scenario</h2>
+              <button className="modal-close" onClick={() => setScheduleModal(false)}>✕</button>
+            </div>
+            <form onSubmit={addScheduleEntry}>
+              <div className="modal-body">
+                <label className="field-label">Member *</label>
+                <select
+                  className="field-input"
+                  value={schedMemberId}
+                  onChange={e => setSchedMemberId(e.target.value)}
+                >
+                  <option value="">Select a member...</option>
+                  {members.map(m => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
+
+                <label className="field-label">Scenario *</label>
+                <div className="scenario-select-grid">
+                  {SCENARIOS.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`scenario-select-btn ${schedScenario === s ? 'selected' : ''}`}
+                      onClick={() => setSchedScenario(s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+
+                <label className="field-label">Days *</label>
+                <div className="schedule-day-picker">
+                  {getWeekDates().map(({ date, label }) => (
+                    <button
+                      key={date}
+                      type="button"
+                      className={`schedule-day-btn ${schedDates.includes(date) ? 'selected' : ''}`}
+                      onClick={() => toggleSchedDate(date)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn-cancel" onClick={() => setScheduleModal(false)}>Cancel</button>
+                <button type="submit" className="btn-confirm" disabled={!schedMemberId || schedDates.length === 0}>Schedule</button>
               </div>
             </form>
           </div>
