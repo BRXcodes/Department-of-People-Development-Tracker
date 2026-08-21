@@ -3,11 +3,12 @@ import { supabase } from '../supabase'
 import { uid } from '../store'
 import './ScenarioTracker.css'
 
-const SCENARIOS = ['1', '2', '3.1', '3.2', '3.3', 'BTL 3.3']
+const SCENARIOS = ['1', '2', '3.1', '3.2', '3.3', 'BTL 3.3', 'Raffle BTL']
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 function scenarioLabel(s) {
   if (s === 'BTL 3.3') return 'BTL 3.3'
+  if (s === 'Raffle BTL') return 'Raffle BTL'
   return `Scenario ${s}`
 }
 
@@ -402,6 +403,7 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
         <div className="schedule-week">
           {getWeekDates().map(({ date, label, isToday }) => {
             const dayEntries = schedule.filter(s => s.date === date)
+            const isFriday = new Date(date + 'T00:00:00').getDay() === 5
             return (
               <div key={date} className={`schedule-day ${isToday ? 'today' : ''}`}>
                 <div className="schedule-day-header">
@@ -409,6 +411,12 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
                   {isToday && <span className="schedule-today-badge">Today</span>}
                 </div>
                 <div className="schedule-day-entries">
+                  {isFriday && (
+                    <div className="schedule-entry s-raffle-btl schedule-entry-auto">
+                      <span className="schedule-entry-name">Every Friday</span>
+                      <span className="schedule-entry-scenario">Raffle BTL</span>
+                    </div>
+                  )}
                   {dayEntries.length === 0 && (
                     <span className="schedule-day-empty">—</span>
                   )}
