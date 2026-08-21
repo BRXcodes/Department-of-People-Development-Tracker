@@ -32,7 +32,7 @@ function ordinal(n) {
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
 
-export default function ScenarioTracker({ isManager }) {
+export default function ScenarioTracker({ isManager, teams, allMembers }) {
   const [members, setMembers] = useState([])
   const [schedule, setSchedule] = useState([])
   const [loading, setLoading] = useState(true)
@@ -50,7 +50,13 @@ export default function ScenarioTracker({ isManager }) {
   const [schedMemberId, setSchedMemberId] = useState('')
   const [schedScenario, setSchedScenario] = useState('1')
   const [schedDates, setSchedDates] = useState([])
+  const [schedAssigneeId, setSchedAssigneeId] = useState('')
   const [allEmployees, setAllEmployees] = useState([])
+
+  // Get People Development team members (non-truck teams)
+  const TRUCK_TEAM_NAME = 'Truck Maintenance'
+  const pdTeams = (teams || []).filter(t => t.name !== TRUCK_TEAM_NAME)
+  const pdMembers = (allMembers || []).filter(m => pdTeams.some(t => t.id === m.team_id))
 
   useEffect(() => {
     loadAll()
@@ -125,10 +131,29 @@ export default function ScenarioTracker({ isManager }) {
     const { error } = await supabase.from('scenario_schedule').insert(entries)
     if (error) { console.error(error); return }
     setSchedule(prev => [...prev, ...entries].sort((a, b) => a.date.localeCompare(b.date)))
+
+    // Also create a task under the People Development assignee if one is selected
+    if (schedAssigneeId) {
+      const employeeName = allEmployees.find(e => e.id === schedMemberId)?.name || 'Team member'
+      const taskId = uid()
+      const { error: taskErr } = await supabase.from('tasks').insert({
+        id: taskId,
+        name: `Scenario ${schedScenario} — ${employeeName}`,
+        description: `Run Scenario ${schedScenario} with ${employeeName}`,
+        member_id: schedAssigneeId,
+        days: schedDates,
+        priority: null,
+        due_date: null,
+        reminder_time: null,
+      })
+      if (taskErr) console.error(taskErr)
+    }
+
     setScheduleModal(false)
     setSchedMemberId('')
     setSchedScenario('1')
     setSchedDates([])
+    setSchedAssigneeId('')
   }
 
   async function removeScheduleEntry(id) {
@@ -427,6 +452,18 @@ export default function ScenarioTracker({ isManager }) {
                     </button>
                   ))}
                 </div>
+
+                <label className="field-label">Assign To (People Development Member)</label>
+                <select
+                  className="field-input"
+                  value={schedAssigneeId}
+                  onChange={e => setSchedAssigneeId(e.target.value)}
+                >
+                  <option value="">None — don't create a task</option>
+                  {pdMembers.map(m => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn-cancel" onClick={() => setScheduleModal(false)}>Cancel</button>
