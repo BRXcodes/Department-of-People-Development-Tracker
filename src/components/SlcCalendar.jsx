@@ -270,7 +270,12 @@ export default function SlcCalendar({ isManager }) {
               const dayIdx = DAYS.indexOf(filterDay)
               const shiftA = a.shifts[dayIdx] || ''
               const shiftB = b.shifts[dayIdx] || ''
-              return shiftA.localeCompare(shiftB)
+              const order = ['6:30 Scenario', 'First Shift Ops', 'Morning lead', 'Morning Crew', 'Afternoon lead', 'Afternoon Crew', '2nd shift ops', 'Sunday Crew', 'Truck Maitenence']
+              const idxA = order.indexOf(shiftA)
+              const idxB = order.indexOf(shiftB)
+              const rankA = idxA >= 0 ? idxA : 99
+              const rankB = idxB >= 0 ? idxB : 99
+              return rankA - rankB || a.name.localeCompare(b.name)
             }).map(row => {
               const dayIdx = DAYS.indexOf(filterDay)
               const shift = row.shifts[dayIdx]
