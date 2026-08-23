@@ -248,6 +248,13 @@
 .slc-hours-badge.green { background: #ECFDF5; color: #059669; }
 .slc-hours-badge.red { background: #FEF2F2; color: #DC2626; }
 
+.slc-shifts-badge {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+
 .slc-shift-cell {
   padding: 6px 4px;
   display: flex;

@@ -220,6 +220,9 @@ export default function SlcCalendar({ isManager }) {
                     <span className={`slc-hours-badge ${row.hours >= 40 ? 'red' : row.hours >= 31 ? 'green' : row.hours >= 16 ? 'yellow' : 'orange'}`}>
                       {row.hours}h
                     </span>
+                    <span className="slc-shifts-badge">
+                      {row.shifts.filter(Boolean).length} shifts
+                    </span>
                   </div>
                   {row.shifts.map((shift, i) => (
                     <div key={i} className={`slc-shift-cell ${shift ? '' : 'off'}`}>
