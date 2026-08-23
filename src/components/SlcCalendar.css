@@ -378,7 +378,7 @@
   }
 
   .slc-hours-badge {
-    display: none;
+    font-size: 9px;
   }
 
   .slc-shifts-badge {
