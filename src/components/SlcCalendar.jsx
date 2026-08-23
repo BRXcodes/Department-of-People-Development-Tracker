@@ -126,6 +126,47 @@ export default function SlcCalendar() {
 
       {schedule.length > 0 && (
         <>
+          {/* Weekly summary calendar */}
+          <div className="slc-week-summary">
+            {DAYS.map((day, dayIdx) => {
+              const morningOps = schedule.filter(s => s.shifts[dayIdx] === 'Morning lead').map(s => s.name)
+              const secondShift = schedule.filter(s => s.shifts[dayIdx] === '2nd shift ops').map(s => s.name)
+              const scenario = schedule.filter(s => s.shifts[dayIdx] === '6:30 Scenario').map(s => s.name)
+              const today = new Date()
+              const todayDay = today.getDay()
+              const isToday = (todayDay === 0 ? 6 : todayDay - 1) === dayIdx
+              return (
+                <div key={day} className={`slc-summary-day ${isToday ? 'today' : ''}`}>
+                  <div className="slc-summary-day-header">
+                    <span className="slc-summary-day-name">{day.slice(0, 3)}</span>
+                    {isToday && <span className="slc-summary-today-badge">Today</span>}
+                  </div>
+                  {morningOps.length > 0 && (
+                    <div className="slc-summary-group">
+                      <span className="slc-summary-label" style={{ color: '#10B981' }}>Morning Ops</span>
+                      {morningOps.map(n => <span key={n} className="slc-summary-name">{n}</span>)}
+                    </div>
+                  )}
+                  {secondShift.length > 0 && (
+                    <div className="slc-summary-group">
+                      <span className="slc-summary-label" style={{ color: '#EC4899' }}>2nd Shift</span>
+                      {secondShift.map(n => <span key={n} className="slc-summary-name">{n}</span>)}
+                    </div>
+                  )}
+                  {scenario.length > 0 && (
+                    <div className="slc-summary-group">
+                      <span className="slc-summary-label" style={{ color: '#EF4444' }}>6:30 Scenario</span>
+                      {scenario.map(n => <span key={n} className="slc-summary-name">{n}</span>)}
+                    </div>
+                  )}
+                  {morningOps.length === 0 && secondShift.length === 0 && scenario.length === 0 && (
+                    <span className="slc-summary-empty">—</span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
           {/* Filter and search */}
           <div className="slc-toolbar">
             <input

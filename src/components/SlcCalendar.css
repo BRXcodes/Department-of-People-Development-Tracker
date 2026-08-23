@@ -32,6 +32,96 @@
   margin-top: 2px;
 }
 
+/* Week Summary Calendar */
+.slc-week-summary {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.slc-summary-day {
+  background: white;
+  border-radius: 10px;
+  border: 1.5px solid var(--gray-200);
+  padding: 10px 8px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slc-summary-day.today {
+  border-color: var(--blue-accent);
+  background: var(--blue-pale);
+}
+
+.slc-summary-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.slc-summary-day-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.slc-summary-today-badge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--blue-mid);
+  background: white;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+
+.slc-summary-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.slc-summary-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.slc-summary-name {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--gray-800);
+  padding-left: 6px;
+  border-left: 2px solid var(--gray-200);
+}
+
+.slc-summary-empty {
+  font-size: 12px;
+  color: var(--gray-300);
+  text-align: center;
+  padding: 10px 0;
+}
+
+@media (max-width: 700px) {
+  .slc-week-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .slc-week-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Toolbar */
 .slc-toolbar {
   display: flex;
