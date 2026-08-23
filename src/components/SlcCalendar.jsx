@@ -36,6 +36,7 @@ export default function SlcCalendar({ isManager }) {
     return `${nextMon.getFullYear()}-${String(nextMon.getMonth() + 1).padStart(2, '0')}-${String(nextMon.getDate()).padStart(2, '0')}`
   })
   const [filterShift, setFilterShift] = useState('all')
+  const [filterDay, setFilterDay] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
@@ -108,6 +109,11 @@ export default function SlcCalendar({ isManager }) {
       if (filterShift === 'all') return true
       if (filterShift === 'off') return s.shifts.some(sh => !sh)
       return s.shifts.includes(filterShift)
+    })
+    .filter(s => {
+      if (filterDay === 'all') return true
+      const dayIdx = DAYS.indexOf(filterDay)
+      return dayIdx >= 0 && s.shifts[dayIdx] !== null
     })
     .filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
 
@@ -202,6 +208,24 @@ export default function SlcCalendar({ isManager }) {
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
+          </div>
+
+          <div className="slc-day-filters">
+            <button
+              className={`slc-day-filter-btn ${filterDay === 'all' ? 'active' : ''}`}
+              onClick={() => setFilterDay('all')}
+            >
+              All Days
+            </button>
+            {DAYS.map(d => (
+              <button
+                key={d}
+                className={`slc-day-filter-btn ${filterDay === d ? 'active' : ''}`}
+                onClick={() => setFilterDay(f => f === d ? 'all' : d)}
+              >
+                {d.slice(0, 3)}
+              </button>
+            ))}
           </div>
 
           {/* Schedule grid */}
