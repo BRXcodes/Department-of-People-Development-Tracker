@@ -180,7 +180,7 @@
 
 .slc-grid-header {
   display: grid;
-  grid-template-columns: 180px repeat(7, 1fr);
+  grid-template-columns: 260px repeat(7, 1fr);
   background: var(--gray-50);
   border-bottom: 1.5px solid var(--gray-200);
   position: sticky;
@@ -209,7 +209,7 @@
 
 .slc-grid-row {
   display: grid;
-  grid-template-columns: 180px repeat(7, 1fr);
+  grid-template-columns: 260px repeat(7, 1fr);
   border-bottom: 1px solid var(--gray-100);
   transition: background 0.1s;
 }
@@ -305,7 +305,7 @@
 @media (max-width: 700px) {
   .slc-grid-header,
   .slc-grid-row {
-    grid-template-columns: 120px repeat(7, 1fr);
+    grid-template-columns: 160px repeat(7, 1fr);
   }
 
   .slc-name-cell {
