@@ -229,10 +229,24 @@
   color: var(--gray-900);
   display: flex;
   align-items: center;
+  gap: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.slc-hours-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.slc-hours-badge.orange { background: #FFF7ED; color: #C2410C; }
+.slc-hours-badge.yellow { background: #FFFBEB; color: #D97706; }
+.slc-hours-badge.green { background: #ECFDF5; color: #059669; }
+.slc-hours-badge.red { background: #FEF2F2; color: #DC2626; }
 
 .slc-shift-cell {
   padding: 6px 4px;

@@ -93,7 +93,9 @@ export default function SlcCalendar({ isManager }) {
         const val = s.trim()
         return val === 'Select Shift' ? null : val
       })
-      results.push({ name, shifts })
+      const hoursRaw = parts[8] ? parts[8].trim() : '0'
+      const hours = parseFloat(hoursRaw) || 0
+      results.push({ name, shifts, hours })
     }
     return results.sort((a, b) => a.name.localeCompare(b.name))
   }
@@ -213,7 +215,12 @@ export default function SlcCalendar({ isManager }) {
               </div>
               {filtered.map(row => (
                 <div key={row.name} className="slc-grid-row">
-                  <div className="slc-name-cell">{row.name}</div>
+                  <div className="slc-name-cell">
+                    <span>{row.name}</span>
+                    <span className={`slc-hours-badge ${row.hours >= 40 ? 'red' : row.hours >= 31 ? 'green' : row.hours >= 16 ? 'yellow' : 'orange'}`}>
+                      {row.hours}h
+                    </span>
+                  </div>
                   {row.shifts.map((shift, i) => (
                     <div key={i} className={`slc-shift-cell ${shift ? '' : 'off'}`}>
                       {shift ? (
