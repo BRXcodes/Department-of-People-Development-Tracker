@@ -288,7 +288,7 @@ export default function App() {
         ) : view === 'scenarios' ? (
           <ScenarioTracker isManager={true} teams={teams} allMembers={members} />
         ) : view === 'slc' ? (
-          <SlcCalendar />
+          <SlcCalendar isManager={isManager} />
         ) : (
           <Dashboard
             members={activeMembers}
