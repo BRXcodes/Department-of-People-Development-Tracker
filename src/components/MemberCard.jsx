@@ -54,7 +54,11 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
           {tasks.length === 0 && (
             <p className="no-tasks">No tasks assigned yet.</p>
           )}
-          {tasks.map(task => (
+          {[...tasks].sort((a, b) => {
+            const aFirst = (a.days || [])[0] || ''
+            const bFirst = (b.days || [])[0] || ''
+            return aFirst.localeCompare(bFirst)
+          }).map(task => (
             <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
           ))}
         </div>
