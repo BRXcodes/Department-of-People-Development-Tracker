@@ -129,7 +129,7 @@ export default function SlcCalendar() {
           {/* Weekly summary calendar */}
           <div className="slc-week-summary">
             {DAYS.map((day, dayIdx) => {
-              const morningOps = schedule.filter(s => s.shifts[dayIdx] === 'Morning lead').map(s => s.name)
+              const morningOps = schedule.filter(s => s.shifts[dayIdx] === 'First Shift Ops').map(s => s.name)
               const secondShift = schedule.filter(s => s.shifts[dayIdx] === '2nd shift ops').map(s => s.name)
               const scenario = schedule.filter(s => s.shifts[dayIdx] === '6:30 Scenario').map(s => s.name)
               const today = new Date()
@@ -143,7 +143,7 @@ export default function SlcCalendar() {
                   </div>
                   {morningOps.length > 0 && (
                     <div className="slc-summary-group">
-                      <span className="slc-summary-label" style={{ color: '#10B981' }}>Morning Ops</span>
+                      <span className="slc-summary-label" style={{ color: '#10B981' }}>First Shift Ops</span>
                       {morningOps.map(n => <span key={n} className="slc-summary-name">{n}</span>)}
                     </div>
                   )}
