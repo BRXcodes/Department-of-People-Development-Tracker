@@ -246,7 +246,7 @@ export default function SlcCalendar({ isManager }) {
                       {row.hours}h
                     </span>
                     <span className="slc-shifts-badge">
-                      {row.shifts.filter(Boolean).length} shifts
+                      {row.shifts.filter(Boolean).length} shifts left
                     </span>
                   </div>
                   {row.shifts.map((shift, i) => (
@@ -286,7 +286,7 @@ export default function SlcCalendar({ isManager }) {
                     {row.hours}h
                   </span>
                   <span className="slc-shifts-badge">
-                    {row.shifts.filter(Boolean).length} shifts
+                    {row.shifts.filter(Boolean).length} shifts left
                   </span>
                   <span className="slc-day-list-shift" style={{ borderLeftColor: getShiftColor(shift) }}>
                     {shift}
