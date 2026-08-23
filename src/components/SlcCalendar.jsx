@@ -285,6 +285,9 @@ export default function SlcCalendar({ isManager }) {
                   <span className={`slc-hours-badge ${row.hours >= 40 ? 'red' : row.hours >= 31 ? 'green' : row.hours >= 16 ? 'yellow' : 'orange'}`}>
                     {row.hours}h
                   </span>
+                  <span className="slc-shifts-badge">
+                    {row.shifts.filter(Boolean).length} shifts
+                  </span>
                   <span className="slc-day-list-shift" style={{ borderLeftColor: getShiftColor(shift) }}>
                     {shift}
                   </span>
