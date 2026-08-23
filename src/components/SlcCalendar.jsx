@@ -229,20 +229,17 @@ export default function SlcCalendar({ isManager }) {
           </div>
 
           {/* Schedule grid */}
+          {filterDay === 'all' ? (
           <div className="slc-grid-wrapper">
             <div className="slc-grid">
-              <div className="slc-grid-header" style={filterDay !== 'all' ? { gridTemplateColumns: '260px 1fr' } : undefined}>
+              <div className="slc-grid-header">
                 <div className="slc-name-col">Name</div>
-                {filterDay === 'all' ? (
-                  DAYS.map(d => (
-                    <div key={d} className="slc-day-col">{d.slice(0, 3)}</div>
-                  ))
-                ) : (
-                  <div className="slc-day-col">{filterDay}</div>
-                )}
+                {DAYS.map(d => (
+                  <div key={d} className="slc-day-col">{d.slice(0, 3)}</div>
+                ))}
               </div>
               {filtered.map(row => (
-                <div key={row.name} className="slc-grid-row" style={filterDay !== 'all' ? { gridTemplateColumns: '260px 1fr' } : undefined}>
+                <div key={row.name} className="slc-grid-row">
                   <div className="slc-name-cell">
                     <span>{row.name}</span>
                     <span className={`slc-hours-badge ${row.hours >= 40 ? 'red' : row.hours >= 31 ? 'green' : row.hours >= 16 ? 'yellow' : 'orange'}`}>
@@ -252,39 +249,40 @@ export default function SlcCalendar({ isManager }) {
                       {row.shifts.filter(Boolean).length} shifts
                     </span>
                   </div>
-                  {filterDay === 'all' ? (
-                    row.shifts.map((shift, i) => (
-                      <div key={i} className={`slc-shift-cell ${shift ? '' : 'off'}`}>
-                        {shift ? (
-                          <span className="slc-shift-badge" style={{ borderLeftColor: getShiftColor(shift) }}>
-                            {shift}
-                          </span>
-                        ) : (
-                          <span className="slc-off">Off</span>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    (() => {
-                      const dayIdx = DAYS.indexOf(filterDay)
-                      const shift = row.shifts[dayIdx]
-                      return (
-                        <div className={`slc-shift-cell ${shift ? '' : 'off'}`}>
-                          {shift ? (
-                            <span className="slc-shift-badge" style={{ borderLeftColor: getShiftColor(shift) }}>
-                              {shift}
-                            </span>
-                          ) : (
-                            <span className="slc-off">Off</span>
-                          )}
-                        </div>
-                      )
-                    })()
-                  )}
+                  {row.shifts.map((shift, i) => (
+                    <div key={i} className={`slc-shift-cell ${shift ? '' : 'off'}`}>
+                      {shift ? (
+                        <span className="slc-shift-badge" style={{ borderLeftColor: getShiftColor(shift) }}>
+                          {shift}
+                        </span>
+                      ) : (
+                        <span className="slc-off">—</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
           </div>
+          ) : (
+          <div className="slc-day-list">
+            {filtered.map(row => {
+              const dayIdx = DAYS.indexOf(filterDay)
+              const shift = row.shifts[dayIdx]
+              return (
+                <div key={row.name} className="slc-day-list-item">
+                  <span className="slc-day-list-name">{row.name}</span>
+                  <span className={`slc-hours-badge ${row.hours >= 40 ? 'red' : row.hours >= 31 ? 'green' : row.hours >= 16 ? 'yellow' : 'orange'}`}>
+                    {row.hours}h
+                  </span>
+                  <span className="slc-day-list-shift" style={{ borderLeftColor: getShiftColor(shift) }}>
+                    {shift}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+          )}
         </>
       )}
 
