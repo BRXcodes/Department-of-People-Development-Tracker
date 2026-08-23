@@ -266,7 +266,12 @@ export default function SlcCalendar({ isManager }) {
           </div>
           ) : (
           <div className="slc-day-list">
-            {filtered.map(row => {
+            {[...filtered].sort((a, b) => {
+              const dayIdx = DAYS.indexOf(filterDay)
+              const shiftA = a.shifts[dayIdx] || ''
+              const shiftB = b.shifts[dayIdx] || ''
+              return shiftA.localeCompare(shiftB)
+            }).map(row => {
               const dayIdx = DAYS.indexOf(filterDay)
               const shift = row.shifts[dayIdx]
               return (
