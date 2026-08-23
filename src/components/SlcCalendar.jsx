@@ -27,6 +27,14 @@ export default function SlcCalendar() {
   const [loading, setLoading] = useState(true)
   const [importModal, setImportModal] = useState(false)
   const [importText, setImportText] = useState('')
+  const [importWeekStart, setImportWeekStart] = useState(() => {
+    // Default to next Monday
+    const now = new Date()
+    const day = now.getDay()
+    const daysUntilMon = day === 0 ? 1 : 8 - day
+    const nextMon = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMon)
+    return `${nextMon.getFullYear()}-${String(nextMon.getMonth() + 1).padStart(2, '0')}-${String(nextMon.getDate()).padStart(2, '0')}`
+  })
   const [filterShift, setFilterShift] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -57,11 +65,7 @@ export default function SlcCalendar() {
       return
     }
     // Store the schedule
-    const today = new Date()
-    const day = today.getDay()
-    const diff = today.getDate() - day + (day === 0 ? -6 : 1)
-    const monday = new Date(today.getFullYear(), today.getMonth(), diff)
-    const weekStartStr = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`
+    const weekStartStr = importWeekStart
 
     const id = uid()
     const { error } = await supabase.from('slc_schedule').insert({
@@ -135,10 +139,18 @@ export default function SlcCalendar() {
               const today = new Date()
               const todayDay = today.getDay()
               const isToday = (todayDay === 0 ? 6 : todayDay - 1) === dayIdx
+              // Calculate actual date for this day column
+              let dateLabel = day.slice(0, 3)
+              if (weekStart) {
+                const ws = new Date(weekStart + 'T00:00:00')
+                const d = new Date(ws)
+                d.setDate(ws.getDate() + dayIdx)
+                dateLabel = `${day.slice(0, 3)} ${d.getDate()}`
+              }
               return (
                 <div key={day} className={`slc-summary-day ${isToday ? 'today' : ''}`}>
                   <div className="slc-summary-day-header">
-                    <span className="slc-summary-day-name">{day.slice(0, 3)}</span>
+                    <span className="slc-summary-day-name">{dateLabel}</span>
                     {isToday && <span className="slc-summary-today-badge">Today</span>}
                   </div>
                   {morningOps.length > 0 && (
@@ -235,6 +247,14 @@ export default function SlcCalendar() {
             </div>
             <form onSubmit={handleImport}>
               <div className="modal-body">
+                <label className="field-label">Week Starting (Monday)</label>
+                <input
+                  className="field-input"
+                  type="date"
+                  value={importWeekStart}
+                  onChange={e => setImportWeekStart(e.target.value)}
+                />
+
                 <label className="field-label">Paste schedule data from bookmarklet</label>
                 <textarea
                   className="field-input"
