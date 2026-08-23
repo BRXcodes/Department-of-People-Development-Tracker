@@ -382,6 +382,6 @@
   }
 
   .slc-shifts-badge {
-    display: none;
+    font-size: 9px;
   }
 }
