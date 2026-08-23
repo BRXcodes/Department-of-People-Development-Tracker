@@ -134,6 +134,8 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
       member_id: schedMemberId,
       scenario: schedScenario,
       date,
+      assignee_id: schedAssigneeId || null,
+      assignee2_id: schedAssignee2Id || null,
     }))
     const { error } = await supabase.from('scenario_schedule').insert(entries)
     if (error) console.error(error)
@@ -422,10 +424,14 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
                   )}
                   {dayEntries.map(entry => {
                     const member = members.find(m => m.id === entry.member_id) || allEmployees.find(m => m.id === entry.member_id)
+                    const assignee1 = entry.assignee_id ? pdMembers.find(m => m.id === entry.assignee_id) : null
+                    const assignee2 = entry.assignee2_id ? pdMembers.find(m => m.id === entry.assignee2_id) : null
+                    const runBy = [assignee1?.name, assignee2?.name].filter(Boolean).join(' & ')
                     return (
                       <div key={entry.id} className={`schedule-entry s-${scenarioClass(entry.scenario)}`}>
                         <span className="schedule-entry-name">{member?.name || 'Unknown'}</span>
                         <span className="schedule-entry-scenario">{scenarioLabel(entry.scenario)}</span>
+                        {runBy && <span className="schedule-entry-assignee">Run by: {runBy}</span>}
                         <button className="schedule-entry-remove" onClick={() => removeScheduleEntry(entry.id)} aria-label="Remove">✕</button>
                       </div>
                     )

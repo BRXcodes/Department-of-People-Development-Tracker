@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS scenario_schedule (
   member_id TEXT NOT NULL,
   scenario TEXT NOT NULL DEFAULT '1',
   date DATE NOT NULL,
+  assignee_id TEXT,
+  assignee2_id TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
