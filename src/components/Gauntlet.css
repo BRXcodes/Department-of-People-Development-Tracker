@@ -28,6 +28,27 @@
   align-items: center;
 }
 
+.btn-reset-gauntlet {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-reset-gauntlet:hover {
+  background: var(--gray-200);
+  border-color: var(--gray-300);
+  color: var(--gray-900);
+}
+
 /* Level selector */
 .gauntlet-levels {
   display: flex;
