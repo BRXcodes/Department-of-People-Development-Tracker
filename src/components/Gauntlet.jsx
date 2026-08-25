@@ -93,21 +93,29 @@ function generateRoutes() {
   const west = shuffle(CITIES_WEST).slice(0, 4)
   const east = shuffle(CITIES_EAST).slice(0, 4)
 
-  // All 16 jobs — one per direction per time slot, then scatter across routes
-  const allJobs = [...south, ...north, ...west, ...east].map((city, i) => ({
-    id: `job-${Date.now()}-${i}`,
-    city,
-    items: randomItems(),
-  }))
+  // All 16 jobs — ensure no duplicate city in the same column (time slot)
+  const directions = [south, north, west, east]
+  // Shuffle each direction's cities independently
+  const shuffledDirs = directions.map(d => shuffle(d))
 
-  // Shuffle all 16 jobs then deal into 4 routes of 4
-  const shuffled = shuffle(allJobs)
-  return [
-    shuffled.slice(0, 4),
-    shuffled.slice(4, 8),
-    shuffled.slice(8, 12),
-    shuffled.slice(12, 16),
-  ]
+  // Build 4 columns (time slots), each with one city per direction
+  // Column i gets shuffledDirs[0][i], shuffledDirs[1][i], shuffledDirs[2][i], shuffledDirs[3][i]
+  // Then shuffle within each column so routes are random
+  const routes = [[], [], [], []]
+  for (let col = 0; col < 4; col++) {
+    const columnJobs = shuffledDirs.map((dir, dirIdx) => ({
+      id: `job-${Date.now()}-${col * 4 + dirIdx}`,
+      city: dir[col],
+      items: randomItems(),
+    }))
+    // Shuffle which route gets which job in this column
+    const shuffledCol = shuffle(columnJobs)
+    for (let row = 0; row < 4; row++) {
+      routes[row].push(shuffledCol[row])
+    }
+  }
+
+  return routes
 }
 
 export default function Gauntlet() {
