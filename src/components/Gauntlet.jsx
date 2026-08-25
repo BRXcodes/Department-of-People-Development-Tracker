@@ -7,9 +7,6 @@ const CITIES_NORTH = ['Ogden', 'Layton', 'Bountiful', 'Murray', 'Park City', 'He
 const CITIES_WEST = ['Tooele', 'West Jordan', 'Herriman', 'Riverton', 'South Jordan']
 const CITIES_EAST = ['Sandy', 'Draper', 'Salt Lake City', 'Park City', 'Heber City']
 
-// Combined flat list for drive time lookups
-const UTAH_CITIES = [...new Set([...CITIES_SOUTH, ...CITIES_NORTH, ...CITIES_WEST, ...CITIES_EAST])]
-
 const ITEMS = [
   'Couch', 'Mattress', 'Dresser', 'Desk', 'Bookshelf',
   'TV', 'Recliner', 'Box Spring', 'Table', 'Chairs',
@@ -20,9 +17,18 @@ const ITEMS = [
   'Bags of Trash', 'Yard Waste', 'Construction Debris', 'Pallets',
 ]
 
+const NOTES = [
+  'Call 15 min before', 'Gate code: 1234', 'Around back', 'Upstairs unit',
+  'Customer will help load', 'Narrow driveway', 'Dog in yard - call first',
+  'Items in garage', 'Second floor no elevator', 'Ring doorbell twice',
+  'Basement access only', 'Use side gate', 'Heavy items - 2 person',
+  'Customer not home - items on curb', 'Gated community - wait for entry',
+]
+
 const ROUTE_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
 const ROUTE_NAMES = ['Route A', 'Route B', 'Route C', 'Route D']
 const TIME_SLOTS = ['8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM']
+const ALL_TIME_WINDOWS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM']
 
 // Approximate drive times in minutes between cities (one-way)
 const DRIVE_TIMES = {
@@ -86,98 +92,188 @@ function randomItems() {
   return shuffle(ITEMS).slice(0, count)
 }
 
-function generateRoutes() {
-  // Pick 4 cities from each direction
+function randomNote() {
+  return shuffle(NOTES)[0]
+}
+
+// ==================== LEVEL 1: Cities only ====================
+function generateLevel1() {
   const south = shuffle(CITIES_SOUTH).slice(0, 4)
   const north = shuffle(CITIES_NORTH).slice(0, 4)
   const west = shuffle(CITIES_WEST).slice(0, 4)
   const east = shuffle(CITIES_EAST).slice(0, 4)
-
-  // All 16 jobs — ensure no duplicate city in the same column (time slot)
   const directions = [south, north, west, east]
-  // Shuffle each direction's cities independently
   const shuffledDirs = directions.map(d => shuffle(d))
-
-  // Build 4 columns (time slots), each with one city per direction
-  // Column i gets shuffledDirs[0][i], shuffledDirs[1][i], shuffledDirs[2][i], shuffledDirs[3][i]
-  // Then shuffle within each column so routes are random
   const routes = [[], [], [], []]
   for (let col = 0; col < 4; col++) {
     const columnJobs = shuffledDirs.map((dir, dirIdx) => ({
-      id: `job-${Date.now()}-${col * 4 + dirIdx}`,
+      id: `job-${Date.now()}-${col * 4 + dirIdx}-${Math.random()}`,
       city: dir[col],
-      items: randomItems(),
     }))
-    // Shuffle which route gets which job in this column
     const shuffledCol = shuffle(columnJobs)
     for (let row = 0; row < 4; row++) {
       routes[row].push(shuffledCol[row])
     }
   }
-
   return routes
 }
 
+// ==================== LEVEL 2: Current (cities + items) ====================
+function generateLevel2() {
+  const south = shuffle(CITIES_SOUTH).slice(0, 4)
+  const north = shuffle(CITIES_NORTH).slice(0, 4)
+  const west = shuffle(CITIES_WEST).slice(0, 4)
+  const east = shuffle(CITIES_EAST).slice(0, 4)
+  const directions = [south, north, west, east]
+  const shuffledDirs = directions.map(d => shuffle(d))
+  const routes = [[], [], [], []]
+  for (let col = 0; col < 4; col++) {
+    const columnJobs = shuffledDirs.map((dir, dirIdx) => ({
+      id: `job-${Date.now()}-${col * 4 + dirIdx}-${Math.random()}`,
+      city: dir[col],
+      items: randomItems(),
+    }))
+    const shuffledCol = shuffle(columnJobs)
+    for (let row = 0; row < 4; row++) {
+      routes[row].push(shuffledCol[row])
+    }
+  }
+  return routes
+}
+
+// ==================== LEVEL 3: Advanced (build routes from pool) ====================
+function generateLevel3() {
+  const allCities = shuffle([...new Set([...CITIES_SOUTH, ...CITIES_NORTH, ...CITIES_WEST, ...CITIES_EAST])])
+  const selectedCities = allCities.slice(0, 16)
+
+  const allJobs = selectedCities.map((city, i) => ({
+    id: `job-${Date.now()}-${i}-${Math.random()}`,
+    city,
+    items: randomItems(),
+    note: randomNote(),
+    timeWindow: shuffle(ALL_TIME_WINDOWS)[0],
+  }))
+
+  // First 4 jobs go into routes (one per route), rest go to pool
+  const shuffled = shuffle(allJobs)
+  const routes = shuffled.slice(0, 4).map(j => [j])
+  const pool = shuffled.slice(4)
+
+  return { routes, pool }
+}
+
 export default function Gauntlet() {
-  const [routes, setRoutes] = useState(() => generateRoutes())
-  const [dragState, setDragState] = useState(null) // { routeIdx, colIdx }
-  const [dropTarget, setDropTarget] = useState(null) // { routeIdx, colIdx }
+  const [level, setLevel] = useState(1)
+  const [routes, setRoutes] = useState(() => generateLevel1())
+  const [pool, setPool] = useState([]) // Level 3 only
+  const [dragState, setDragState] = useState(null)
+  const [dropTarget, setDropTarget] = useState(null)
   const [showTimes, setShowTimes] = useState(false)
 
-  function reroll() {
-    setRoutes(generateRoutes())
+  function switchLevel(newLevel) {
+    setLevel(newLevel)
     setShowTimes(false)
+    setDragState(null)
+    setDropTarget(null)
+    if (newLevel === 1) { setRoutes(generateLevel1()); setPool([]) }
+    else if (newLevel === 2) { setRoutes(generateLevel2()); setPool([]) }
+    else { const data = generateLevel3(); setRoutes(data.routes); setPool(data.pool) }
   }
 
-  function handleDragStart(e, routeIdx, colIdx) {
-    setDragState({ routeIdx, colIdx })
+  function reroll() {
+    setShowTimes(false)
+    setDragState(null)
+    setDropTarget(null)
+    if (level === 1) { setRoutes(generateLevel1()); setPool([]) }
+    else if (level === 2) { setRoutes(generateLevel2()); setPool([]) }
+    else { const data = generateLevel3(); setRoutes(data.routes); setPool(data.pool) }
+  }
+
+  // ===== Level 1 & 2 drag: swap within same column =====
+  function handleSwapDragStart(e, routeIdx, colIdx) {
+    setDragState({ type: 'swap', routeIdx, colIdx })
     e.dataTransfer.effectAllowed = 'move'
   }
 
-  function handleCardDragOver(e, routeIdx, colIdx) {
+  function handleSwapDragOver(e, routeIdx, colIdx) {
     e.preventDefault()
-    // Only allow dropping in the same column (time slot is locked)
-    if (dragState && dragState.colIdx === colIdx) {
+    if (dragState && dragState.type === 'swap' && dragState.colIdx === colIdx) {
       e.dataTransfer.dropEffect = 'move'
       setDropTarget({ routeIdx, colIdx })
     }
   }
 
-  function handleDrop(e, routeIdx, colIdx) {
+  function handleSwapDrop(e, routeIdx, colIdx) {
     e.preventDefault()
-    if (!dragState || dragState.colIdx !== colIdx) {
-      setDragState(null)
-      setDropTarget(null)
-      return
+    if (!dragState || dragState.type !== 'swap' || dragState.colIdx !== colIdx || dragState.routeIdx === routeIdx) {
+      setDragState(null); setDropTarget(null); return
     }
-    if (dragState.routeIdx === routeIdx) {
-      setDragState(null)
-      setDropTarget(null)
-      return
-    }
-
-    // Swap the jobs between the two routes at this column
     const updated = routes.map(r => [...r])
     const temp = updated[dragState.routeIdx][colIdx]
     updated[dragState.routeIdx][colIdx] = updated[routeIdx][colIdx]
     updated[routeIdx][colIdx] = temp
-
     setRoutes(updated)
-    setDragState(null)
-    setDropTarget(null)
+    setDragState(null); setDropTarget(null)
+  }
+
+  // ===== Level 3 drag: from pool to route or reorder within routes =====
+  function handlePoolDragStart(e, poolIdx) {
+    setDragState({ type: 'pool', poolIdx })
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  function handleRouteDragStartL3(e, routeIdx, jobIdx) {
+    setDragState({ type: 'route', routeIdx, jobIdx })
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  function handleRouteDropL3(e, routeIdx, insertIdx) {
+    e.preventDefault()
+    if (!dragState) { setDropTarget(null); return }
+
+    if (dragState.type === 'pool') {
+      const job = pool[dragState.poolIdx]
+      const newPool = [...pool]
+      newPool.splice(dragState.poolIdx, 1)
+      const updated = routes.map(r => [...r])
+      updated[routeIdx].splice(insertIdx, 0, job)
+      setRoutes(updated)
+      setPool(newPool)
+    } else if (dragState.type === 'route') {
+      const updated = routes.map(r => [...r])
+      const [dragged] = updated[dragState.routeIdx].splice(dragState.jobIdx, 1)
+      let finalIdx = insertIdx
+      if (dragState.routeIdx === routeIdx && dragState.jobIdx < insertIdx) finalIdx--
+      updated[routeIdx].splice(finalIdx, 0, dragged)
+      setRoutes(updated)
+    }
+    setDragState(null); setDropTarget(null)
+  }
+
+  function handleRouteJobBackToPool(e, routeIdx, jobIdx) {
+    e.preventDefault()
+    const updated = routes.map(r => [...r])
+    const [job] = updated[routeIdx].splice(jobIdx, 1)
+    setRoutes(updated)
+    setPool(prev => [...prev, job])
   }
 
   function handleDragEnd() {
-    setDragState(null)
-    setDropTarget(null)
+    setDragState(null); setDropTarget(null)
   }
+
+  const totalDriveTime = routes.reduce((sum, r) => sum + getRouteDriveTime(r), 0)
 
   return (
     <div className="gauntlet">
       <div className="gauntlet-header">
         <div>
           <h2 className="gauntlet-title">The Gauntlet</h2>
-          <p className="gauntlet-subtitle">Swap jobs between routes to minimize drive time (columns are locked by appointment time)</p>
+          <p className="gauntlet-subtitle">
+            {level === 1 && 'Swap jobs between routes to minimize drive time'}
+            {level === 2 && 'Swap jobs between routes — columns locked by appointment time'}
+            {level === 3 && 'Build efficient routes by dragging jobs from the pool'}
+          </p>
         </div>
         <button className="btn btn-primary" onClick={reroll}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -185,6 +281,19 @@ export default function Gauntlet() {
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
           </svg>
           Randomize
+        </button>
+      </div>
+
+      {/* Level selector */}
+      <div className="gauntlet-levels">
+        <button className={`gauntlet-level-btn ${level === 1 ? 'active' : ''}`} onClick={() => switchLevel(1)}>
+          Level 1 <span className="gauntlet-level-desc">Drive Time</span>
+        </button>
+        <button className={`gauntlet-level-btn ${level === 2 ? 'active' : ''}`} onClick={() => switchLevel(2)}>
+          Level 2 <span className="gauntlet-level-desc">+ Items</span>
+        </button>
+        <button className={`gauntlet-level-btn ${level === 3 ? 'active' : ''}`} onClick={() => switchLevel(3)}>
+          Level 3 <span className="gauntlet-level-desc">Advanced</span>
         </button>
       </div>
 
@@ -198,60 +307,148 @@ export default function Gauntlet() {
           </button>
         ) : (
           <span className="gauntlet-total-time">
-            Total drive time: {formatDriveTime(routes.reduce((sum, r) => sum + getRouteDriveTime(r), 0))}
+            Total drive time: {formatDriveTime(totalDriveTime)}
           </span>
         )}
       </div>
 
-      {/* Time slot column headers */}
-      <div className="gauntlet-time-header">
-        <div className="gauntlet-route-label-spacer" />
-        {TIME_SLOTS.map((time, i) => (
-          <div key={i} className="gauntlet-time-col-header">{time}</div>
-        ))}
-      </div>
+      {/* ===== LEVEL 1 & 2 ===== */}
+      {(level === 1 || level === 2) && (
+        <>
+          <div className="gauntlet-time-header">
+            <div className="gauntlet-route-label-spacer" />
+            {TIME_SLOTS.map((time, i) => (
+              <div key={i} className="gauntlet-time-col-header">{time}</div>
+            ))}
+          </div>
 
-      <div className="gauntlet-routes">
-        {routes.map((route, routeIdx) => (
-          <div key={routeIdx} className="gauntlet-route" style={{ '--route-color': ROUTE_COLORS[routeIdx] }}>
-            <div className="gauntlet-route-label">
-              <span className="gauntlet-route-dot" style={{ background: ROUTE_COLORS[routeIdx] }} />
-              <span className="gauntlet-route-name">{ROUTE_NAMES[routeIdx]}</span>
-              {showTimes && (
-                <span className={`gauntlet-route-time ${getRouteDriveTime(route) > 90 ? 'over' : getRouteDriveTime(route) > 60 ? 'warn' : 'good'}`}>
-                  {formatDriveTime(getRouteDriveTime(route))}
-                </span>
+          <div className="gauntlet-routes">
+            {routes.map((route, routeIdx) => (
+              <div key={routeIdx} className="gauntlet-route" style={{ '--route-color': ROUTE_COLORS[routeIdx] }}>
+                <div className="gauntlet-route-label">
+                  <span className="gauntlet-route-dot" style={{ background: ROUTE_COLORS[routeIdx] }} />
+                  <span className="gauntlet-route-name">{ROUTE_NAMES[routeIdx]}</span>
+                  {showTimes && (
+                    <span className={`gauntlet-route-time ${getRouteDriveTime(route) > 90 ? 'over' : getRouteDriveTime(route) > 60 ? 'warn' : 'good'}`}>
+                      {formatDriveTime(getRouteDriveTime(route))}
+                    </span>
+                  )}
+                </div>
+                <div className="gauntlet-route-slots">
+                  {route.map((job, colIdx) => {
+                    const isDragging = dragState && dragState.type === 'swap' && dragState.routeIdx === routeIdx && dragState.colIdx === colIdx
+                    const isTarget = dropTarget && dropTarget.routeIdx === routeIdx && dropTarget.colIdx === colIdx && dragState && dragState.routeIdx !== routeIdx
+                    return (
+                      <div
+                        key={job.id}
+                        className={`gauntlet-card ${isDragging ? 'dragging' : ''} ${isTarget ? 'drop-target' : ''}`}
+                        draggable
+                        onDragStart={e => handleSwapDragStart(e, routeIdx, colIdx)}
+                        onDragOver={e => handleSwapDragOver(e, routeIdx, colIdx)}
+                        onDrop={e => handleSwapDrop(e, routeIdx, colIdx)}
+                        onDragEnd={handleDragEnd}
+                      >
+                        <span className="gauntlet-card-time">{TIME_SLOTS[colIdx]}</span>
+                        <span className="gauntlet-card-city">{job.city}</span>
+                        {level === 2 && (
+                          <div className="gauntlet-card-items">
+                            {job.items.map((item, i) => (
+                              <span key={i} className="gauntlet-card-item">{item}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* ===== LEVEL 3 ===== */}
+      {level === 3 && (
+        <>
+          <div className="gauntlet-routes gauntlet-routes-l3">
+            {routes.map((route, routeIdx) => (
+              <div key={routeIdx} className="gauntlet-route-l3" style={{ '--route-color': ROUTE_COLORS[routeIdx] }}>
+                <div className="gauntlet-route-label">
+                  <span className="gauntlet-route-dot" style={{ background: ROUTE_COLORS[routeIdx] }} />
+                  <span className="gauntlet-route-name">{ROUTE_NAMES[routeIdx]}</span>
+                  <span className="gauntlet-route-count">{route.length} stops</span>
+                  {showTimes && (
+                    <span className={`gauntlet-route-time ${getRouteDriveTime(route) > 90 ? 'over' : getRouteDriveTime(route) > 60 ? 'warn' : 'good'}`}>
+                      {formatDriveTime(getRouteDriveTime(route))}
+                    </span>
+                  )}
+                </div>
+                <div
+                  className="gauntlet-route-jobs-l3"
+                  onDragOver={e => { e.preventDefault(); setDropTarget({ routeIdx, position: route.length }) }}
+                  onDrop={e => handleRouteDropL3(e, routeIdx, route.length)}
+                >
+                  {route.map((job, jobIdx) => (
+                    <div
+                      key={job.id}
+                      className={`gauntlet-card-l3 ${dragState && dragState.type === 'route' && dragState.routeIdx === routeIdx && dragState.jobIdx === jobIdx ? 'dragging' : ''}`}
+                      draggable
+                      onDragStart={e => handleRouteDragStartL3(e, routeIdx, jobIdx)}
+                      onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDropTarget({ routeIdx, position: jobIdx }) }}
+                      onDrop={e => { e.stopPropagation(); handleRouteDropL3(e, routeIdx, jobIdx) }}
+                      onDragEnd={handleDragEnd}
+                      onDoubleClick={e => handleRouteJobBackToPool(e, routeIdx, jobIdx)}
+                    >
+                      <span className="gauntlet-card-time">{job.timeWindow}</span>
+                      <span className="gauntlet-card-city">{job.city}</span>
+                      <div className="gauntlet-card-items">
+                        {job.items.map((item, i) => (
+                          <span key={i} className="gauntlet-card-item">{item}</span>
+                        ))}
+                      </div>
+                      {job.note && <span className="gauntlet-card-note">{job.note}</span>}
+                    </div>
+                  ))}
+                  {route.length === 0 && (
+                    <div className="gauntlet-empty-route">Drop jobs here</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Job Pool */}
+          <div className="gauntlet-pool">
+            <div className="gauntlet-pool-header">
+              <span className="gauntlet-pool-title">Unassigned Jobs</span>
+              <span className="gauntlet-pool-count">{pool.length} remaining</span>
+            </div>
+            <div className="gauntlet-pool-grid">
+              {pool.map((job, poolIdx) => (
+                <div
+                  key={job.id}
+                  className="gauntlet-card-l3 pool-card"
+                  draggable
+                  onDragStart={e => handlePoolDragStart(e, poolIdx)}
+                  onDragEnd={handleDragEnd}
+                >
+                  <span className="gauntlet-card-time">{job.timeWindow}</span>
+                  <span className="gauntlet-card-city">{job.city}</span>
+                  <div className="gauntlet-card-items">
+                    {job.items.map((item, i) => (
+                      <span key={i} className="gauntlet-card-item">{item}</span>
+                    ))}
+                  </div>
+                  {job.note && <span className="gauntlet-card-note">{job.note}</span>}
+                </div>
+              ))}
+              {pool.length === 0 && (
+                <div className="gauntlet-pool-empty">All jobs assigned! Double-click a job on a route to send it back.</div>
               )}
             </div>
-            <div className="gauntlet-route-slots">
-              {route.map((job, colIdx) => {
-                const isDragging = dragState && dragState.routeIdx === routeIdx && dragState.colIdx === colIdx
-                const isDropTarget = dropTarget && dropTarget.routeIdx === routeIdx && dropTarget.colIdx === colIdx && dragState && dragState.routeIdx !== routeIdx
-                return (
-                  <div
-                    key={job.id}
-                    className={`gauntlet-card ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''}`}
-                    draggable
-                    onDragStart={e => handleDragStart(e, routeIdx, colIdx)}
-                    onDragOver={e => handleCardDragOver(e, routeIdx, colIdx)}
-                    onDrop={e => handleDrop(e, routeIdx, colIdx)}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <span className="gauntlet-card-time">{TIME_SLOTS[colIdx]}</span>
-                    <span className="gauntlet-card-city">{job.city}</span>
-                    <span className="gauntlet-card-job">Junk Removal</span>
-                    <div className="gauntlet-card-items">
-                      {job.items.map((item, i) => (
-                        <span key={i} className="gauntlet-card-item">{item}</span>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   )
 }
