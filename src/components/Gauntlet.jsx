@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import './Gauntlet.css'
 
 // Cities grouped by direction from Salt Lake City
@@ -169,24 +169,41 @@ export default function Gauntlet() {
   const [dragState, setDragState] = useState(null)
   const [dropTarget, setDropTarget] = useState(null)
   const [showTimes, setShowTimes] = useState(false)
+  const initialState = useRef({ routes: generateLevel1(), pool: [] })
 
   function switchLevel(newLevel) {
     setLevel(newLevel)
     setShowTimes(false)
     setDragState(null)
     setDropTarget(null)
-    if (newLevel === 1) { setRoutes(generateLevel1()); setPool([]) }
-    else if (newLevel === 2) { setRoutes(generateLevel2()); setPool([]) }
-    else { const data = generateLevel3(); setRoutes(data.routes); setPool(data.pool) }
+    let newRoutes, newPool = []
+    if (newLevel === 1) { newRoutes = generateLevel1() }
+    else if (newLevel === 2) { newRoutes = generateLevel2() }
+    else { const data = generateLevel3(); newRoutes = data.routes; newPool = data.pool }
+    setRoutes(newRoutes)
+    setPool(newPool)
+    initialState.current = { routes: JSON.parse(JSON.stringify(newRoutes)), pool: JSON.parse(JSON.stringify(newPool)) }
   }
 
   function reroll() {
     setShowTimes(false)
     setDragState(null)
     setDropTarget(null)
-    if (level === 1) { setRoutes(generateLevel1()); setPool([]) }
-    else if (level === 2) { setRoutes(generateLevel2()); setPool([]) }
-    else { const data = generateLevel3(); setRoutes(data.routes); setPool(data.pool) }
+    let newRoutes, newPool = []
+    if (level === 1) { newRoutes = generateLevel1() }
+    else if (level === 2) { newRoutes = generateLevel2() }
+    else { const data = generateLevel3(); newRoutes = data.routes; newPool = data.pool }
+    setRoutes(newRoutes)
+    setPool(newPool)
+    initialState.current = { routes: JSON.parse(JSON.stringify(newRoutes)), pool: JSON.parse(JSON.stringify(newPool)) }
+  }
+
+  function resetToInitial() {
+    setShowTimes(false)
+    setDragState(null)
+    setDropTarget(null)
+    setRoutes(JSON.parse(JSON.stringify(initialState.current.routes)))
+    setPool(JSON.parse(JSON.stringify(initialState.current.pool)))
   }
 
   // ===== Level 1 & 2 drag: swap within same column =====
@@ -275,13 +292,22 @@ export default function Gauntlet() {
             {level === 3 && 'Build efficient routes by dragging jobs from the pool'}
           </p>
         </div>
-        <button className="btn btn-primary" onClick={reroll}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-          </svg>
-          Randomize
-        </button>
+        <div className="gauntlet-header-btns">
+          <button className="btn btn-ghost" onClick={resetToInitial} title="Reset to starting positions for another attempt">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+            </svg>
+            Reset
+          </button>
+          <button className="btn btn-primary" onClick={reroll}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Randomize
+          </button>
+        </div>
       </div>
 
       {/* Level selector */}

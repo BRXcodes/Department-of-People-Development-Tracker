@@ -22,6 +22,12 @@
   margin-top: 2px;
 }
 
+.gauntlet-header-btns {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 /* Level selector */
 .gauntlet-levels {
   display: flex;
