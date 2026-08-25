@@ -200,7 +200,11 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
                 </form>
               ) : (
                 <>
-                  <button className="team-tab-btn" onClick={() => { onSelectTeam(team.id); if (view === 'attendance' || view === 'scenarios' || view === 'slc') setView('dashboard') }}>
+                  <button className="team-tab-btn" onClick={() => { 
+                    onSelectTeam(team.id); 
+                    if (view === 'attendance' || view === 'scenarios' || view === 'slc') setView('dashboard')
+                    if (view === 'gauntlet' && !team.name.toLowerCase().includes('operation')) setView('dashboard')
+                  }}>
                     {team.name}
                   </button>
                   {isManager && team.id === activeTeamId && view !== 'attendance' && (
@@ -255,6 +259,20 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
             </svg>
             Daily Check-in
           </button>
+          {(() => {
+            const activeTeam = teams.find(t => t.id === activeTeamId)
+            if (activeTeam && activeTeam.name.toLowerCase().includes('operation')) {
+              return (
+                <button className={`toggle-btn ${view === 'gauntlet' ? 'active' : ''}`} onClick={() => setView('gauntlet')}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  Gauntlet
+                </button>
+              )
+            }
+            return null
+          })()}
         </div>
         )}
 

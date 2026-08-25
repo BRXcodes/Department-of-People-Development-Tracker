@@ -1,0 +1,280 @@
+.gauntlet {
+  padding: 0;
+}
+
+.gauntlet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.gauntlet-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.3px;
+}
+
+.gauntlet-subtitle {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.gauntlet-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.btn-submit-routes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-submit-routes:hover {
+  background: #047857;
+}
+
+.gauntlet-total-time {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-800);
+  padding: 8px 16px;
+  background: var(--gray-50);
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
+}
+
+/* Time column headers */
+.gauntlet-time-header {
+  display: grid;
+  grid-template-columns: 100px repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.gauntlet-route-label-spacer {
+  /* empty space above route labels */
+}
+
+.gauntlet-time-col-header {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 6px 0;
+  background: var(--gray-50);
+  border-radius: 6px;
+}
+
+/* Routes layout */
+.gauntlet-routes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gauntlet-route {
+  display: grid;
+  grid-template-columns: 100px repeat(4, 1fr);
+  gap: 8px;
+  align-items: stretch;
+}
+
+.gauntlet-route-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.gauntlet-route-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.gauntlet-route-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-800);
+  letter-spacing: -0.2px;
+}
+
+.gauntlet-route-time {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.gauntlet-route-time.good {
+  color: #059669;
+  background: #ECFDF5;
+}
+
+.gauntlet-route-time.warn {
+  color: #D97706;
+  background: #FFFBEB;
+}
+
+.gauntlet-route-time.over {
+  color: #DC2626;
+  background: #FEF2F2;
+}
+
+/* Route slots (the 4 job cells) */
+.gauntlet-route-slots {
+  display: contents;
+}
+
+/* Job cards */
+.gauntlet-card {
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: box-shadow 0.15s, border-color 0.15s, opacity 0.15s, transform 0.1s;
+  cursor: grab;
+  position: relative;
+}
+
+.gauntlet-card:active {
+  cursor: grabbing;
+}
+
+.gauntlet-card:hover {
+  border-color: var(--blue-accent);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08);
+}
+
+.gauntlet-card.dragging {
+  opacity: 0.35;
+  border: 1.5px dashed var(--gray-300);
+  background: var(--gray-50);
+}
+
+.gauntlet-card.drop-target {
+  border-color: var(--blue-accent);
+  background: var(--blue-pale, #EFF6FF);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  transform: scale(1.02);
+}
+
+.gauntlet-card-time {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--gray-400);
+  background: var(--gray-50);
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--gray-100);
+}
+
+.gauntlet-card-city {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--blue-mid);
+  padding-right: 50px;
+}
+
+.gauntlet-card-job {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.gauntlet-card-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding-top: 4px;
+  border-top: 1px solid var(--gray-100);
+  margin-top: 2px;
+}
+
+.gauntlet-card-item {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--gray-50);
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--gray-100);
+}
+
+@media (max-width: 800px) {
+  .gauntlet-time-header {
+    grid-template-columns: 70px repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .gauntlet-route {
+    grid-template-columns: 70px repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .gauntlet-route-name {
+    font-size: 11px;
+  }
+
+  .gauntlet-card-city {
+    font-size: 10px;
+    padding-right: 40px;
+  }
+
+  .gauntlet-card-job {
+    font-size: 10px;
+  }
+
+  .gauntlet-card-item {
+    font-size: 9px;
+  }
+
+  .gauntlet-time-col-header {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 550px) {
+  .gauntlet-time-header,
+  .gauntlet-route {
+    grid-template-columns: 60px repeat(4, 1fr);
+    gap: 3px;
+  }
+
+  .gauntlet-card {
+    padding: 6px;
+  }
+
+  .gauntlet-card-time {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+}
