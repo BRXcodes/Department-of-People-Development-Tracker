@@ -265,35 +265,47 @@ export default function SlcCalendar({ isManager }) {
             </div>
           </div>
           ) : (
-          <div className="slc-day-list">
-            {[...filtered].sort((a, b) => {
+          <div className="slc-day-grouped">
+            {(() => {
               const dayIdx = DAYS.indexOf(filterDay)
-              const shiftA = a.shifts[dayIdx] || ''
-              const shiftB = b.shifts[dayIdx] || ''
-              const order = ['6:30 Scenario', 'First Shift Ops', 'Morning lead', 'Morning Crew', 'Afternoon lead', 'Afternoon Crew', '2nd shift ops', 'Sunday Crew', 'Truck Maitenence']
-              const idxA = order.indexOf(shiftA)
-              const idxB = order.indexOf(shiftB)
-              const rankA = idxA >= 0 ? idxA : 99
-              const rankB = idxB >= 0 ? idxB : 99
-              return rankA - rankB || a.name.localeCompare(b.name)
-            }).map(row => {
-              const dayIdx = DAYS.indexOf(filterDay)
-              const shift = row.shifts[dayIdx]
-              return (
-                <div key={row.name} className="slc-day-list-item">
-                  <span className="slc-day-list-name">{row.name}</span>
-                  <span className={`slc-hours-badge ${row.hours >= 40 ? 'red' : row.hours >= 31 ? 'green' : row.hours >= 16 ? 'yellow' : 'orange'}`}>
-                    {row.hours}h
-                  </span>
-                  <span className="slc-shifts-badge">
-                    {row.shifts.filter(Boolean).length} shifts left
-                  </span>
-                  <span className="slc-day-list-shift" style={{ borderLeftColor: getShiftColor(shift) }}>
-                    {shift}
-                  </span>
+              const shiftOrder = ['6:30 Scenario', 'First Shift Ops', 'Morning lead', 'Morning Crew', 'Afternoon lead', 'Afternoon Crew', '2nd shift ops', 'Sunday Crew', 'Truck Maitenence']
+              // Group filtered employees by their shift for this day
+              const groups = {}
+              filtered.forEach(row => {
+                const shift = row.shifts[dayIdx] || 'Unassigned'
+                if (!groups[shift]) groups[shift] = []
+                groups[shift].push(row)
+              })
+              // Sort groups by shift order
+              const sortedShifts = Object.keys(groups).sort((a, b) => {
+                const idxA = shiftOrder.indexOf(a)
+                const idxB = shiftOrder.indexOf(b)
+                const rankA = idxA >= 0 ? idxA : 98
+                const rankB = idxB >= 0 ? idxB : 98
+                if (a === 'Unassigned') return 1
+                if (b === 'Unassigned') return -1
+                return rankA - rankB
+              })
+              return sortedShifts.map(shift => (
+                <div key={shift} className="slc-shift-group">
+                  <div className="slc-shift-group-header">
+                    <span className="slc-shift-group-dot" style={{ background: getShiftColor(shift) }} />
+                    <span className="slc-shift-group-label">{shift}</span>
+                    <span className="slc-shift-group-count">{groups[shift].length}</span>
+                  </div>
+                  <div className="slc-shift-group-members">
+                    {groups[shift].sort((a, b) => a.name.localeCompare(b.name)).map(row => (
+                      <div key={row.name} className="slc-member-chip">
+                        <span className="slc-member-chip-name">{row.name}</span>
+                        <span className={`slc-hours-badge ${row.hours >= 40 ? 'red' : row.hours >= 31 ? 'green' : row.hours >= 16 ? 'yellow' : 'orange'}`}>
+                          {row.hours}h
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              )
-            })}
+              ))
+            })()}
           </div>
           )}
         </>

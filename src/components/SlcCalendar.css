@@ -304,44 +304,81 @@
   opacity: 0.4;
 }
 
-/* Single day filtered view — compact list */
-.slc-day-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 4px;
+/* Single day filtered view — grouped by shift */
+.slc-day-grouped {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.slc-day-list-item {
+.slc-shift-group {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+}
+
+.slc-shift-group-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  background: white;
-  border-radius: 6px;
-  border: 1px solid var(--gray-200);
-  flex-wrap: wrap;
-}
-
-.slc-day-list-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gray-900);
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.slc-day-list-shift {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--gray-700);
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 10px 14px;
   background: var(--gray-50);
-  border-left: 3px solid var(--gray-300);
-  white-space: nowrap;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.slc-shift-group-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.slc-shift-group-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-800);
+  letter-spacing: -0.2px;
+}
+
+.slc-shift-group-count {
   margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-400);
+  background: var(--gray-100);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.slc-shift-group-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 14px;
+}
+
+.slc-member-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--gray-50);
+  border-radius: 6px;
+  border: 1px solid var(--gray-100);
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.slc-member-chip:hover {
+  background: var(--blue-pale, #EFF6FF);
+  border-color: var(--blue-accent, #3B82F6);
+}
+
+.slc-member-chip-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-800);
+  white-space: nowrap;
 }
 
 /* Empty */
