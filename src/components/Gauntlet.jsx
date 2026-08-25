@@ -18,7 +18,7 @@ const ITEMS = [
 ]
 
 const NOTES = [
-  'Call 15 min before', 'Gate code: 1234', 'Around back', 'Upstairs unit',
+  'Call 15 min before', 'Items on curb already', 'Around back', 'Upstairs unit',
   'Customer will help load', 'Narrow driveway', 'Dog in yard - call first',
   'Items in garage', 'Second floor no elevator', 'Ring doorbell twice',
   'Basement access only', 'Use side gate', 'Heavy items - 2 person',
