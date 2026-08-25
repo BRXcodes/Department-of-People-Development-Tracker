@@ -23,7 +23,10 @@ const NOTES = [
   'Items in garage', 'Second floor no elevator', 'Ring doorbell twice',
   'Basement access only', 'Use side gate', 'Heavy items - 2 person',
   'Customer not home - items on curb', 'Gated community - wait for entry',
+  'Family member passed',
 ]
+
+const RARE_NOTES = ['Strict estimate']
 
 const ROUTE_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
 const ROUTE_NAMES = ['Route A', 'Route B', 'Route C', 'Route D']
@@ -93,6 +96,10 @@ function randomItems() {
 }
 
 function randomNote() {
+  // ~15% chance to get a rare note
+  if (Math.random() < 0.15 && RARE_NOTES.length > 0) {
+    return RARE_NOTES[Math.floor(Math.random() * RARE_NOTES.length)]
+  }
   return shuffle(NOTES)[0]
 }
 
