@@ -154,9 +154,9 @@ function generateLevel3() {
     timeWindow: shuffle(ALL_TIME_WINDOWS)[0],
   }))
 
-  // First 4 jobs go into routes (one per route), rest go to pool
+  // First 4 jobs go into routes (one per route) — starting jobs are always 8 AM
   const shuffled = shuffle(allJobs)
-  const routes = shuffled.slice(0, 4).map(j => [j])
+  const routes = shuffled.slice(0, 4).map(j => [{ ...j, timeWindow: '8:00 AM' }])
   const pool = shuffled.slice(4)
 
   return { routes, pool }
