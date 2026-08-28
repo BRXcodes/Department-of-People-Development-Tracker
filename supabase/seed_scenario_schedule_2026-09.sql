@@ -14,7 +14,7 @@
 --   Michael Burton    = phkzloky   (the "Michael B" on the list)
 --   Daniel Archuleta  = javh1fnu
 --   Miguel Fuentes    = y7r4eg2k
---   Michael P         = <UNKNOWN — no match found in attendance_members>
+--   Michael Partain   = matched by name ILIKE '%partain%' (the "Michael P" on the list)
 --
 -- Coach ids (People Development):
 --   Brandon = hj32jih2, Braxton = yvo8wd7a, Brayden = pkxedbgm,
@@ -28,11 +28,11 @@
 --   Wed 9/2  Phelix Figueroa  -> Morning Meeting  (run by Brandon)
 --   Wed 9/2  Imged Alatabi    -> BTL 3.3          (run by Brayden)
 --   Thu 9/3  Michael Burton   -> Morning Meeting  (run by David)
---   Thu 9/3  Michael P        -> BTL 3.3          (run by Brandon)  [PENDING ID]
+--   Thu 9/3  Michael Partain  -> BTL 3.3          (run by Brandon)
 --   Sat 9/5  Daniel Archuleta -> BTL 3.3          (run by Braxton)
 --   Sat 9/5  Miguel Fuentes   -> Morning Meeting  (run by Brayden)
 --
---   Coach load (once Michael P is added): Brandon 2, Brayden 2, David 1, Braxton 1.
+--   Coach load: Brandon 2, Brayden 2, David 1, Braxton 1.
 --
 -- Friday's "Raffle BTL" is shown automatically by the app every Friday and is
 -- intentionally NOT inserted here.
@@ -50,10 +50,12 @@ INSERT INTO scenario_schedule (id, member_id, scenario, date, assignee_id, assig
   ('sched_20260905_archuleta', 'javh1fnu', 'BTL 3.3',         DATE '2026-09-05', 'yvo8wd7a', NULL),
   ('sched_20260905_miguel',    'y7r4eg2k', 'Morning Meeting', DATE '2026-09-05', 'pkxedbgm', NULL);
 
--- Michael P — no attendance_members match was found. Once you have his id,
--- replace <MICHAEL_P_ID> below and uncomment these two statements.
--- INSERT INTO scenario_schedule (id, member_id, scenario, date, assignee_id, assignee2_id) VALUES
---   ('sched_20260903_michaelp', '<MICHAEL_P_ID>', 'BTL 3.3', DATE '2026-09-03', 'hj32jih2', NULL);
+-- Michael P = Michael Partain. Matched by name against attendance_members.
+-- Run the check first:  SELECT id, name FROM attendance_members WHERE name ILIKE '%partain%';
+-- It should return exactly one row before you run this.
+INSERT INTO scenario_schedule (id, member_id, scenario, date, assignee_id, assignee2_id)
+SELECT 'sched_20260903_michaelp', am.id, 'BTL 3.3', DATE '2026-09-03', 'hj32jih2', NULL
+FROM attendance_members am WHERE am.name ILIKE '%partain%' LIMIT 1;
 
 
 -- ----------------------------------------------------------------------------
@@ -70,9 +72,13 @@ INSERT INTO tasks (id, name, description, member_id, days, priority, due_date, r
   ('task_20260905_archuleta', 'BTL 3.3 — Daniel Archuleta',         'Run BTL 3.3 with Daniel Archuleta',         'yvo8wd7a', ARRAY['2026-09-05'], NULL, NULL, NULL),
   ('task_20260905_miguel',    'Morning Meeting — Miguel Fuentes',   'Run Morning Meeting with Miguel Fuentes',   'pkxedbgm', ARRAY['2026-09-05'], NULL, NULL, NULL);
 
--- Michael P task — uncomment and set his name once his id is known:
--- INSERT INTO tasks (id, name, description, member_id, days, priority, due_date, reminder_time) VALUES
---   ('task_20260903_michaelp', 'BTL 3.3 — <MICHAEL_P_NAME>', 'Run BTL 3.3 with <MICHAEL_P_NAME>', 'hj32jih2', ARRAY['2026-09-03'], NULL, NULL, NULL);
+-- Michael P (Michael Partain) coach task — matched by name:
+INSERT INTO tasks (id, name, description, member_id, days, priority, due_date, reminder_time)
+SELECT 'task_20260903_michaelp',
+       'BTL 3.3 — ' || am.name,
+       'Run BTL 3.3 with ' || am.name,
+       'hj32jih2', ARRAY['2026-09-03'], NULL, NULL, NULL
+FROM attendance_members am WHERE am.name ILIKE '%partain%' LIMIT 1;
 
 
 -- ----------------------------------------------------------------------------
