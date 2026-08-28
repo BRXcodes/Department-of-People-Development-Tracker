@@ -14,7 +14,7 @@
 --   Michael Burton    = phkzloky   (the "Michael B" on the list)
 --   Daniel Archuleta  = javh1fnu
 --   Miguel Fuentes    = y7r4eg2k
---   Michael Partain   = matched by name ILIKE '%partain%' (the "Michael P" on the list)
+--   Micheal Partain   = lgmn59gr   (the "Michael P" on the list; spelled Micheal)
 --
 -- Coach ids (People Development):
 --   Brandon = hj32jih2, Braxton = yvo8wd7a, Brayden = pkxedbgm,
@@ -50,12 +50,9 @@ INSERT INTO scenario_schedule (id, member_id, scenario, date, assignee_id, assig
   ('sched_20260905_archuleta', 'javh1fnu', 'BTL 3.3',         DATE '2026-09-05', 'yvo8wd7a', NULL),
   ('sched_20260905_miguel',    'y7r4eg2k', 'Morning Meeting', DATE '2026-09-05', 'pkxedbgm', NULL);
 
--- Michael P = Michael Partain. Matched by name against attendance_members.
--- Run the check first:  SELECT id, name FROM attendance_members WHERE name ILIKE '%partain%';
--- It should return exactly one row before you run this.
-INSERT INTO scenario_schedule (id, member_id, scenario, date, assignee_id, assignee2_id)
-SELECT 'sched_20260903_michaelp', am.id, 'BTL 3.3', DATE '2026-09-03', 'hj32jih2', NULL
-FROM attendance_members am WHERE am.name ILIKE '%partain%' LIMIT 1;
+-- Michael P = "Micheal Partain" (id lgmn59gr; note the first name is spelled Micheal).
+INSERT INTO scenario_schedule (id, member_id, scenario, date, assignee_id, assignee2_id) VALUES
+  ('sched_20260903_michaelp', 'lgmn59gr', 'BTL 3.3', DATE '2026-09-03', 'hj32jih2', NULL);
 
 
 -- ----------------------------------------------------------------------------
@@ -72,13 +69,9 @@ INSERT INTO tasks (id, name, description, member_id, days, priority, due_date, r
   ('task_20260905_archuleta', 'BTL 3.3 — Daniel Archuleta',         'Run BTL 3.3 with Daniel Archuleta',         'yvo8wd7a', ARRAY['2026-09-05'], NULL, NULL, NULL),
   ('task_20260905_miguel',    'Morning Meeting — Miguel Fuentes',   'Run Morning Meeting with Miguel Fuentes',   'pkxedbgm', ARRAY['2026-09-05'], NULL, NULL, NULL);
 
--- Michael P (Michael Partain) coach task — matched by name:
-INSERT INTO tasks (id, name, description, member_id, days, priority, due_date, reminder_time)
-SELECT 'task_20260903_michaelp',
-       'BTL 3.3 — ' || am.name,
-       'Run BTL 3.3 with ' || am.name,
-       'hj32jih2', ARRAY['2026-09-03'], NULL, NULL, NULL
-FROM attendance_members am WHERE am.name ILIKE '%partain%' LIMIT 1;
+-- Michael P (Micheal Partain) coach task:
+INSERT INTO tasks (id, name, description, member_id, days, priority, due_date, reminder_time) VALUES
+  ('task_20260903_michaelp', 'BTL 3.3 — Micheal Partain', 'Run BTL 3.3 with Micheal Partain', 'hj32jih2', ARRAY['2026-09-03'], NULL, NULL, NULL);
 
 
 -- ----------------------------------------------------------------------------
