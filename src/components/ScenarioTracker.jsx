@@ -3,12 +3,14 @@ import { supabase } from '../supabase'
 import { uid } from '../store'
 import './ScenarioTracker.css'
 
-const SCENARIOS = ['1', '2', '3.1', '3.2', '3.3', 'BTL 3.3', 'Raffle BTL']
+const SCENARIOS = ['1', '2', '3.1', '3.2', '3.3', 'BTL 3.3', 'Raffle BTL', 'Morning Meeting']
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
+// Scenarios whose label is used verbatim (not prefixed with "Scenario ")
+const NAMED_SCENARIOS = ['BTL 3.3', 'Raffle BTL', 'Morning Meeting']
+
 function scenarioLabel(s) {
-  if (s === 'BTL 3.3') return 'BTL 3.3'
-  if (s === 'Raffle BTL') return 'Raffle BTL'
+  if (NAMED_SCENARIOS.includes(s)) return s
   return `Scenario ${s}`
 }
 
@@ -149,8 +151,8 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
       const taskId = uid()
       const { error: taskErr } = await supabase.from('tasks').insert({
         id: taskId,
-        name: `Scenario ${schedScenario} — ${employeeName}`,
-        description: `Run Scenario ${schedScenario} with ${employeeName}`,
+        name: `${scenarioLabel(schedScenario)} — ${employeeName}`,
+        description: `Run ${scenarioLabel(schedScenario)} with ${employeeName}`,
         member_id: schedAssigneeId,
         days: schedDates,
         priority: null,
@@ -166,8 +168,8 @@ export default function ScenarioTracker({ isManager, teams, allMembers }) {
       const taskId2 = uid()
       const { error: taskErr2 } = await supabase.from('tasks').insert({
         id: taskId2,
-        name: `Scenario ${schedScenario} — ${employeeName}`,
-        description: `Run Scenario ${schedScenario} with ${employeeName}`,
+        name: `${scenarioLabel(schedScenario)} — ${employeeName}`,
+        description: `Run ${scenarioLabel(schedScenario)} with ${employeeName}`,
         member_id: schedAssignee2Id,
         days: schedDates,
         priority: null,

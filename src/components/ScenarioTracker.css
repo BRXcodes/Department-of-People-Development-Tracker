@@ -135,6 +135,7 @@
 .scenario-card.scenario-3-3 { border-left-color: #EF4444; }
 .scenario-card.scenario-btl-3-3 { border-left-color: #7C3AED; }
 .scenario-card.scenario-raffle-btl { border-left-color: #EC4899; }
+.scenario-card.scenario-morning-meeting { border-left-color: #0891B2; }
 
 .scenario-card-main {
   flex: 1;
@@ -174,6 +175,7 @@
 .scenario-badge.s-3-3 { background: #FEF2F2; color: #DC2626; }
 .scenario-badge.s-btl-3-3 { background: #F5F3FF; color: #6D28D9; }
 .scenario-badge.s-raffle-btl { background: #FDF2F8; color: #BE185D; }
+.scenario-badge.s-morning-meeting { background: #ECFEFF; color: #0E7490; }
 
 .scenario-card-notes {
   font-size: 12.5px;
@@ -365,6 +367,7 @@
 .schedule-entry.s-3-3 { border-left-color: #EF4444; background: #FFF5F5; }
 .schedule-entry.s-btl-3-3 { border-left-color: #7C3AED; background: #FAF5FF; }
 .schedule-entry.s-raffle-btl { border-left-color: #EC4899; background: #FFF1F8; }
+.schedule-entry.s-morning-meeting { border-left-color: #0891B2; background: #F0FDFF; }
 
 .schedule-entry-auto {
   opacity: 0.8;
