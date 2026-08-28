@@ -455,3 +455,174 @@
   text-align: center;
   font-weight: 500;
 }
+
+/* Assignment templates */
+.template-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.template-add-toggle {
+  background: none;
+  border: none;
+  color: var(--blue-mid);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.template-add-toggle:hover {
+  background: var(--blue-pale);
+  color: var(--blue-dark);
+}
+
+.template-picker {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.template-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  border: 1.5px solid var(--gray-200);
+  background: white;
+  overflow: hidden;
+  transition: all 0.15s;
+}
+
+.template-chip:hover {
+  border-color: var(--blue-accent);
+}
+
+.template-chip.active {
+  border-color: var(--blue-mid);
+  background: var(--blue-pale);
+}
+
+.template-chip-btn {
+  padding: 6px 13px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.template-chip:hover .template-chip-btn {
+  color: var(--blue-mid);
+}
+
+.template-chip.active .template-chip-btn {
+  color: var(--blue-dark);
+  font-weight: 600;
+}
+
+.template-chip.editing {
+  border-color: var(--blue-mid);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.template-chip-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--gray-400);
+  cursor: pointer;
+  padding: 6px 9px 6px 3px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.template-chip-edit:hover {
+  color: var(--blue-mid);
+}
+
+.template-restore-link {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--gray-500);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+
+.template-restore-link:hover {
+  color: var(--blue-mid);
+}
+
+.template-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1.5px dashed var(--blue-accent);
+  border-radius: var(--radius-sm);
+  background: var(--blue-pale);
+}
+
+.template-form-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.template-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.template-add-save {
+  margin-left: auto;
+  padding: 7px 16px;
+  font-size: 12.5px;
+}
+
+.template-form-delete,
+.template-form-reset {
+  background: none;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.template-form-delete {
+  color: #DC2626;
+}
+
+.template-form-delete:hover {
+  background: #FEE2E2;
+}
+
+.template-form-reset {
+  color: var(--gray-500);
+}
+
+.template-form-reset:hover {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}

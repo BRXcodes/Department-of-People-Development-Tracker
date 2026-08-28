@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { getTemplates, addTemplate, updateTemplate, removeTemplate, resetTemplate, isBuiltinModified, hiddenBuiltinCount, restoreHiddenBuiltins } from '../assignmentTemplates'
 import './Modal.css'
 
 const REMINDER_OPTIONS = [
@@ -114,6 +115,77 @@ export default function AssignModal({ members, task, onSave, onClose, weekStart 
 
   const isEditing = !!task
 
+  // Assignment templates (scenarios, whiteboards, etc.)
+  const [templates, setTemplates] = useState(() => getTemplates())
+  const [activeTemplateId, setActiveTemplateId] = useState(null)
+  // Template editor: null = closed, 'new' = adding, or a template id = editing that one
+  const [tplEditorMode, setTplEditorMode] = useState(null)
+  const [tplLabel, setTplLabel] = useState('')
+  const [tplName, setTplName] = useState('')
+  const [tplDesc, setTplDesc] = useState('')
+
+  function applyTemplate(tpl) {
+    // Toggle off if the same template is clicked again
+    if (activeTemplateId === tpl.id) {
+      setActiveTemplateId(null)
+      return
+    }
+    setActiveTemplateId(tpl.id)
+    setName(tpl.name)
+    setDescription(tpl.description || '')
+  }
+
+  function openNewTemplate() {
+    setTplEditorMode('new')
+    setTplLabel('')
+    setTplName('')
+    setTplDesc('')
+  }
+
+  function openEditTemplate(tpl) {
+    setTplEditorMode(tpl.id)
+    setTplLabel(tpl.label)
+    setTplName(tpl.name)
+    setTplDesc(tpl.description || '')
+  }
+
+  function closeTemplateEditor() {
+    setTplEditorMode(null)
+  }
+
+  function handleSaveTemplate() {
+    const label = tplLabel.trim()
+    if (!label) return
+    const payload = { label, name: tplName.trim() || label, description: tplDesc }
+    const updated = tplEditorMode === 'new'
+      ? addTemplate(payload)
+      : updateTemplate(tplEditorMode, payload)
+    setTemplates(updated)
+    // If we just edited the currently applied template, refresh the prefilled fields
+    if (tplEditorMode !== 'new' && activeTemplateId === tplEditorMode) {
+      setName(payload.name)
+      setDescription(payload.description)
+    }
+    closeTemplateEditor()
+  }
+
+  function handleRemoveTemplate(id) {
+    setTemplates(removeTemplate(id))
+    if (activeTemplateId === id) setActiveTemplateId(null)
+    if (tplEditorMode === id) closeTemplateEditor()
+  }
+
+  function handleResetTemplate(id) {
+    setTemplates(resetTemplate(id))
+    if (tplEditorMode === id) closeTemplateEditor()
+  }
+
+  function handleRestoreHidden() {
+    setTemplates(restoreHiddenBuiltins())
+  }
+
+  const numHidden = hiddenBuiltinCount()
+
   function toggleMember(id) {
     if (isEditing) return
     setMemberIds(prev =>
@@ -150,11 +222,121 @@ export default function AssignModal({ members, task, onSave, onClose, weekStart 
         </div>
 
         <div className="modal-body">
+          {!isEditing && (
+            <>
+              <div className="template-label-row">
+                <label className="field-label" style={{ marginBottom: 0 }}>Quick Templates</label>
+                <button
+                  type="button"
+                  className="template-add-toggle"
+                  onClick={() => tplEditorMode === 'new' ? closeTemplateEditor() : openNewTemplate()}
+                >
+                  {tplEditorMode === 'new' ? 'Cancel' : '+ New template'}
+                </button>
+              </div>
+              <div className="template-picker">
+                {templates.map(tpl => (
+                  <span
+                    key={tpl.id}
+                    className={`template-chip ${activeTemplateId === tpl.id ? 'active' : ''} ${tplEditorMode === tpl.id ? 'editing' : ''}`}
+                  >
+                    <button
+                      type="button"
+                      className="template-chip-btn"
+                      onClick={() => applyTemplate(tpl)}
+                    >
+                      {tpl.label}
+                    </button>
+                    <button
+                      type="button"
+                      className="template-chip-edit"
+                      onClick={() => tplEditorMode === tpl.id ? closeTemplateEditor() : openEditTemplate(tpl)}
+                      aria-label={`Edit ${tpl.label} template`}
+                      title="Edit template"
+                    >
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
+
+              {numHidden > 0 && (
+                <button
+                  type="button"
+                  className="template-restore-link"
+                  onClick={handleRestoreHidden}
+                >
+                  Restore {numHidden} hidden default{numHidden !== 1 ? 's' : ''}
+                </button>
+              )}
+
+              {tplEditorMode !== null && (
+                <div className="template-add-form">
+                  <div className="template-form-title">
+                    {tplEditorMode === 'new' ? 'New Template' : 'Edit Template'}
+                  </div>
+                  <input
+                    className="field-input"
+                    value={tplLabel}
+                    onChange={e => setTplLabel(e.target.value)}
+                    placeholder="Template label (e.g. Cold Call Practice)"
+                  />
+                  <input
+                    className="field-input"
+                    value={tplName}
+                    onChange={e => setTplName(e.target.value)}
+                    placeholder="Task name (defaults to label)"
+                  />
+                  <textarea
+                    className="field-input"
+                    value={tplDesc}
+                    onChange={e => setTplDesc(e.target.value)}
+                    placeholder="Default description (optional)"
+                    rows={2}
+                  />
+                  <div className="template-form-actions">
+                    {tplEditorMode !== 'new' && (
+                      <>
+                        <button
+                          type="button"
+                          className="template-form-delete"
+                          onClick={() => handleRemoveTemplate(tplEditorMode)}
+                        >
+                          Delete
+                        </button>
+                        {isBuiltinModified(tplEditorMode) && !String(tplEditorMode).startsWith('custom-') && (
+                          <button
+                            type="button"
+                            className="template-form-reset"
+                            onClick={() => handleResetTemplate(tplEditorMode)}
+                          >
+                            Reset to default
+                          </button>
+                        )}
+                      </>
+                    )}
+                    <button
+                      type="button"
+                      className="btn-confirm template-add-save"
+                      onClick={handleSaveTemplate}
+                      disabled={!tplLabel.trim()}
+                    >
+                      {tplEditorMode === 'new' ? 'Save Template' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
           <label className="field-label">Task Name *</label>
           <input
             className="field-input"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={e => { setName(e.target.value); setActiveTemplateId(null) }}
             placeholder="e.g. Morning briefing"
             autoFocus
           />
