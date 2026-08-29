@@ -202,7 +202,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
                 <>
                   <button className="team-tab-btn" onClick={() => { 
                     onSelectTeam(team.id); 
-                    if (view === 'attendance' || view === 'scenarios' || view === 'slc') setView('dashboard')
+                    if (view === 'attendance' || view === 'scenarios' || view === 'slc' || view === 'shop') setView('dashboard')
                     if (view === 'gauntlet' && !team.name.toLowerCase().includes('operation')) setView('dashboard')
                   }}>
                     {team.name}
@@ -234,6 +234,11 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
               SLC Calendar
             </button>
           </div>
+          <div className={`team-tab ${view === 'shop' ? 'active' : ''}`}>
+            <button className="team-tab-btn" onClick={() => setView('shop')}>
+              Shop Management
+            </button>
+          </div>
           {isManager && (
             <button className="team-tab-add" onClick={() => setAddTeamModal(true)} title="Add team">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -244,7 +249,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
           )}
         </div>
 
-        {!isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && (
+        {!isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && (
         <div className="view-toggle">
           <button className={`toggle-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

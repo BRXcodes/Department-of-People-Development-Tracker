@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard'
 import Attendance from './components/Attendance'
 import ScenarioTracker from './components/ScenarioTracker'
 import SlcCalendar from './components/SlcCalendar'
+import ShopManagement from './components/ShopManagement'
 import Gauntlet from './components/Gauntlet'
 import AssignModal from './components/AssignModal'
 import TruckIssueModal from './components/TruckIssueModal'
@@ -290,6 +291,8 @@ export default function App() {
           <ScenarioTracker isManager={true} teams={teams} allMembers={members} />
         ) : view === 'slc' ? (
           <SlcCalendar isManager={isManager} />
+        ) : view === 'shop' ? (
+          <ShopManagement isManager={isManager} />
         ) : view === 'gauntlet' ? (
           <Gauntlet />
         ) : (
