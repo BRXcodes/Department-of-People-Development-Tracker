@@ -15,6 +15,40 @@ function formatDateLabel(dateStr) {
   return `${dayAbbr} ${ordinal(d.getDate())}`
 }
 
+const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const MONTHS_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+/** Heading for a day group, e.g. "Wednesday, Sep 2". "" -> Unscheduled. */
+function formatGroupHeading(dateStr) {
+  if (!dateStr) return 'Unscheduled'
+  const d = new Date(dateStr + 'T00:00:00')
+  return `${DAY_NAMES_FULL[d.getDay()]}, ${MONTHS_ABBR[d.getMonth()]} ${d.getDate()}`
+}
+
+/**
+ * Groups tasks by their earliest (start) day so the card reads as day sections
+ * instead of one flat list. Multi-day tasks appear once, under their start day.
+ * Groups are ordered chronologically; tasks with no days go last (Unscheduled).
+ */
+function groupTasksByStartDay(tasks) {
+  const groups = new Map()
+  for (const task of tasks) {
+    const startDay = [...(task.days || [])].sort()[0] || ''
+    if (!groups.has(startDay)) groups.set(startDay, [])
+    groups.get(startDay).push(task)
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => {
+      if (a === '') return 1
+      if (b === '') return -1
+      return a.localeCompare(b)
+    })
+    .map(([day, dayTasks]) => ({
+      day,
+      tasks: dayTasks.sort((a, b) => (a.name || '').localeCompare(b.name || '')),
+    }))
+}
+
 export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, isManager }) {
   const [expanded, setExpanded] = useState(true)
 
@@ -54,12 +88,16 @@ export default function MemberCard({ member, tasks, onToggle, onEdit, onDelete, 
           {tasks.length === 0 && (
             <p className="no-tasks">No tasks assigned yet.</p>
           )}
-          {[...tasks].sort((a, b) => {
-            const aFirst = (a.days || [])[0] || ''
-            const bFirst = (b.days || [])[0] || ''
-            return aFirst.localeCompare(bFirst)
-          }).map(task => (
-            <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
+          {groupTasksByStartDay(tasks).map(group => (
+            <div key={group.day} className="day-group">
+              <div className="day-group-head">
+                <span className="day-group-dot" />
+                {formatGroupHeading(group.day)}
+              </div>
+              {group.tasks.map(task => (
+                <TaskRow key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} isManager={isManager} />
+              ))}
+            </div>
           ))}
         </div>
       )}
