@@ -14,7 +14,13 @@ function formatDayTitle(dateStr) {
   return `${dayName}, ${month} ${d.getDate()}`
 }
 
-function DaySection({ label, dateStr, members, tasks }) {
+const CheckIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+)
+
+function DaySection({ label, dateStr, members, tasks, onToggle }) {
   const dayTasks = tasks.filter(t => t.days?.includes(dateStr))
   const membersWithTasks = members
     .map(member => ({ member, mTasks: dayTasks.filter(t => t.memberId === member.id) }))
@@ -33,19 +39,33 @@ function DaySection({ label, dateStr, members, tasks }) {
         <div className="tt-members">
           {membersWithTasks.map(({ member, mTasks }) => {
             const initials = member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+            const doneCount = mTasks.filter(t => t.completions?.[dateStr] === 'done').length
             return (
               <div key={member.id} className="tt-member">
                 <div className="tt-member-header">
                   <div className="tt-avatar" style={{ background: member.color }}>{initials}</div>
                   <span className="tt-member-name">{member.name}</span>
+                  <span className="tt-member-count">{doneCount}/{mTasks.length}</span>
                 </div>
                 <ul className="tt-task-list">
-                  {mTasks.map(task => (
-                    <li key={task.id} className="tt-task">
-                      <span className="tt-task-name">{task.name}</span>
-                      {task.description && <span className="tt-task-desc">{task.description}</span>}
-                    </li>
-                  ))}
+                  {mTasks.map(task => {
+                    const done = task.completions?.[dateStr] === 'done'
+                    return (
+                      <li key={task.id} className={`tt-task ${done ? 'done' : ''}`}>
+                        <button
+                          className={`tt-check ${done ? 'done' : ''}`}
+                          onClick={() => onToggle(task.id, dateStr)}
+                          aria-label={done ? `Mark ${task.name} not done` : `Mark ${task.name} done`}
+                        >
+                          {done && <CheckIcon />}
+                        </button>
+                        <div className="tt-task-info">
+                          <span className="tt-task-name">{task.name}</span>
+                          {task.description && <span className="tt-task-desc">{task.description}</span>}
+                        </div>
+                      </li>
+                    )
+                  })}
                 </ul>
               </div>
             )
@@ -56,7 +76,7 @@ function DaySection({ label, dateStr, members, tasks }) {
   )
 }
 
-export default function TodayTomorrow({ members, tasks }) {
+export default function TodayTomorrow({ members, tasks, onToggle }) {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const tomorrow = new Date(today)
@@ -69,8 +89,8 @@ export default function TodayTomorrow({ members, tasks }) {
         <p className="tt-subtitle">Everyone's responsibilities at a glance</p>
       </div>
       <div className="tt-grid">
-        <DaySection label="Today" dateStr={toDateStr(today)} members={members} tasks={tasks} />
-        <DaySection label="Tomorrow" dateStr={toDateStr(tomorrow)} members={members} tasks={tasks} />
+        <DaySection label="Today" dateStr={toDateStr(today)} members={members} tasks={tasks} onToggle={onToggle} />
+        <DaySection label="Tomorrow" dateStr={toDateStr(tomorrow)} members={members} tasks={tasks} onToggle={onToggle} />
       </div>
     </div>
   )

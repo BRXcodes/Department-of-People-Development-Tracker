@@ -168,6 +168,32 @@ export default function App() {
     }
   }
 
+  // Simple two-state toggle for the employee Today & Tomorrow view: done <-> clear
+  async function toggleDone(taskId, day) {
+    const task = tasks.find(t => t.id === taskId)
+    if (!task) return
+    const isDone = task.completions?.[day] === 'done'
+
+    if (isDone) {
+      const { error } = await supabase.from('completions').delete()
+        .eq('task_id', taskId).eq('day', day)
+      if (error) { console.error(error); return }
+      setTasks(prev => prev.map(t => {
+        if (t.id !== taskId) return t
+        const newCompletions = { ...t.completions }
+        delete newCompletions[day]
+        return { ...t, completions: newCompletions }
+      }))
+    } else {
+      // Clear any existing row for this day, then insert 'done'. Avoids relying
+      // on a unique constraint and works whether the day was unset or 'missed'.
+      await supabase.from('completions').delete().eq('task_id', taskId).eq('day', day)
+      const { error } = await supabase.from('completions').insert({ task_id: taskId, day, status: 'done' })
+      if (error) { console.error(error); return }
+      setTasks(prev => prev.map(t => t.id !== taskId ? t : { ...t, completions: { ...t.completions, [day]: 'done' } }))
+    }
+  }
+
   async function updateMembers(updatedMembers) {
     // Upsert all members, delete removed ones
     const removedIds = members
@@ -297,7 +323,7 @@ export default function App() {
         ) : view === 'gauntlet' ? (
           <Gauntlet />
         ) : (!isManager && !isTruckTeam) ? (
-          <TodayTomorrow members={activeMembers} tasks={activeTasks} />
+          <TodayTomorrow members={activeMembers} tasks={activeTasks} onToggle={toggleDone} />
         ) : (
           <Dashboard
             members={activeMembers}
