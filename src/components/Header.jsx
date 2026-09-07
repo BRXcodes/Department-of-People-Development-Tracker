@@ -249,7 +249,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
           )}
         </div>
 
-        {!isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && (
+        {isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && (
         <div className="view-toggle">
           <button className={`toggle-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -281,7 +281,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
         </div>
         )}
 
-        {!isTruckTeam && view === 'daily' && (
+        {isManager && !isTruckTeam && view === 'daily' && (
           <div className="day-picker">
             {Array.from({ length: 7 }, (_, i) => {
               const today = new Date()
