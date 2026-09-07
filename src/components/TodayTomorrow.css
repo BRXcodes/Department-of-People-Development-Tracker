@@ -128,16 +128,31 @@
   gap: 6px;
 }
 
+.tt-task-item {
+  list-style: none;
+}
+
 .tt-task {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
   background: white;
   border: 1px solid var(--gray-200);
   border-left: 3px solid var(--blue-accent);
   border-radius: 6px;
   transition: border-color 0.15s, background 0.15s;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: rgba(37, 99, 235, 0.15);
+  touch-action: manipulation;
+}
+
+.tt-task:active {
+  background: var(--gray-50);
 }
 
 .tt-task.done {
@@ -146,8 +161,8 @@
 }
 
 .tt-check {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   border-radius: 50%;
   border: 2px solid var(--gray-300);
@@ -156,12 +171,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: all 0.15s;
-  margin-top: 1px;
 }
 
-.tt-check:hover {
+.tt-task:hover .tt-check {
   border-color: var(--green);
 }
 
@@ -175,6 +188,7 @@
   flex-direction: column;
   gap: 1px;
   min-width: 0;
+  flex: 1;
 }
 
 .tt-task-name {

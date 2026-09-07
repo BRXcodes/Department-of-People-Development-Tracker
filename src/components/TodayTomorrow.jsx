@@ -51,18 +51,22 @@ function DaySection({ label, dateStr, members, tasks, onToggle }) {
                   {mTasks.map(task => {
                     const done = task.completions?.[dateStr] === 'done'
                     return (
-                      <li key={task.id} className={`tt-task ${done ? 'done' : ''}`}>
+                      <li key={task.id} className="tt-task-item">
                         <button
-                          className={`tt-check ${done ? 'done' : ''}`}
+                          type="button"
+                          className={`tt-task ${done ? 'done' : ''}`}
                           onClick={() => onToggle(task.id, dateStr)}
+                          aria-pressed={done}
                           aria-label={done ? `Mark ${task.name} not done` : `Mark ${task.name} done`}
                         >
-                          {done && <CheckIcon />}
+                          <span className={`tt-check ${done ? 'done' : ''}`}>
+                            {done && <CheckIcon />}
+                          </span>
+                          <span className="tt-task-info">
+                            <span className="tt-task-name">{task.name}</span>
+                            {task.description && <span className="tt-task-desc">{task.description}</span>}
+                          </span>
                         </button>
-                        <div className="tt-task-info">
-                          <span className="tt-task-name">{task.name}</span>
-                          {task.description && <span className="tt-task-desc">{task.description}</span>}
-                        </div>
                       </li>
                     )
                   })}
