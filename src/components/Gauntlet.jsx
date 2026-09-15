@@ -81,6 +81,64 @@ function formatDriveTime(minutes) {
   return m > 0 ? `${h}h ${m}m` : `${h}h`
 }
 
+// All permutations of [0,1,2,3] (24 of them), used by the Level 1 solver.
+function permutations4() {
+  const result = []
+  const perm = (arr, m = []) => {
+    if (arr.length === 0) { result.push(m); return }
+    for (let i = 0; i < arr.length; i++) {
+      const rest = arr.slice(0, i).concat(arr.slice(i + 1))
+      perm(rest, m.concat(arr[i]))
+    }
+  }
+  perm([0, 1, 2, 3])
+  return result
+}
+
+// Level 1 solver: columns are locked by time slot and each route takes one job
+// per column in order (col0 -> col1 -> col2 -> col3). We fix column 0 and try
+// every assignment of columns 1-3 to the 4 routes (24^3 = 13,824 combos),
+// returning the arrangement with the lowest total drive time. This is exact.
+function solveLevel1(routes) {
+  const columns = [0, 1, 2, 3].map(col => routes.map(r => r[col]))
+  const perms = permutations4()
+
+  // Cost of route r under a given permutation set = drives between its stops.
+  // We only need column-to-column drive sums, so precompute per candidate.
+  let best = null
+  let bestTotal = Infinity
+
+  for (const p1 of perms) {
+    for (const p2 of perms) {
+      for (const p3 of perms) {
+        let total = 0
+        for (let r = 0; r < 4; r++) {
+          const c0 = columns[0][r]
+          const c1 = columns[1][p1[r]]
+          const c2 = columns[2][p2[r]]
+          const c3 = columns[3][p3[r]]
+          total += getDriveTime(c0.city, c1.city)
+            + getDriveTime(c1.city, c2.city)
+            + getDriveTime(c2.city, c3.city)
+          if (total >= bestTotal) break // prune
+        }
+        if (total < bestTotal) {
+          bestTotal = total
+          best = { p1, p2, p3 }
+        }
+      }
+    }
+  }
+
+  // Rebuild routes using the winning permutations.
+  return routes.map((_, r) => [
+    columns[0][r],
+    columns[1][best.p1[r]],
+    columns[2][best.p2[r]],
+    columns[3][best.p3[r]],
+  ])
+}
+
 function shuffle(arr) {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -213,6 +271,14 @@ export default function Gauntlet() {
     setPool(JSON.parse(JSON.stringify(initialState.current.pool)))
   }
 
+  // Level 1 only: arrange jobs for the lowest total drive time (exact solution).
+  function solve() {
+    setDragState(null)
+    setDropTarget(null)
+    setRoutes(solveLevel1(routes))
+    setShowTimes(true)
+  }
+
   // ===== Level 1 & 2 drag: swap within same column =====
   function handleSwapDragStart(e, routeIdx, colIdx) {
     setDragState({ type: 'swap', routeIdx, colIdx })
@@ -342,6 +408,14 @@ export default function Gauntlet() {
           <span className="gauntlet-total-time">
             Total drive time: {formatDriveTime(totalDriveTime)}
           </span>
+        )}
+        {level === 1 && (
+          <button className="btn btn-solve-gauntlet" onClick={solve} title="Arrange for the lowest total drive time">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            </svg>
+            Solve
+          </button>
         )}
       </div>
 
