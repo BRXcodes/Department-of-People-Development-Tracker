@@ -281,6 +281,27 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
         </div>
         )}
 
+        {!isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && (() => {
+          const activeTeam = teams.find(t => t.id === activeTeamId)
+          if (!activeTeam || !activeTeam.name.toLowerCase().includes('operation')) return null
+          return (
+            <div className="view-toggle">
+              <button className={`toggle-btn ${view !== 'gauntlet' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                Today &amp; Tomorrow
+              </button>
+              <button className={`toggle-btn ${view === 'gauntlet' ? 'active' : ''}`} onClick={() => setView('gauntlet')}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                Gauntlet
+              </button>
+            </div>
+          )
+        })()}
+
         {isManager && !isTruckTeam && view === 'daily' && (
           <div className="day-picker">
             {Array.from({ length: 7 }, (_, i) => {
