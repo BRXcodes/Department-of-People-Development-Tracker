@@ -381,6 +381,14 @@ export default function Gauntlet() {
                         onDrop={e => handleSwapDrop(e, routeIdx, colIdx)}
                         onDragEnd={handleDragEnd}
                       >
+                        {showTimes && colIdx > 0 && (
+                          <span className="gauntlet-leg-eta" title={`Drive from ${route[colIdx - 1].city}`}>
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                            {formatDriveTime(getDriveTime(route[colIdx - 1].city, job.city))}
+                          </span>
+                        )}
                         <span className="gauntlet-card-time">{TIME_SLOTS[colIdx]}</span>
                         <span className="gauntlet-card-city">{job.city}</span>
                         {level === 2 && (
@@ -432,6 +440,14 @@ export default function Gauntlet() {
                       onDragEnd={handleDragEnd}
                       onDoubleClick={e => handleRouteJobBackToPool(e, routeIdx, jobIdx)}
                     >
+                      {showTimes && jobIdx > 0 && (
+                        <span className="gauntlet-leg-eta" title={`Drive from ${route[jobIdx - 1].city}`}>
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                          </svg>
+                          {formatDriveTime(getDriveTime(route[jobIdx - 1].city, job.city))}
+                        </span>
+                      )}
                       <span className="gauntlet-card-time">{job.timeWindow}</span>
                       <span className="gauntlet-card-city">{job.city}</span>
                       <div className="gauntlet-card-items">
