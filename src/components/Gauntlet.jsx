@@ -101,11 +101,13 @@ const FRANCHISES = {
     name: 'Salt Lake',
     south: SLC_CITIES_SOUTH, north: SLC_CITIES_NORTH, west: SLC_CITIES_WEST, east: SLC_CITIES_EAST,
     driveTimes: SLC_DRIVE_TIMES,
+    levels: [1, 2, 3],
   },
   denver: {
     name: 'Denver',
     south: DEN_CITIES_SOUTH, north: DEN_CITIES_NORTH, west: DEN_CITIES_WEST, east: DEN_CITIES_EAST,
     driveTimes: DEN_DRIVE_TIMES,
+    levels: [1],
   },
 }
 const DEFAULT_FRANCHISE = 'slc'
@@ -311,11 +313,16 @@ export default function Gauntlet() {
   }
 
   function switchFranchise(newId) {
+    const nextFranchise = FRANCHISES[newId]
+    // If the current level isn't allowed for this franchise, drop to its first.
+    const allowed = nextFranchise.levels || [1, 2, 3]
+    const nextLevel = allowed.includes(level) ? level : allowed[0]
     setFranchiseId(newId)
+    setLevel(nextLevel)
     setShowTimes(false)
     setDragState(null)
     setDropTarget(null)
-    const { routes: newRoutes, pool: newPool } = buildForLevel(level, FRANCHISES[newId])
+    const { routes: newRoutes, pool: newPool } = buildForLevel(nextLevel, nextFranchise)
     setRoutes(newRoutes)
     setPool(newPool)
     initialState.current = { routes: JSON.parse(JSON.stringify(newRoutes)), pool: JSON.parse(JSON.stringify(newPool)) }
@@ -465,18 +472,26 @@ export default function Gauntlet() {
         ))}
       </div>
 
-      {/* Level selector */}
+      {/* Level selector — only levels allowed for the current franchise */}
+      {(franchise.levels || [1, 2, 3]).length > 1 && (
       <div className="gauntlet-levels">
-        <button className={`gauntlet-level-btn ${level === 1 ? 'active' : ''}`} onClick={() => switchLevel(1)}>
-          Level 1 <span className="gauntlet-level-desc">Drive Time</span>
-        </button>
-        <button className={`gauntlet-level-btn ${level === 2 ? 'active' : ''}`} onClick={() => switchLevel(2)}>
-          Level 2 <span className="gauntlet-level-desc">+ Items</span>
-        </button>
-        <button className={`gauntlet-level-btn ${level === 3 ? 'active' : ''}`} onClick={() => switchLevel(3)}>
-          Level 3 <span className="gauntlet-level-desc">Advanced</span>
-        </button>
+        {(franchise.levels || [1, 2, 3]).includes(1) && (
+          <button className={`gauntlet-level-btn ${level === 1 ? 'active' : ''}`} onClick={() => switchLevel(1)}>
+            Level 1 <span className="gauntlet-level-desc">Drive Time</span>
+          </button>
+        )}
+        {(franchise.levels || [1, 2, 3]).includes(2) && (
+          <button className={`gauntlet-level-btn ${level === 2 ? 'active' : ''}`} onClick={() => switchLevel(2)}>
+            Level 2 <span className="gauntlet-level-desc">+ Items</span>
+          </button>
+        )}
+        {(franchise.levels || [1, 2, 3]).includes(3) && (
+          <button className={`gauntlet-level-btn ${level === 3 ? 'active' : ''}`} onClick={() => switchLevel(3)}>
+            Level 3 <span className="gauntlet-level-desc">Advanced</span>
+          </button>
+        )}
       </div>
+      )}
 
       <div className="gauntlet-actions">
         {!showTimes ? (
