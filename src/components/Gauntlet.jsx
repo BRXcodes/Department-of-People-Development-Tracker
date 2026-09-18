@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react'
 import './Gauntlet.css'
 
+// ==================== Salt Lake franchise geography ====================
 // Cities grouped by direction from Salt Lake City
-const CITIES_SOUTH = ['Provo', 'Lehi', 'Orem', 'American Fork', 'Pleasant Grove', 'Saratoga Springs', 'Eagle Mountain', 'Springville', 'Payson']
-const CITIES_NORTH = ['Ogden', 'Layton', 'Bountiful', 'Murray', 'Park City', 'Heber City']
-const CITIES_WEST = ['Tooele', 'West Jordan', 'Herriman', 'Riverton', 'South Jordan']
-const CITIES_EAST = ['Sandy', 'Draper', 'Salt Lake City', 'Park City', 'Heber City']
+const SLC_CITIES_SOUTH = ['Provo', 'Lehi', 'Orem', 'American Fork', 'Pleasant Grove', 'Saratoga Springs', 'Eagle Mountain', 'Springville', 'Payson']
+const SLC_CITIES_NORTH = ['Ogden', 'Layton', 'Bountiful', 'Murray', 'Park City', 'Heber City']
+const SLC_CITIES_WEST = ['Tooele', 'West Jordan', 'Herriman', 'Riverton', 'South Jordan']
+const SLC_CITIES_EAST = ['Sandy', 'Draper', 'Salt Lake City', 'Park City', 'Heber City']
 
 const ITEMS = [
   'Couch', 'Mattress', 'Dresser', 'Desk', 'Bookshelf',
@@ -33,8 +34,8 @@ const ROUTE_NAMES = ['Route A', 'Route B', 'Route C', 'Route D']
 const TIME_SLOTS = ['8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM']
 const ALL_TIME_WINDOWS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM']
 
-// Approximate drive times in minutes between cities (one-way)
-const DRIVE_TIMES = {
+// Approximate drive times in minutes between cities (one-way) — Salt Lake
+const SLC_DRIVE_TIMES = {
   'Salt Lake City': { 'Provo': 45, 'Ogden': 35, 'Lehi': 30, 'Orem': 40, 'Sandy': 15, 'West Jordan': 15, 'Layton': 25, 'Murray': 12, 'Draper': 20, 'Bountiful': 12, 'Riverton': 20, 'Tooele': 35, 'Park City': 35, 'Springville': 50, 'American Fork': 32, 'Payson': 60, 'Heber City': 45, 'Pleasant Grove': 35, 'Saratoga Springs': 35, 'Eagle Mountain': 40, 'Herriman': 25, 'South Jordan': 20 },
   'Provo': { 'Salt Lake City': 45, 'Ogden': 70, 'Lehi': 15, 'Orem': 5, 'Sandy': 30, 'West Jordan': 30, 'Layton': 60, 'Murray': 35, 'Draper': 25, 'Bountiful': 50, 'Riverton': 28, 'Tooele': 65, 'Park City': 55, 'Springville': 8, 'American Fork': 12, 'Payson': 18, 'Heber City': 30, 'Pleasant Grove': 10, 'Saratoga Springs': 15, 'Eagle Mountain': 20, 'Herriman': 28, 'South Jordan': 28 },
   'Ogden': { 'Salt Lake City': 35, 'Provo': 70, 'Lehi': 55, 'Orem': 65, 'Sandy': 40, 'West Jordan': 40, 'Layton': 10, 'Murray': 35, 'Draper': 45, 'Bountiful': 18, 'Riverton': 45, 'Tooele': 55, 'Park City': 50, 'Springville': 75, 'American Fork': 55, 'Payson': 85, 'Heber City': 60, 'Pleasant Grove': 58, 'Saratoga Springs': 58, 'Eagle Mountain': 60, 'Herriman': 48, 'South Jordan': 42 },
@@ -60,16 +61,66 @@ const DRIVE_TIMES = {
   'South Jordan': { 'Salt Lake City': 20, 'Provo': 28, 'Ogden': 42, 'Lehi': 12, 'Orem': 22, 'Sandy': 8, 'West Jordan': 5, 'Layton': 32, 'Murray': 10, 'Draper': 5, 'Bountiful': 25, 'Riverton': 5, 'Tooele': 28, 'Park City': 32, 'Springville': 30, 'American Fork': 15, 'Payson': 40, 'Heber City': 35, 'Pleasant Grove': 18, 'Saratoga Springs': 15, 'Eagle Mountain': 18, 'Herriman': 5 },
 }
 
-function getDriveTime(cityA, cityB) {
-  if (cityA === cityB) return 0
-  return DRIVE_TIMES[cityA]?.[cityB] || DRIVE_TIMES[cityB]?.[cityA] || 30
+// ==================== Denver franchise geography ====================
+// Cities grouped by direction from Denver.
+const DEN_CITIES_SOUTH = ['Littleton', 'Centennial', 'Highlands Ranch', 'Parker', 'Castle Rock', 'Lone Tree']
+const DEN_CITIES_NORTH = ['Thornton', 'Westminster', 'Broomfield', 'Northglenn', 'Brighton', 'Longmont']
+const DEN_CITIES_WEST = ['Lakewood', 'Golden', 'Arvada', 'Wheat Ridge', 'Boulder', 'Morrison']
+const DEN_CITIES_EAST = ['Aurora', 'Denver', 'Commerce City', 'Englewood', 'Centennial', 'Parker']
+
+// Approximate drive times in minutes between cities (one-way) — Denver.
+// Hand-filled estimates; adjust as needed for your franchise.
+const DEN_DRIVE_TIMES = {
+  'Denver': { 'Aurora': 20, 'Lakewood': 18, 'Littleton': 25, 'Centennial': 25, 'Highlands Ranch': 30, 'Parker': 35, 'Castle Rock': 45, 'Lone Tree': 28, 'Thornton': 22, 'Westminster': 20, 'Broomfield': 28, 'Northglenn': 22, 'Brighton': 35, 'Longmont': 45, 'Golden': 25, 'Arvada': 20, 'Wheat Ridge': 15, 'Boulder': 40, 'Morrison': 28, 'Commerce City': 18, 'Englewood': 15 },
+  'Aurora': { 'Denver': 20, 'Lakewood': 30, 'Littleton': 30, 'Centennial': 22, 'Highlands Ranch': 30, 'Parker': 25, 'Castle Rock': 40, 'Lone Tree': 25, 'Thornton': 28, 'Westminster': 35, 'Broomfield': 40, 'Northglenn': 30, 'Brighton': 30, 'Longmont': 55, 'Golden': 40, 'Arvada': 35, 'Wheat Ridge': 30, 'Boulder': 55, 'Morrison': 38, 'Commerce City': 22, 'Englewood': 25 },
+  'Lakewood': { 'Denver': 18, 'Aurora': 30, 'Littleton': 20, 'Centennial': 25, 'Highlands Ranch': 28, 'Parker': 38, 'Castle Rock': 45, 'Lone Tree': 30, 'Thornton': 30, 'Westminster': 22, 'Broomfield': 30, 'Northglenn': 28, 'Brighton': 42, 'Longmont': 48, 'Golden': 15, 'Arvada': 18, 'Wheat Ridge': 12, 'Boulder': 38, 'Morrison': 18, 'Commerce City': 28, 'Englewood': 18 },
+  'Littleton': { 'Denver': 25, 'Aurora': 30, 'Lakewood': 20, 'Centennial': 15, 'Highlands Ranch': 15, 'Parker': 28, 'Castle Rock': 32, 'Lone Tree': 18, 'Thornton': 38, 'Westminster': 32, 'Broomfield': 38, 'Northglenn': 38, 'Brighton': 48, 'Longmont': 55, 'Golden': 25, 'Arvada': 28, 'Wheat Ridge': 22, 'Boulder': 48, 'Morrison': 18, 'Commerce City': 35, 'Englewood': 15 },
+  'Centennial': { 'Denver': 25, 'Aurora': 22, 'Lakewood': 25, 'Littleton': 15, 'Highlands Ranch': 12, 'Parker': 18, 'Castle Rock': 28, 'Lone Tree': 10, 'Thornton': 38, 'Westminster': 35, 'Broomfield': 40, 'Northglenn': 38, 'Brighton': 45, 'Longmont': 58, 'Golden': 32, 'Arvada': 35, 'Wheat Ridge': 30, 'Boulder': 55, 'Morrison': 25, 'Commerce City': 35, 'Englewood': 15 },
+  'Highlands Ranch': { 'Denver': 30, 'Aurora': 30, 'Lakewood': 28, 'Littleton': 15, 'Centennial': 12, 'Parker': 20, 'Castle Rock': 25, 'Lone Tree': 12, 'Thornton': 42, 'Westminster': 38, 'Broomfield': 42, 'Northglenn': 42, 'Brighton': 50, 'Longmont': 60, 'Golden': 32, 'Arvada': 38, 'Wheat Ridge': 32, 'Boulder': 58, 'Morrison': 25, 'Commerce City': 40, 'Englewood': 18 },
+  'Parker': { 'Denver': 35, 'Aurora': 25, 'Lakewood': 38, 'Littleton': 28, 'Centennial': 18, 'Highlands Ranch': 20, 'Castle Rock': 22, 'Lone Tree': 15, 'Thornton': 45, 'Westminster': 48, 'Broomfield': 50, 'Northglenn': 45, 'Brighton': 45, 'Longmont': 65, 'Golden': 45, 'Arvada': 48, 'Wheat Ridge': 42, 'Boulder': 65, 'Morrison': 40, 'Commerce City': 40, 'Englewood': 25 },
+  'Castle Rock': { 'Denver': 45, 'Aurora': 40, 'Lakewood': 45, 'Littleton': 32, 'Centennial': 28, 'Highlands Ranch': 25, 'Parker': 22, 'Lone Tree': 22, 'Thornton': 55, 'Westminster': 55, 'Broomfield': 58, 'Northglenn': 55, 'Brighton': 58, 'Longmont': 72, 'Golden': 50, 'Arvada': 55, 'Wheat Ridge': 50, 'Boulder': 72, 'Morrison': 42, 'Commerce City': 52, 'Englewood': 32 },
+  'Lone Tree': { 'Denver': 28, 'Aurora': 25, 'Lakewood': 30, 'Littleton': 18, 'Centennial': 10, 'Highlands Ranch': 12, 'Parker': 15, 'Castle Rock': 22, 'Thornton': 40, 'Westminster': 40, 'Broomfield': 45, 'Northglenn': 40, 'Brighton': 48, 'Longmont': 62, 'Golden': 38, 'Arvada': 42, 'Wheat Ridge': 35, 'Boulder': 60, 'Morrison': 30, 'Commerce City': 38, 'Englewood': 15 },
+  'Thornton': { 'Denver': 22, 'Aurora': 28, 'Lakewood': 30, 'Littleton': 38, 'Centennial': 38, 'Highlands Ranch': 42, 'Parker': 45, 'Castle Rock': 55, 'Lone Tree': 40, 'Westminster': 15, 'Broomfield': 18, 'Northglenn': 8, 'Brighton': 18, 'Longmont': 35, 'Golden': 32, 'Arvada': 22, 'Wheat Ridge': 25, 'Boulder': 38, 'Morrison': 38, 'Commerce City': 15, 'Englewood': 32 },
+  'Westminster': { 'Denver': 20, 'Aurora': 35, 'Lakewood': 22, 'Littleton': 32, 'Centennial': 35, 'Highlands Ranch': 38, 'Parker': 48, 'Castle Rock': 55, 'Lone Tree': 40, 'Thornton': 15, 'Broomfield': 12, 'Northglenn': 12, 'Brighton': 28, 'Longmont': 32, 'Golden': 25, 'Arvada': 12, 'Wheat Ridge': 18, 'Boulder': 30, 'Morrison': 30, 'Commerce City': 22, 'Englewood': 28 },
+  'Broomfield': { 'Denver': 28, 'Aurora': 40, 'Lakewood': 30, 'Littleton': 38, 'Centennial': 40, 'Highlands Ranch': 42, 'Parker': 50, 'Castle Rock': 58, 'Lone Tree': 45, 'Thornton': 18, 'Westminster': 12, 'Northglenn': 15, 'Brighton': 28, 'Longmont': 22, 'Golden': 28, 'Arvada': 18, 'Wheat Ridge': 22, 'Boulder': 22, 'Morrison': 35, 'Commerce City': 25, 'Englewood': 35 },
+  'Northglenn': { 'Denver': 22, 'Aurora': 30, 'Lakewood': 28, 'Littleton': 38, 'Centennial': 38, 'Highlands Ranch': 42, 'Parker': 45, 'Castle Rock': 55, 'Lone Tree': 40, 'Thornton': 8, 'Westminster': 12, 'Broomfield': 15, 'Brighton': 18, 'Longmont': 35, 'Golden': 30, 'Arvada': 20, 'Wheat Ridge': 22, 'Boulder': 38, 'Morrison': 38, 'Commerce City': 15, 'Englewood': 32 },
+  'Brighton': { 'Denver': 35, 'Aurora': 30, 'Lakewood': 42, 'Littleton': 48, 'Centennial': 45, 'Highlands Ranch': 50, 'Parker': 45, 'Castle Rock': 58, 'Lone Tree': 48, 'Thornton': 18, 'Westminster': 28, 'Broomfield': 28, 'Northglenn': 18, 'Longmont': 35, 'Golden': 45, 'Arvada': 32, 'Wheat Ridge': 38, 'Boulder': 45, 'Morrison': 50, 'Commerce City': 20, 'Englewood': 42 },
+  'Longmont': { 'Denver': 45, 'Aurora': 55, 'Lakewood': 48, 'Littleton': 55, 'Centennial': 58, 'Highlands Ranch': 60, 'Parker': 65, 'Castle Rock': 72, 'Lone Tree': 62, 'Thornton': 35, 'Westminster': 32, 'Broomfield': 22, 'Northglenn': 35, 'Brighton': 35, 'Golden': 42, 'Arvada': 35, 'Wheat Ridge': 40, 'Boulder': 22, 'Morrison': 52, 'Commerce City': 40, 'Englewood': 52 },
+  'Golden': { 'Denver': 25, 'Aurora': 40, 'Lakewood': 15, 'Littleton': 25, 'Centennial': 32, 'Highlands Ranch': 32, 'Parker': 45, 'Castle Rock': 50, 'Lone Tree': 38, 'Thornton': 32, 'Westminster': 25, 'Broomfield': 28, 'Northglenn': 30, 'Brighton': 45, 'Longmont': 42, 'Arvada': 18, 'Wheat Ridge': 15, 'Boulder': 30, 'Morrison': 15, 'Commerce City': 32, 'Englewood': 25 },
+  'Arvada': { 'Denver': 20, 'Aurora': 35, 'Lakewood': 18, 'Littleton': 28, 'Centennial': 35, 'Highlands Ranch': 38, 'Parker': 48, 'Castle Rock': 55, 'Lone Tree': 42, 'Thornton': 22, 'Westminster': 12, 'Broomfield': 18, 'Northglenn': 20, 'Brighton': 32, 'Longmont': 35, 'Golden': 18, 'Wheat Ridge': 10, 'Boulder': 30, 'Morrison': 25, 'Commerce City': 25, 'Englewood': 28 },
+  'Wheat Ridge': { 'Denver': 15, 'Aurora': 30, 'Lakewood': 12, 'Littleton': 22, 'Centennial': 30, 'Highlands Ranch': 32, 'Parker': 42, 'Castle Rock': 50, 'Lone Tree': 35, 'Thornton': 25, 'Westminster': 18, 'Broomfield': 22, 'Northglenn': 22, 'Brighton': 38, 'Longmont': 40, 'Golden': 15, 'Arvada': 10, 'Boulder': 32, 'Morrison': 20, 'Commerce City': 25, 'Englewood': 22 },
+  'Boulder': { 'Denver': 40, 'Aurora': 55, 'Lakewood': 38, 'Littleton': 48, 'Centennial': 55, 'Highlands Ranch': 58, 'Parker': 65, 'Castle Rock': 72, 'Lone Tree': 60, 'Thornton': 38, 'Westminster': 30, 'Broomfield': 22, 'Northglenn': 38, 'Brighton': 45, 'Longmont': 22, 'Golden': 30, 'Arvada': 30, 'Wheat Ridge': 32, 'Morrison': 42, 'Commerce City': 42, 'Englewood': 48 },
+  'Morrison': { 'Denver': 28, 'Aurora': 38, 'Lakewood': 18, 'Littleton': 18, 'Centennial': 25, 'Highlands Ranch': 25, 'Parker': 40, 'Castle Rock': 42, 'Lone Tree': 30, 'Thornton': 38, 'Westminster': 30, 'Broomfield': 35, 'Northglenn': 38, 'Brighton': 50, 'Longmont': 52, 'Golden': 15, 'Arvada': 25, 'Wheat Ridge': 20, 'Boulder': 42, 'Commerce City': 38, 'Englewood': 20 },
+  'Commerce City': { 'Denver': 18, 'Aurora': 22, 'Lakewood': 28, 'Littleton': 35, 'Centennial': 35, 'Highlands Ranch': 40, 'Parker': 40, 'Castle Rock': 52, 'Lone Tree': 38, 'Thornton': 15, 'Westminster': 22, 'Broomfield': 25, 'Northglenn': 15, 'Brighton': 20, 'Longmont': 40, 'Golden': 32, 'Arvada': 25, 'Wheat Ridge': 25, 'Boulder': 42, 'Morrison': 38, 'Englewood': 30 },
+  'Englewood': { 'Denver': 15, 'Aurora': 25, 'Lakewood': 18, 'Littleton': 15, 'Centennial': 15, 'Highlands Ranch': 18, 'Parker': 25, 'Castle Rock': 32, 'Lone Tree': 15, 'Thornton': 32, 'Westminster': 28, 'Broomfield': 35, 'Northglenn': 32, 'Brighton': 42, 'Longmont': 52, 'Golden': 25, 'Arvada': 28, 'Wheat Ridge': 22, 'Boulder': 48, 'Morrison': 20, 'Commerce City': 30 },
 }
 
-function getRouteDriveTime(route) {
+// ==================== Franchise registry ====================
+const FRANCHISES = {
+  slc: {
+    name: 'Salt Lake',
+    south: SLC_CITIES_SOUTH, north: SLC_CITIES_NORTH, west: SLC_CITIES_WEST, east: SLC_CITIES_EAST,
+    driveTimes: SLC_DRIVE_TIMES,
+  },
+  denver: {
+    name: 'Denver',
+    south: DEN_CITIES_SOUTH, north: DEN_CITIES_NORTH, west: DEN_CITIES_WEST, east: DEN_CITIES_EAST,
+    driveTimes: DEN_DRIVE_TIMES,
+  },
+}
+const DEFAULT_FRANCHISE = 'slc'
+
+// Drive time between two cities for a given franchise's table.
+function getDriveTime(driveTimes, cityA, cityB) {
+  if (cityA === cityB) return 0
+  return driveTimes[cityA]?.[cityB] || driveTimes[cityB]?.[cityA] || 30
+}
+
+function getRouteDriveTime(driveTimes, route) {
   if (route.length <= 1) return 0
   let total = 0
   for (let i = 0; i < route.length - 1; i++) {
-    total += getDriveTime(route[i].city, route[i + 1].city)
+    total += getDriveTime(driveTimes, route[i].city, route[i + 1].city)
   }
   return total
 }
@@ -99,7 +150,7 @@ function permutations4() {
 // per column in order (col0 -> col1 -> col2 -> col3). We fix column 0 and try
 // every assignment of columns 1-3 to the 4 routes (24^3 = 13,824 combos),
 // returning the arrangement with the lowest total drive time. This is exact.
-function solveLevel1(routes) {
+function solveLevel1(driveTimes, routes) {
   const columns = [0, 1, 2, 3].map(col => routes.map(r => r[col]))
   const perms = permutations4()
 
@@ -117,9 +168,9 @@ function solveLevel1(routes) {
           const c1 = columns[1][p1[r]]
           const c2 = columns[2][p2[r]]
           const c3 = columns[3][p3[r]]
-          total += getDriveTime(c0.city, c1.city)
-            + getDriveTime(c1.city, c2.city)
-            + getDriveTime(c2.city, c3.city)
+          total += getDriveTime(driveTimes, c0.city, c1.city)
+            + getDriveTime(driveTimes, c1.city, c2.city)
+            + getDriveTime(driveTimes, c2.city, c3.city)
           if (total >= bestTotal) break // prune
         }
         if (total < bestTotal) {
@@ -162,11 +213,11 @@ function randomNote() {
 }
 
 // ==================== LEVEL 1: Cities only ====================
-function generateLevel1() {
-  const south = shuffle(CITIES_SOUTH).slice(0, 4)
-  const north = shuffle(CITIES_NORTH).slice(0, 4)
-  const west = shuffle(CITIES_WEST).slice(0, 4)
-  const east = shuffle(CITIES_EAST).slice(0, 4)
+function generateLevel1(f) {
+  const south = shuffle(f.south).slice(0, 4)
+  const north = shuffle(f.north).slice(0, 4)
+  const west = shuffle(f.west).slice(0, 4)
+  const east = shuffle(f.east).slice(0, 4)
   const directions = [south, north, west, east]
   const shuffledDirs = directions.map(d => shuffle(d))
   const routes = [[], [], [], []]
@@ -184,11 +235,11 @@ function generateLevel1() {
 }
 
 // ==================== LEVEL 2: Current (cities + items) ====================
-function generateLevel2() {
-  const south = shuffle(CITIES_SOUTH).slice(0, 4)
-  const north = shuffle(CITIES_NORTH).slice(0, 4)
-  const west = shuffle(CITIES_WEST).slice(0, 4)
-  const east = shuffle(CITIES_EAST).slice(0, 4)
+function generateLevel2(f) {
+  const south = shuffle(f.south).slice(0, 4)
+  const north = shuffle(f.north).slice(0, 4)
+  const west = shuffle(f.west).slice(0, 4)
+  const east = shuffle(f.east).slice(0, 4)
   const directions = [south, north, west, east]
   const shuffledDirs = directions.map(d => shuffle(d))
   const routes = [[], [], [], []]
@@ -207,8 +258,8 @@ function generateLevel2() {
 }
 
 // ==================== LEVEL 3: Advanced (build routes from pool) ====================
-function generateLevel3() {
-  const allCities = shuffle([...new Set([...CITIES_SOUTH, ...CITIES_NORTH, ...CITIES_WEST, ...CITIES_EAST])])
+function generateLevel3(f) {
+  const allCities = shuffle([...new Set([...f.south, ...f.north, ...f.west, ...f.east])])
   const selectedCities = allCities.slice(0, 16)
 
   const allJobs = selectedCities.map((city, i) => ({
@@ -228,23 +279,43 @@ function generateLevel3() {
 }
 
 export default function Gauntlet() {
+  const [franchiseId, setFranchiseId] = useState(DEFAULT_FRANCHISE)
+  const franchise = FRANCHISES[franchiseId] || FRANCHISES[DEFAULT_FRANCHISE]
+  const driveTimes = franchise.driveTimes
+
   const [level, setLevel] = useState(1)
-  const [routes, setRoutes] = useState(() => generateLevel1())
+  const [routes, setRoutes] = useState(() => generateLevel1(FRANCHISES[DEFAULT_FRANCHISE]))
   const [pool, setPool] = useState([]) // Level 3 only
   const [dragState, setDragState] = useState(null)
   const [dropTarget, setDropTarget] = useState(null)
   const [showTimes, setShowTimes] = useState(false)
-  const initialState = useRef({ routes: generateLevel1(), pool: [] })
+  const initialState = useRef({ routes: generateLevel1(FRANCHISES[DEFAULT_FRANCHISE]), pool: [] })
+
+  // Build routes for a level using the current franchise.
+  function buildForLevel(lvl, f) {
+    if (lvl === 1) return { routes: generateLevel1(f), pool: [] }
+    if (lvl === 2) return { routes: generateLevel2(f), pool: [] }
+    const data = generateLevel3(f)
+    return { routes: data.routes, pool: data.pool }
+  }
 
   function switchLevel(newLevel) {
     setLevel(newLevel)
     setShowTimes(false)
     setDragState(null)
     setDropTarget(null)
-    let newRoutes, newPool = []
-    if (newLevel === 1) { newRoutes = generateLevel1() }
-    else if (newLevel === 2) { newRoutes = generateLevel2() }
-    else { const data = generateLevel3(); newRoutes = data.routes; newPool = data.pool }
+    const { routes: newRoutes, pool: newPool } = buildForLevel(newLevel, franchise)
+    setRoutes(newRoutes)
+    setPool(newPool)
+    initialState.current = { routes: JSON.parse(JSON.stringify(newRoutes)), pool: JSON.parse(JSON.stringify(newPool)) }
+  }
+
+  function switchFranchise(newId) {
+    setFranchiseId(newId)
+    setShowTimes(false)
+    setDragState(null)
+    setDropTarget(null)
+    const { routes: newRoutes, pool: newPool } = buildForLevel(level, FRANCHISES[newId])
     setRoutes(newRoutes)
     setPool(newPool)
     initialState.current = { routes: JSON.parse(JSON.stringify(newRoutes)), pool: JSON.parse(JSON.stringify(newPool)) }
@@ -254,10 +325,7 @@ export default function Gauntlet() {
     setShowTimes(false)
     setDragState(null)
     setDropTarget(null)
-    let newRoutes, newPool = []
-    if (level === 1) { newRoutes = generateLevel1() }
-    else if (level === 2) { newRoutes = generateLevel2() }
-    else { const data = generateLevel3(); newRoutes = data.routes; newPool = data.pool }
+    const { routes: newRoutes, pool: newPool } = buildForLevel(level, franchise)
     setRoutes(newRoutes)
     setPool(newPool)
     initialState.current = { routes: JSON.parse(JSON.stringify(newRoutes)), pool: JSON.parse(JSON.stringify(newPool)) }
@@ -275,7 +343,7 @@ export default function Gauntlet() {
   function solve() {
     setDragState(null)
     setDropTarget(null)
-    setRoutes(solveLevel1(routes))
+    setRoutes(solveLevel1(driveTimes, routes))
     setShowTimes(true)
   }
 
@@ -352,7 +420,7 @@ export default function Gauntlet() {
     setDragState(null); setDropTarget(null)
   }
 
-  const totalDriveTime = routes.reduce((sum, r) => sum + getRouteDriveTime(r), 0)
+  const totalDriveTime = routes.reduce((sum, r) => sum + getRouteDriveTime(driveTimes, r), 0)
 
   return (
     <div className="gauntlet">
@@ -381,6 +449,20 @@ export default function Gauntlet() {
             Randomize
           </button>
         </div>
+      </div>
+
+      {/* Franchise selector */}
+      <div className="gauntlet-franchises">
+        <span className="gauntlet-franchise-label">Franchise</span>
+        {Object.entries(FRANCHISES).map(([id, f]) => (
+          <button
+            key={id}
+            className={`gauntlet-franchise-btn ${franchiseId === id ? 'active' : ''}`}
+            onClick={() => switchFranchise(id)}
+          >
+            {f.name}
+          </button>
+        ))}
       </div>
 
       {/* Level selector */}
@@ -436,8 +518,8 @@ export default function Gauntlet() {
                   <span className="gauntlet-route-dot" style={{ background: ROUTE_COLORS[routeIdx] }} />
                   <span className="gauntlet-route-name">{ROUTE_NAMES[routeIdx]}</span>
                   {showTimes && (
-                    <span className={`gauntlet-route-time ${getRouteDriveTime(route) > 90 ? 'over' : getRouteDriveTime(route) > 60 ? 'warn' : 'good'}`}>
-                      {formatDriveTime(getRouteDriveTime(route))}
+                    <span className={`gauntlet-route-time ${getRouteDriveTime(driveTimes, route) > 90 ? 'over' : getRouteDriveTime(driveTimes, route) > 60 ? 'warn' : 'good'}`}>
+                      {formatDriveTime(getRouteDriveTime(driveTimes, route))}
                     </span>
                   )}
                 </div>
@@ -460,7 +542,7 @@ export default function Gauntlet() {
                             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                             </svg>
-                            {formatDriveTime(getDriveTime(route[colIdx - 1].city, job.city))}
+                            {formatDriveTime(getDriveTime(driveTimes, route[colIdx - 1].city, job.city))}
                           </span>
                         )}
                         <span className="gauntlet-card-time">{TIME_SLOTS[colIdx]}</span>
@@ -493,8 +575,8 @@ export default function Gauntlet() {
                   <span className="gauntlet-route-name">{ROUTE_NAMES[routeIdx]}</span>
                   <span className="gauntlet-route-count">{route.length} stops</span>
                   {showTimes && (
-                    <span className={`gauntlet-route-time ${getRouteDriveTime(route) > 90 ? 'over' : getRouteDriveTime(route) > 60 ? 'warn' : 'good'}`}>
-                      {formatDriveTime(getRouteDriveTime(route))}
+                    <span className={`gauntlet-route-time ${getRouteDriveTime(driveTimes, route) > 90 ? 'over' : getRouteDriveTime(driveTimes, route) > 60 ? 'warn' : 'good'}`}>
+                      {formatDriveTime(getRouteDriveTime(driveTimes, route))}
                     </span>
                   )}
                 </div>
@@ -519,7 +601,7 @@ export default function Gauntlet() {
                           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                           </svg>
-                          {formatDriveTime(getDriveTime(route[jobIdx - 1].city, job.city))}
+                          {formatDriveTime(getDriveTime(driveTimes, route[jobIdx - 1].city, job.city))}
                         </span>
                       )}
                       <span className="gauntlet-card-time">{job.timeWindow}</span>

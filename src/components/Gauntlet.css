@@ -512,3 +512,44 @@
 .btn-solve-gauntlet svg {
   flex-shrink: 0;
 }
+
+/* Franchise selector */
+.gauntlet-franchises {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.gauntlet-franchise-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray-500, #6B7280);
+  margin-right: 2px;
+}
+
+.gauntlet-franchise-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--gray-200, #E5E7EB);
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600, #4B5563);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.gauntlet-franchise-btn:hover {
+  border-color: var(--blue-accent, #93C5FD);
+  color: var(--blue-mid, #2563EB);
+}
+
+.gauntlet-franchise-btn.active {
+  background: var(--blue-mid, #2563EB);
+  border-color: var(--blue-mid, #2563EB);
+  color: white;
+}
