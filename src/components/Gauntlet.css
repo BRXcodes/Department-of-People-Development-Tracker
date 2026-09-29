@@ -60,7 +60,7 @@
   padding: 8px 16px;
   border: 1.5px solid var(--gray-200);
   border-radius: 8px;
-  background: white;
+  background: var(--surface);
   font-size: 13px;
   font-weight: 700;
   color: var(--gray-600);
@@ -213,7 +213,7 @@
 
 /* Job cards (Level 1 & 2) */
 .gauntlet-card {
-  background: white;
+  background: var(--surface);
   border: 1.5px solid var(--gray-200);
   border-radius: 8px;
   padding: 10px 10px;
@@ -277,7 +277,7 @@
 }
 
 .gauntlet-route-l3 {
-  background: white;
+  background: var(--surface);
   border: 1.5px solid var(--gray-200);
   border-left: 4px solid var(--route-color, var(--gray-300));
   border-radius: 10px;
@@ -331,7 +331,7 @@
   font-size: 9.5px;
   font-weight: 700;
   color: var(--gray-400);
-  background: white;
+  background: var(--surface);
   padding: 2px 5px;
   border-radius: 4px;
   border: 1px solid var(--gray-100);
@@ -359,7 +359,7 @@
   font-size: 10px;
   font-weight: 500;
   color: var(--gray-600);
-  background: white;
+  background: var(--surface);
   padding: 2px 5px;
   border-radius: 3px;
   border: 1px solid var(--gray-100);
@@ -411,7 +411,7 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--gray-400);
-  background: white;
+  background: var(--surface);
   padding: 3px 10px;
   border-radius: 10px;
   border: 1px solid var(--gray-200);
@@ -424,7 +424,7 @@
 }
 
 .gauntlet-pool-grid .pool-card {
-  background: white;
+  background: var(--surface);
 }
 
 .gauntlet-pool-empty {
@@ -535,7 +535,7 @@
   padding: 6px 16px;
   border-radius: 8px;
   border: 1.5px solid var(--gray-200, #E5E7EB);
-  background: white;
+  background: var(--surface);
   font-size: 13px;
   font-weight: 600;
   color: var(--gray-600, #4B5563);

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart }) {
+export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart, theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
@@ -152,6 +152,18 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
             </svg>
           </button>
 
+          <button className="btn btn-ghost btn-icon" onClick={onToggleTheme} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} aria-label="Toggle dark mode">
+            {theme === 'dark' ? (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            ) : (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            )}
+          </button>
+
           <button className="hamburger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -202,7 +214,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
                 <>
                   <button className="team-tab-btn" onClick={() => { 
                     onSelectTeam(team.id); 
-                    if (view === 'attendance' || view === 'scenarios' || view === 'slc' || view === 'shop') setView('dashboard')
+                    if (view === 'attendance' || view === 'scenarios' || view === 'slc' || view === 'shop' || view === 'competition') setView('dashboard')
                     if (view === 'gauntlet' && !team.name.toLowerCase().includes('operation')) setView('dashboard')
                   }}>
                     {team.name}
@@ -239,6 +251,11 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
               Shop Management
             </button>
           </div>
+          <div className={`team-tab ${view === 'competition' ? 'active' : ''}`}>
+            <button className="team-tab-btn" onClick={() => setView('competition')}>
+              Competition
+            </button>
+          </div>
           {isManager && (
             <button className="team-tab-add" onClick={() => setAddTeamModal(true)} title="Add team">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -249,7 +266,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
           )}
         </div>
 
-        {isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && (
+        {isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && view !== 'competition' && (
         <div className="view-toggle">
           <button className={`toggle-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -281,7 +298,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
         </div>
         )}
 
-        {!isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && (() => {
+        {!isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && view !== 'competition' && (() => {
           const activeTeam = teams.find(t => t.id === activeTeamId)
           if (!activeTeam || !activeTeam.name.toLowerCase().includes('operation')) return null
           return (

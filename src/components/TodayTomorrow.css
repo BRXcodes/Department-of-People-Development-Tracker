@@ -32,7 +32,7 @@
 }
 
 .tt-day {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
@@ -139,7 +139,7 @@
   width: 100%;
   text-align: left;
   padding: 10px 12px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--gray-200);
   border-left: 3px solid var(--blue-accent);
   border-radius: 6px;
@@ -166,7 +166,7 @@
   flex-shrink: 0;
   border-radius: 50%;
   border: 2px solid var(--gray-300);
-  background: white;
+  background: var(--surface);
   color: white;
   display: flex;
   align-items: center;
