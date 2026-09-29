@@ -1,5 +1,5 @@
 .truck-card {
-  background: white;
+  background: var(--surface);
   border-radius: var(--radius);
   border: 1px solid var(--gray-200);
   box-shadow: var(--shadow-sm);

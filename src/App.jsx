@@ -7,6 +7,7 @@ import Attendance from './components/Attendance'
 import ScenarioTracker from './components/ScenarioTracker'
 import SlcCalendar from './components/SlcCalendar'
 import ShopManagement from './components/ShopManagement'
+import Competition from './components/Competition'
 import TodayTomorrow from './components/TodayTomorrow'
 import Gauntlet from './components/Gauntlet'
 import AssignModal from './components/AssignModal'
@@ -34,6 +35,21 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isManager, setIsManager] = useState(() => sessionStorage.getItem('mgr') === '1')
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('theme')
+    if (saved === 'dark' || saved === 'light') return saved
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
+
+  // Apply theme to <html> and persist it
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  function toggleTheme() {
+    setTheme(t => t === 'dark' ? 'light' : 'dark')
+  }
 
   // Load all data on mount
   useEffect(() => {
@@ -310,6 +326,8 @@ export default function App() {
         onRenameTeam={renameTeam}
         isTruckTeam={isTruckTeam}
         weekStart={getWeekStartForTeam(activeTeamId)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
       <main className="main">
         {view === 'attendance' ? (
@@ -320,6 +338,8 @@ export default function App() {
           <SlcCalendar isManager={isManager} />
         ) : view === 'shop' ? (
           <ShopManagement isManager={isManager} />
+        ) : view === 'competition' ? (
+          <Competition isManager={isManager} />
         ) : view === 'gauntlet' ? (
           <Gauntlet />
         ) : (!isManager && !isTruckTeam) ? (

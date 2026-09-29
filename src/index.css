@@ -32,16 +32,51 @@
   --shadow-lg: 0 10px 40px rgba(10,36,99,0.15), 0 4px 12px rgba(0,0,0,0.08);
   --radius: 12px;
   --radius-sm: 8px;
+
+  /* Semantic surfaces (light mode defaults) */
+  --surface: #FFFFFF;       /* cards, modals, inputs */
+  --surface-2: #F9FAFB;     /* subtle raised/inset areas */
+  --app-bg: var(--gray-100);
+}
+
+/* ==================== Dark mode ==================== */
+.dark {
+  /* Remap the neutral scale so existing var(--gray-*) usages invert sensibly.
+     gray-50/100 become dark backgrounds; gray-900 becomes near-white text. */
+  --gray-50: #262E3A;
+  --gray-100: #171C24;
+  --gray-200: #2C333F;
+  --gray-300: #3A4251;
+  --gray-400: #8A93A3;
+  --gray-500: #A3ABB8;
+  --gray-600: #C0C6D0;
+  --gray-700: #D6DAE1;
+  --gray-900: #F1F3F6;
+
+  --white: #1E2530;         /* things that hardcoded var(--white) as a surface */
+  --incomplete: #2C333F;
+
+  --blue-pale: #1B2740;     /* tinted accent backgrounds readable on dark */
+  --green-pale: #12291F;
+
+  --surface: #1E2530;
+  --surface-2: #262E3A;
+  --app-bg: #12161C;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.4);
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: var(--gray-100);
+  background: var(--app-bg);
   color: var(--gray-900);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 button {

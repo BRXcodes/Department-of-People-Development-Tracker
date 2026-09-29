@@ -1,0 +1,456 @@
+.competition {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.comp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: var(--gray-500);
+}
+
+.comp-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.comp-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.3px;
+}
+
+.comp-subtitle {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.comp-header-btns {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.comp-reset-btn, .comp-import-btn {
+  white-space: nowrap;
+}
+
+/* Import preview */
+.comp-import-preview {
+  margin-top: 6px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--gray-50);
+}
+
+.comp-import-preview-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+}
+
+.comp-import-preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .comp-import-preview-grid { grid-template-columns: 1fr; }
+}
+
+.comp-import-team-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.comp-import-team-head span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
+.comp-import-team ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.comp-import-team li {
+  font-size: 12.5px;
+  color: var(--gray-700);
+  font-weight: 600;
+}
+
+.comp-import-team li span {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--gray-400);
+}
+
+/* Leader banner */
+.comp-banner {
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.1px;
+}
+
+.comp-banner.leading {
+  background: linear-gradient(90deg, var(--blue-pale), var(--green-pale));
+  color: var(--gray-900);
+  border: 1.5px solid var(--blue-accent);
+}
+
+.comp-banner.tie {
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: 1.5px solid var(--gray-200);
+}
+
+/* Teams layout */
+.comp-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .comp-teams { grid-template-columns: 1fr; }
+}
+
+.comp-team-card {
+  background: var(--surface);
+  border: 1px solid var(--gray-200);
+  border-top: 4px solid var(--gray-300);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.comp-team-card.slot-1 { border-top-color: var(--blue-mid); }
+.comp-team-card.slot-2 { border-top-color: var(--green); }
+
+.comp-team-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px 10px;
+}
+
+.comp-team-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comp-team-edit {
+  background: var(--gray-100);
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.comp-team-edit:hover {
+  background: var(--gray-200);
+  color: var(--gray-700);
+}
+
+.comp-team-name-input {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border: 1.5px solid var(--blue-accent);
+  border-radius: var(--radius-sm);
+  outline: none;
+  width: 60%;
+}
+
+.comp-team-count {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-weight: 600;
+}
+
+/* Team totals */
+.comp-totals {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  padding: 10px 12px 14px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.comp-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  padding: 8px 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+}
+
+.comp-total-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+.comp-total-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+/* Members */
+.comp-members {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comp-empty {
+  text-align: center;
+  color: var(--gray-400);
+  font-size: 13px;
+  font-style: italic;
+  padding: 12px 0;
+}
+
+.comp-member {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--surface-2);
+}
+
+.comp-member-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.comp-member-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.comp-member-jobs {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray-400);
+}
+
+.comp-member-remove {
+  background: none;
+  border: none;
+  color: var(--gray-400);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 5px;
+  line-height: 1;
+  transition: all 0.15s;
+}
+
+.comp-member-remove:hover {
+  color: #DC2626;
+  background: #FEE2E2;
+}
+
+/* Per-member metric grid */
+.comp-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+@media (max-width: 520px) {
+  .comp-metric-grid { grid-template-columns: repeat(2, 1fr); }
+  .comp-totals { grid-template-columns: repeat(3, 1fr); }
+}
+
+.comp-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.comp-metric-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+.comp-metric-value {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.comp-metric-edit {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.comp-metric-input {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 6px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-900);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+
+.comp-metric-input::-webkit-outer-spin-button,
+.comp-metric-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.comp-metric-input:focus {
+  border-color: var(--blue-accent);
+}
+
+.comp-step {
+  flex-shrink: 0;
+  width: 24px;
+  height: 30px;
+  border: 1.5px solid var(--gray-200);
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gray-600);
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  touch-action: manipulation;
+}
+
+.comp-step:hover {
+  border-color: var(--blue-accent);
+  color: var(--blue-mid);
+  background: var(--blue-pale);
+}
+
+/* Add member */
+.comp-add-member {
+  width: calc(100% - 24px);
+  margin: 0 12px 12px;
+  padding: 10px;
+  background: var(--blue-pale);
+  border: 1.5px dashed var(--blue-accent);
+  color: var(--blue-mid);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.comp-add-member:hover {
+  background: var(--blue-mid);
+  color: white;
+  border-style: solid;
+}
+
+.comp-add-form {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+
+.comp-add-input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  outline: none;
+}
+
+.comp-add-input:focus {
+  border-color: var(--blue-accent);
+}
+
+.comp-add-save {
+  padding: 9px 16px;
+  background: var(--blue-mid);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.comp-add-cancel {
+  padding: 9px 12px;
+  background: var(--gray-100);
+  color: var(--gray-500);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+}
