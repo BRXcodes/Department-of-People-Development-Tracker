@@ -87,3 +87,18 @@ button {
 input, textarea, select {
   font-family: inherit;
 }
+
+/* Dark-mode safety net: any input without an explicit light background
+   would otherwise render browser-default white. Keep them on the surface
+   color with readable text unless a component overrides it. */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--surface);
+  color: var(--gray-900);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--gray-400);
+}
