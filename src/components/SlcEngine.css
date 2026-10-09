@@ -170,14 +170,21 @@
 .engine-label.strength { color: #059669; }
 .engine-label.weakness { color: #DC2626; }
 
-.engine-oneonone {
-  display: flex;
-  align-items: center;
+.engine-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
-.engine-oneonone .engine-label { width: 100%; }
+@media (max-width: 480px) {
+  .engine-dates { grid-template-columns: 1fr; }
+}
+
+.engine-datefield {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
 .engine-date {
   padding: 7px 10px;

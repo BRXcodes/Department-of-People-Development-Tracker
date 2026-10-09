@@ -127,8 +127,8 @@ export default function SlcEngine() {
                 </div>
               </div>
 
-              <div className="engine-field engine-field-row">
-                <div className="engine-oneonone">
+              <div className="engine-dates">
+                <div className="engine-datefield">
                   <label className="engine-label">Last 1-on-1</label>
                   <input
                     type="date"
@@ -139,7 +139,19 @@ export default function SlcEngine() {
                   <span className={`engine-since ${overdue ? 'overdue' : ''}`}>
                     {emp.last_one_on_one
                       ? (since === 0 ? 'Today' : `${since} day${since === 1 ? '' : 's'} ago`)
-                      : formatDate(null)}
+                      : 'No 1-on-1 logged'}
+                  </span>
+                </div>
+                <div className="engine-datefield">
+                  <label className="engine-label">Certification Date</label>
+                  <input
+                    type="date"
+                    className="engine-date"
+                    value={emp.cert_date || ''}
+                    onChange={e => updateField(emp.id, 'cert_date', e.target.value || null)}
+                  />
+                  <span className="engine-since">
+                    {emp.cert_date ? formatDate(emp.cert_date) : 'Not certified'}
                   </span>
                 </div>
               </div>
