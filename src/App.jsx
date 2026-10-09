@@ -8,6 +8,7 @@ import ScenarioTracker from './components/ScenarioTracker'
 import SlcCalendar from './components/SlcCalendar'
 import ShopManagement from './components/ShopManagement'
 import Competition from './components/Competition'
+import SlcEngine from './components/SlcEngine'
 import TodayTomorrow from './components/TodayTomorrow'
 import Gauntlet from './components/Gauntlet'
 import AssignModal from './components/AssignModal'
@@ -35,6 +36,7 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isManager, setIsManager] = useState(() => sessionStorage.getItem('mgr') === '1')
+  const [isEngine, setIsEngine] = useState(false) // not persisted — re-prompts each session
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme')
     if (saved === 'dark' || saved === 'light') return saved
@@ -62,12 +64,21 @@ export default function App() {
       setIsManager(true)
       return true
     }
+    // The same login box unlocks the hidden SLC Engine tab (top-3 leadership).
+    // Engine access is state-only, so it re-prompts each session.
+    if (password.trim().toLowerCase() === 'engine') {
+      setIsEngine(true)
+      setView('engine')
+      return true
+    }
     return false
   }
 
   function logoutManager() {
     sessionStorage.removeItem('mgr')
     setIsManager(false)
+    setIsEngine(false)
+    if (view === 'engine') setView('dashboard')
   }
 
   async function loadAll() {
@@ -328,6 +339,7 @@ export default function App() {
         weekStart={getWeekStartForTeam(activeTeamId)}
         theme={theme}
         onToggleTheme={toggleTheme}
+        isEngine={isEngine}
       />
       <main className="main">
         {view === 'attendance' ? (
@@ -340,6 +352,8 @@ export default function App() {
           <ShopManagement isManager={isManager} />
         ) : view === 'competition' ? (
           <Competition isManager={isManager} />
+        ) : view === 'engine' ? (
+          isEngine ? <SlcEngine /> : null
         ) : view === 'gauntlet' ? (
           <Gauntlet />
         ) : (!isManager && !isTruckTeam) ? (
