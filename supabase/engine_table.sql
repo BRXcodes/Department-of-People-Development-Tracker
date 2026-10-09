@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS engine_employees (
   name TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'CEL',          -- CEL | CSL | SSL | DOPD | DOO | GM
   last_one_on_one DATE,                       -- date of last 1-on-1 (nullable)
+  cert_date DATE,                             -- certification date (nullable)
   comments TEXT,                              -- priorities communicated in the 1-on-1
   can_drive BOOLEAN NOT NULL DEFAULT FALSE,   -- DOT checkbox
   strengths TEXT,
@@ -22,3 +23,6 @@ ALTER TABLE engine_employees ENABLE ROW LEVEL SECURITY;
 
 -- Allow all operations for anon key (same pattern as existing tables)
 CREATE POLICY "Allow all for engine_employees" ON engine_employees FOR ALL USING (true) WITH CHECK (true);
+
+-- If the table already existed before cert_date was added, run this once:
+ALTER TABLE engine_employees ADD COLUMN IF NOT EXISTS cert_date DATE;
