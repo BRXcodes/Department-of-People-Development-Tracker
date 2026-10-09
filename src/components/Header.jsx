@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './Header.css'
 import './Modal.css'
 
-export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart, theme, onToggleTheme }) {
+export default function Header({ view, setView, selectedDay, setSelectedDay, onOpenAssign, onOpenMembers, onOpenNotify, onResetWeek, isManager, onLogin, onLogout, teams, activeTeamId, onSelectTeam, onAddTeam, onRenameTeam, isTruckTeam, weekStart, theme, onToggleTheme, isEngine }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [loginModal, setLoginModal] = useState(false)
@@ -214,7 +214,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
                 <>
                   <button className="team-tab-btn" onClick={() => { 
                     onSelectTeam(team.id); 
-                    if (view === 'attendance' || view === 'scenarios' || view === 'slc' || view === 'shop' || view === 'competition') setView('dashboard')
+                    if (view === 'attendance' || view === 'scenarios' || view === 'slc' || view === 'shop' || view === 'competition' || view === 'engine') setView('dashboard')
                     if (view === 'gauntlet' && !team.name.toLowerCase().includes('operation')) setView('dashboard')
                   }}>
                     {team.name}
@@ -256,6 +256,13 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
               Competition
             </button>
           </div>
+          {isEngine && (
+            <div className={`team-tab ${view === 'engine' ? 'active' : ''}`}>
+              <button className="team-tab-btn" onClick={() => setView('engine')}>
+                The SLC Engine
+              </button>
+            </div>
+          )}
           {isManager && (
             <button className="team-tab-add" onClick={() => setAddTeamModal(true)} title="Add team">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -266,7 +273,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
           )}
         </div>
 
-        {isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && view !== 'competition' && (
+        {isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && view !== 'competition' && view !== 'engine' && (
         <div className="view-toggle">
           <button className={`toggle-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -298,7 +305,7 @@ export default function Header({ view, setView, selectedDay, setSelectedDay, onO
         </div>
         )}
 
-        {!isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && view !== 'competition' && (() => {
+        {!isManager && !isTruckTeam && view !== 'attendance' && view !== 'scenarios' && view !== 'slc' && view !== 'shop' && view !== 'competition' && view !== 'engine' && (() => {
           const activeTeam = teams.find(t => t.id === activeTeamId)
           if (!activeTeam || !activeTeam.name.toLowerCase().includes('operation')) return null
           return (
