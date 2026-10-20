@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS loco_opportunities (
   account_name TEXT NOT NULL,
   contact_name TEXT,                        -- on-site contact (national CSA)
   contact_phone TEXT,                       -- contact phone (national CSA)
+  address TEXT,                             -- job site address (national CSA)
   appointment_at TIMESTAMPTZ,               -- date + time of the appointment
   national_notes TEXT,                      -- notes from the national CSA
   status TEXT NOT NULL DEFAULT 'scheduled', -- scheduled | visited | not_home | rescheduled | closed
@@ -28,3 +29,4 @@ CREATE POLICY "Allow all for loco_opportunities" ON loco_opportunities FOR ALL U
 -- If the table already existed before contact fields were added, run these once:
 ALTER TABLE loco_opportunities ADD COLUMN IF NOT EXISTS contact_name TEXT;
 ALTER TABLE loco_opportunities ADD COLUMN IF NOT EXISTS contact_phone TEXT;
+ALTER TABLE loco_opportunities ADD COLUMN IF NOT EXISTS address TEXT;
