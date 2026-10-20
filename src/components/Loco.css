@@ -200,6 +200,45 @@
   white-space: pre-wrap;
 }
 
+/* Contact — tap-to-call + inline edit */
+.loco-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: var(--blue-pale);
+  color: var(--blue-mid);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.loco-call svg { flex-shrink: 0; }
+.loco-call:active { opacity: 0.8; }
+
+.loco-contact-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.loco-inline-input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--gray-900);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.loco-inline-input:focus { border-color: var(--blue-accent); }
+
 /* Status picker — wrap of big tappable chips */
 .loco-status-picker {
   display: flex;
