@@ -42,6 +42,8 @@ export default function Loco({ isManager }) {
   // Add form (national CSA fields)
   const [opId, setOpId] = useState('')
   const [account, setAccount] = useState('')
+  const [contactName, setContactName] = useState('')
+  const [contactPhone, setContactPhone] = useState('')
   const [appt, setAppt] = useState('')
   const [natNotes, setNatNotes] = useState('')
 
@@ -67,6 +69,8 @@ export default function Loco({ isManager }) {
       id,
       op_id: opId.trim() || null,
       account_name: name,
+      contact_name: contactName.trim() || null,
+      contact_phone: contactPhone.trim() || null,
       appointment_at: appt ? new Date(appt).toISOString() : null,
       national_notes: natNotes.trim() || null,
       status: 'scheduled',
@@ -76,7 +80,7 @@ export default function Loco({ isManager }) {
     const { error } = await supabase.from('loco_opportunities').insert(row)
     if (error) { console.error(error); return }
     setOpps(prev => [...prev, row])
-    setOpId(''); setAccount(''); setAppt(''); setNatNotes('')
+    setOpId(''); setAccount(''); setContactName(''); setContactPhone(''); setAppt(''); setNatNotes('')
     setAddOpen(false)
   }
 
@@ -163,6 +167,34 @@ export default function Loco({ isManager }) {
 
                 {expanded && (
                   <div className="loco-card-body">
+                    <div className="loco-field">
+                      <span className="loco-label">Contact</span>
+                      {opp.contact_phone && (
+                        <a className="loco-call" href={`tel:${opp.contact_phone.replace(/[^+\d]/g, '')}`}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+                          </svg>
+                          {opp.contact_name ? `${opp.contact_name} · ` : ''}{opp.contact_phone}
+                        </a>
+                      )}
+                      <div className="loco-contact-edit">
+                        <input
+                          className="loco-inline-input"
+                          defaultValue={opp.contact_name || ''}
+                          placeholder="Contact name"
+                          onBlur={e => { if (e.target.value !== (opp.contact_name || '')) updateOpp(opp.id, { contact_name: e.target.value || null }) }}
+                        />
+                        <input
+                          className="loco-inline-input"
+                          type="tel"
+                          inputMode="tel"
+                          defaultValue={opp.contact_phone || ''}
+                          placeholder="Contact phone"
+                          onBlur={e => { if (e.target.value !== (opp.contact_phone || '')) updateOpp(opp.id, { contact_phone: e.target.value || null }) }}
+                        />
+                      </div>
+                    </div>
+
                     {opp.national_notes && (
                       <div className="loco-field">
                         <span className="loco-label">National CSA notes</span>
@@ -229,6 +261,12 @@ export default function Loco({ isManager }) {
 
                 <label className="field-label">OP ID</label>
                 <input className="field-input" value={opId} onChange={e => setOpId(e.target.value)} placeholder="Opportunity ID" inputMode="text" />
+
+                <label className="field-label">Contact Name</label>
+                <input className="field-input" value={contactName} onChange={e => setContactName(e.target.value)} placeholder="On-site contact" />
+
+                <label className="field-label">Contact Phone</label>
+                <input className="field-input" type="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="(555) 123-4567" inputMode="tel" />
 
                 <label className="field-label">Appointment Date &amp; Time</label>
                 <input className="field-input" type="datetime-local" value={appt} onChange={e => setAppt(e.target.value)} />
