@@ -126,11 +126,9 @@ export default function Loco({ isManager }) {
           <h2 className="loco-title">LOCO</h2>
           <p className="loco-subtitle">Local Commercial · {openCount} to visit</p>
         </div>
-        {isManager && (
-          <button className="btn btn-primary loco-add-btn" onClick={() => setAddOpen(true)}>
-            + Add
-          </button>
-        )}
+        <button className="btn btn-primary loco-add-btn" onClick={() => setAddOpen(true)}>
+          + Add
+        </button>
       </div>
 
       <div className="loco-filters">
