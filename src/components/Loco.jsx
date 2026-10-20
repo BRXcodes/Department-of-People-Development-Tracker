@@ -126,9 +126,11 @@ export default function Loco({ isManager }) {
           <h2 className="loco-title">LOCO</h2>
           <p className="loco-subtitle">Local Commercial · {openCount} to visit</p>
         </div>
-        <button className="btn btn-primary loco-add-btn" onClick={() => setAddOpen(true)}>
-          + Add
-        </button>
+        {isManager && (
+          <button className="btn btn-primary loco-add-btn" onClick={() => setAddOpen(true)}>
+            + Add
+          </button>
+        )}
       </div>
 
       <div className="loco-filters">
@@ -179,22 +181,28 @@ export default function Loco({ isManager }) {
                           {opp.contact_name ? `${opp.contact_name} · ` : ''}{opp.contact_phone}
                         </a>
                       )}
-                      <div className="loco-contact-edit">
-                        <input
-                          className="loco-inline-input"
-                          defaultValue={opp.contact_name || ''}
-                          placeholder="Contact name"
-                          onBlur={e => { if (e.target.value !== (opp.contact_name || '')) updateOpp(opp.id, { contact_name: e.target.value || null }) }}
-                        />
-                        <input
-                          className="loco-inline-input"
-                          type="tel"
-                          inputMode="tel"
-                          defaultValue={opp.contact_phone || ''}
-                          placeholder="Contact phone"
-                          onBlur={e => { if (e.target.value !== (opp.contact_phone || '')) updateOpp(opp.id, { contact_phone: e.target.value || null }) }}
-                        />
-                      </div>
+                      {isManager ? (
+                        <div className="loco-contact-edit">
+                          <input
+                            className="loco-inline-input"
+                            defaultValue={opp.contact_name || ''}
+                            placeholder="Contact name"
+                            onBlur={e => { if (e.target.value !== (opp.contact_name || '')) updateOpp(opp.id, { contact_name: e.target.value || null }) }}
+                          />
+                          <input
+                            className="loco-inline-input"
+                            type="tel"
+                            inputMode="tel"
+                            defaultValue={opp.contact_phone || ''}
+                            placeholder="Contact phone"
+                            onBlur={e => { if (e.target.value !== (opp.contact_phone || '')) updateOpp(opp.id, { contact_phone: e.target.value || null }) }}
+                          />
+                        </div>
+                      ) : (
+                        !opp.contact_phone && (
+                          <p className="loco-readonly">{opp.contact_name || 'No contact on file'}</p>
+                        )
+                      )}
                     </div>
 
                     <div className="loco-field">
@@ -212,12 +220,16 @@ export default function Loco({ isManager }) {
                           {opp.address}
                         </a>
                       )}
-                      <input
-                        className="loco-inline-input"
-                        defaultValue={opp.address || ''}
-                        placeholder="Job site address"
-                        onBlur={e => { if (e.target.value !== (opp.address || '')) updateOpp(opp.id, { address: e.target.value || null }) }}
-                      />
+                      {isManager ? (
+                        <input
+                          className="loco-inline-input"
+                          defaultValue={opp.address || ''}
+                          placeholder="Job site address"
+                          onBlur={e => { if (e.target.value !== (opp.address || '')) updateOpp(opp.id, { address: e.target.value || null }) }}
+                        />
+                      ) : (
+                        !opp.address && <p className="loco-readonly">No address on file</p>
+                      )}
                     </div>
 
                     {opp.national_notes && (
