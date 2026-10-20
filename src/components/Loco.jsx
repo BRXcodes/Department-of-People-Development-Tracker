@@ -44,6 +44,7 @@ export default function Loco({ isManager }) {
   const [account, setAccount] = useState('')
   const [contactName, setContactName] = useState('')
   const [contactPhone, setContactPhone] = useState('')
+  const [address, setAddress] = useState('')
   const [appt, setAppt] = useState('')
   const [natNotes, setNatNotes] = useState('')
 
@@ -71,6 +72,7 @@ export default function Loco({ isManager }) {
       account_name: name,
       contact_name: contactName.trim() || null,
       contact_phone: contactPhone.trim() || null,
+      address: address.trim() || null,
       appointment_at: appt ? new Date(appt).toISOString() : null,
       national_notes: natNotes.trim() || null,
       status: 'scheduled',
@@ -80,7 +82,7 @@ export default function Loco({ isManager }) {
     const { error } = await supabase.from('loco_opportunities').insert(row)
     if (error) { console.error(error); return }
     setOpps(prev => [...prev, row])
-    setOpId(''); setAccount(''); setContactName(''); setContactPhone(''); setAppt(''); setNatNotes('')
+    setOpId(''); setAccount(''); setContactName(''); setContactPhone(''); setAddress(''); setAppt(''); setNatNotes('')
     setAddOpen(false)
   }
 
@@ -195,6 +197,29 @@ export default function Loco({ isManager }) {
                       </div>
                     </div>
 
+                    <div className="loco-field">
+                      <span className="loco-label">Address</span>
+                      {opp.address && (
+                        <a
+                          className="loco-map"
+                          href={`https://maps.google.com/?q=${encodeURIComponent(opp.address)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                          </svg>
+                          {opp.address}
+                        </a>
+                      )}
+                      <input
+                        className="loco-inline-input"
+                        defaultValue={opp.address || ''}
+                        placeholder="Job site address"
+                        onBlur={e => { if (e.target.value !== (opp.address || '')) updateOpp(opp.id, { address: e.target.value || null }) }}
+                      />
+                    </div>
+
                     {opp.national_notes && (
                       <div className="loco-field">
                         <span className="loco-label">National CSA notes</span>
@@ -267,6 +292,9 @@ export default function Loco({ isManager }) {
 
                 <label className="field-label">Contact Phone</label>
                 <input className="field-input" type="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="(555) 123-4567" inputMode="tel" />
+
+                <label className="field-label">Address</label>
+                <input className="field-input" value={address} onChange={e => setAddress(e.target.value)} placeholder="Job site address" />
 
                 <label className="field-label">Appointment Date &amp; Time</label>
                 <input className="field-input" type="datetime-local" value={appt} onChange={e => setAppt(e.target.value)} />
