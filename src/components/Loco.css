@@ -258,6 +258,12 @@
 
 .loco-inline-input:focus { border-color: var(--blue-accent); }
 
+.loco-readonly {
+  font-size: 14px;
+  color: var(--gray-600);
+  padding: 2px 0;
+}
+
 /* Status picker — wrap of big tappable chips */
 .loco-status-picker {
   display: flex;
