@@ -7,8 +7,8 @@ import Attendance from './components/Attendance'
 import ScenarioTracker from './components/ScenarioTracker'
 import SlcCalendar from './components/SlcCalendar'
 import ShopManagement from './components/ShopManagement'
-import Competition from './components/Competition'
 import SlcEngine from './components/SlcEngine'
+import Loco from './components/Loco'
 import TodayTomorrow from './components/TodayTomorrow'
 import Gauntlet from './components/Gauntlet'
 import AssignModal from './components/AssignModal'
@@ -350,8 +350,8 @@ export default function App() {
           <SlcCalendar isManager={isManager} />
         ) : view === 'shop' ? (
           <ShopManagement isManager={isManager} />
-        ) : view === 'competition' ? (
-          <Competition isManager={isManager} />
+        ) : view === 'loco' ? (
+          <Loco isManager={isManager} />
         ) : view === 'engine' ? (
           isEngine ? <SlcEngine /> : null
         ) : view === 'gauntlet' ? (

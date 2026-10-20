@@ -1,0 +1,270 @@
+/* LOCO — mobile-first local commercial board */
+.loco {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.loco-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: var(--gray-500);
+}
+
+.loco-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.loco-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--gray-900);
+  letter-spacing: -0.3px;
+}
+
+.loco-subtitle {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.loco-add-btn {
+  flex-shrink: 0;
+  padding: 11px 18px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+/* Filters — big tappable pills */
+.loco-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.loco-pill {
+  flex: 1;
+  padding: 11px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--gray-200);
+  background: var(--surface);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.loco-pill.active {
+  background: var(--blue-mid);
+  border-color: var(--blue-mid);
+  color: #fff;
+}
+
+/* Empty */
+.loco-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--gray-400);
+  background: var(--surface);
+  border: 1px dashed var(--gray-300);
+  border-radius: var(--radius);
+}
+
+.loco-empty p:first-child {
+  font-weight: 600;
+  color: var(--gray-600);
+  margin-bottom: 4px;
+}
+
+/* List */
+.loco-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loco-card {
+  background: var(--surface);
+  border: 1px solid var(--gray-200);
+  border-left: 4px solid var(--gray-300);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.loco-card.status-scheduled { border-left-color: var(--blue-mid); }
+.loco-card.status-visited { border-left-color: #10B981; }
+.loco-card.status-not_home { border-left-color: #F59E0B; }
+.loco-card.status-rescheduled { border-left-color: #8B5CF6; }
+.loco-card.status-closed { border-left-color: var(--gray-400); }
+
+/* Card head — the whole row is a big tap target */
+.loco-card-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.loco-card-head-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.loco-account {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gray-900);
+  line-height: 1.25;
+}
+
+.loco-appt {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-mid);
+}
+
+.loco-opid {
+  font-size: 11.5px;
+  color: var(--gray-400);
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.loco-status-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.loco-status-badge.status-scheduled { background: var(--blue-pale); color: var(--blue-mid); }
+.loco-status-badge.status-visited { background: #ECFDF5; color: #059669; }
+.loco-status-badge.status-not_home { background: #FFFBEB; color: #D97706; }
+.loco-status-badge.status-rescheduled { background: #F5F3FF; color: #7C3AED; }
+.loco-status-badge.status-closed { background: var(--gray-100); color: var(--gray-500); }
+
+/* Card body (expanded) */
+.loco-card-body {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.loco-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.loco-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.loco-national-notes {
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.5;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  white-space: pre-wrap;
+}
+
+/* Status picker — wrap of big tappable chips */
+.loco-status-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.loco-status-choice {
+  flex: 1 1 auto;
+  min-width: 96px;
+  padding: 12px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--gray-200);
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.loco-status-choice.selected.status-scheduled { background: var(--blue-mid); border-color: var(--blue-mid); color: #fff; }
+.loco-status-choice.selected.status-visited { background: #10B981; border-color: #10B981; color: #fff; }
+.loco-status-choice.selected.status-not_home { background: #F59E0B; border-color: #F59E0B; color: #fff; }
+.loco-status-choice.selected.status-rescheduled { background: #8B5CF6; border-color: #8B5CF6; color: #fff; }
+.loco-status-choice.selected.status-closed { background: var(--gray-500); border-color: var(--gray-500); color: #fff; }
+
+/* On-site notes */
+.loco-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--gray-900);
+  background: var(--surface);
+  resize: vertical;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.15s;
+}
+
+.loco-textarea:focus { border-color: var(--blue-accent); }
+
+.loco-visited-at {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-weight: 500;
+  margin-top: -6px;
+}
+
+.loco-delete {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #DC2626;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 2px;
+}
+
+/* Modal sizing on mobile */
+.loco-modal {
+  max-width: 460px;
+}
