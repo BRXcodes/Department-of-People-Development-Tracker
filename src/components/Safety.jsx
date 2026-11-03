@@ -3,18 +3,28 @@ import { supabase } from '../supabase'
 import { uid } from '../store'
 import './Safety.css'
 
-// 1 point per unsafe-driving clip. 3 points = termination threshold.
-const TERMINATION_POINTS = 3
+// Clip types tracked separately. 3 of the SAME type = termination.
+const CLIP_TYPES = [
+  { value: 'seatbelt', label: 'Seatbelt Violation', short: 'Seatbelt' },
+  { value: 'distracted', label: 'Distracted Driving', short: 'Distracted' },
+  { value: 'backing', label: 'Backing Without a Spotter', short: 'Backing' },
+]
+const TERMINATION_COUNT = 3
 
-function getStatusColor(points) {
-  if (points >= TERMINATION_POINTS) return 'red'
-  if (points === TERMINATION_POINTS - 1) return 'yellow'
+function clipLabel(type) {
+  return CLIP_TYPES.find(t => t.value === type)?.label || type
+}
+
+// Status is driven by the worst (highest) single-type count.
+function getStatusColor(maxCount) {
+  if (maxCount >= TERMINATION_COUNT) return 'red'
+  if (maxCount === TERMINATION_COUNT - 1) return 'yellow'
   return 'green'
 }
 
-function getStatusLabel(points) {
-  if (points >= TERMINATION_POINTS) return 'Termination'
-  if (points === TERMINATION_POINTS - 1) return 'Final Warning'
+function getStatusLabel(maxCount) {
+  if (maxCount >= TERMINATION_COUNT) return 'Termination'
+  if (maxCount === TERMINATION_COUNT - 1) return 'Final Warning'
   return 'Good Standing'
 }
 
@@ -25,7 +35,7 @@ export default function Safety({ isManager }) {
   const [addModal, setAddModal] = useState(false)
   const [logModal, setLogModal] = useState(null) // employee id
   const [addName, setAddName] = useState('')
-  const [clipPoints, setClipPoints] = useState(1)
+  const [clipType, setClipType] = useState('seatbelt')
   const [clipNote, setClipNote] = useState('')
   const [clipDate, setClipDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [filterStatus, setFilterStatus] = useState('all')
@@ -75,18 +85,17 @@ export default function Safety({ isManager }) {
     e.preventDefault()
     if (!logModal) return
     const id = uid()
-    const points = Number(clipPoints) || 1
     const { error } = await supabase.from('safety_incidents').insert({
       id,
       employee_id: logModal,
-      points,
+      type: clipType,
       note: clipNote.trim() || null,
       date: clipDate,
     })
     if (error) { console.error(error); return }
-    setIncidents(prev => [{ id, employee_id: logModal, points, note: clipNote.trim() || null, date: clipDate, created_at: new Date().toISOString() }, ...prev])
+    setIncidents(prev => [{ id, employee_id: logModal, type: clipType, note: clipNote.trim() || null, date: clipDate, created_at: new Date().toISOString() }, ...prev])
     setLogModal(null)
-    setClipPoints(1)
+    setClipType('seatbelt')
     setClipNote('')
     setClipDate(new Date().toISOString().slice(0, 10))
   }
@@ -97,18 +106,26 @@ export default function Safety({ isManager }) {
     setIncidents(prev => prev.filter(i => i.id !== incidentId))
   }
 
-  function getPoints(employeeId) {
-    return incidents
-      .filter(i => i.employee_id === employeeId)
-      .reduce((sum, i) => sum + (i.points || 0), 0)
+  // Count of each clip type for an employee, e.g. { seatbelt: 2, distracted: 0, backing: 1 }
+  function getCounts(employeeId) {
+    const counts = {}
+    for (const t of CLIP_TYPES) counts[t.value] = 0
+    for (const i of incidents) {
+      if (i.employee_id === employeeId && counts[i.type] != null) counts[i.type]++
+    }
+    return counts
+  }
+
+  function getMaxCount(employeeId) {
+    return Math.max(0, ...Object.values(getCounts(employeeId)))
   }
 
   const filteredEmployees = employees
-    .map(emp => ({ ...emp, points: getPoints(emp.id) }))
+    .map(emp => ({ ...emp, counts: getCounts(emp.id), maxCount: getMaxCount(emp.id) }))
     .filter(emp => {
-      if (filterStatus === 'green') return emp.points <= TERMINATION_POINTS - 2
-      if (filterStatus === 'yellow') return emp.points === TERMINATION_POINTS - 1
-      if (filterStatus === 'red') return emp.points >= TERMINATION_POINTS
+      if (filterStatus === 'green') return emp.maxCount <= TERMINATION_COUNT - 2
+      if (filterStatus === 'yellow') return emp.maxCount === TERMINATION_COUNT - 1
+      if (filterStatus === 'red') return emp.maxCount >= TERMINATION_COUNT
       return true
     })
     .filter(emp => emp.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -116,9 +133,9 @@ export default function Safety({ isManager }) {
 
   const stats = {
     total: employees.length,
-    green: employees.filter(e => getPoints(e.id) <= TERMINATION_POINTS - 2).length,
-    yellow: employees.filter(e => getPoints(e.id) === TERMINATION_POINTS - 1).length,
-    red: employees.filter(e => getPoints(e.id) >= TERMINATION_POINTS).length,
+    green: employees.filter(e => getMaxCount(e.id) <= TERMINATION_COUNT - 2).length,
+    yellow: employees.filter(e => getMaxCount(e.id) === TERMINATION_COUNT - 1).length,
+    red: employees.filter(e => getMaxCount(e.id) >= TERMINATION_COUNT).length,
   }
 
   if (loading) {
@@ -130,7 +147,7 @@ export default function Safety({ isManager }) {
       <div className="safety-header-row">
         <div>
           <h2 className="safety-title">Fleet &amp; Safety</h2>
-          <p className="safety-subtitle">{stats.total} drivers · 3 points = termination</p>
+          <p className="safety-subtitle">{stats.total} drivers · 3 of the same clip = termination</p>
         </div>
         {isManager && (
           <button className="btn btn-primary" onClick={() => setAddModal(true)}>
@@ -191,7 +208,7 @@ export default function Safety({ isManager }) {
           </div>
         )}
         {filteredEmployees.map(emp => {
-          const color = getStatusColor(emp.points)
+          const color = getStatusColor(emp.maxCount)
           const empIncidents = incidents.filter(i => i.employee_id === emp.id)
           const isExpanded = expandedId === emp.id
           return (
@@ -200,10 +217,17 @@ export default function Safety({ isManager }) {
                 <div className={`saf-card-indicator ${color}`} />
                 <div className="saf-card-info">
                   <span className="saf-card-name">{emp.name}</span>
-                  <span className={`saf-card-status ${color}`}>{getStatusLabel(emp.points)}</span>
+                  <span className={`saf-card-status ${color}`}>{getStatusLabel(emp.maxCount)}</span>
                 </div>
-                <div className="saf-card-points">
-                  <span className={`saf-points-badge ${color}`}>{emp.points} / {TERMINATION_POINTS}</span>
+                <div className="saf-card-counts">
+                  {CLIP_TYPES.map(t => {
+                    const c = emp.counts[t.value]
+                    return (
+                      <span key={t.value} className={`saf-count-chip ${getStatusColor(c)}`} title={t.label}>
+                        {t.short} {c}/{TERMINATION_COUNT}
+                      </span>
+                    )
+                  })}
                 </div>
                 <div className="saf-card-actions">
                   {isManager && (
@@ -227,11 +251,10 @@ export default function Safety({ isManager }) {
                       {empIncidents.map(inc => (
                         <div key={inc.id} className="saf-incident">
                           <div className="saf-incident-info">
-                            <span className="saf-incident-type">Unsafe driving clip</span>
+                            <span className="saf-incident-type">{clipLabel(inc.type)}</span>
                             <span className="saf-incident-date">{inc.date}</span>
                             {inc.note && <span className="saf-incident-note">{inc.note}</span>}
                           </div>
-                          <span className="saf-incident-pts">+{inc.points}</span>
                           {isManager && (
                             <button className="saf-incident-remove" onClick={() => removeIncident(inc.id)} aria-label="Remove clip">✕</button>
                           )}
@@ -291,16 +314,16 @@ export default function Safety({ isManager }) {
                   For: <strong>{employees.find(e => e.id === logModal)?.name}</strong>
                 </p>
 
-                <label className="field-label">Points</label>
-                <div className="saf-points-selector">
-                  {[1, 2, 3].map(p => (
+                <label className="field-label">Clip Type</label>
+                <div className="saf-type-selector">
+                  {CLIP_TYPES.map(t => (
                     <button
-                      key={p}
+                      key={t.value}
                       type="button"
-                      className={`saf-points-btn ${Number(clipPoints) === p ? 'selected' : ''}`}
-                      onClick={() => setClipPoints(p)}
+                      className={`saf-type-btn ${clipType === t.value ? 'selected' : ''}`}
+                      onClick={() => setClipType(t.value)}
                     >
-                      +{p}
+                      {t.label}
                     </button>
                   ))}
                 </div>

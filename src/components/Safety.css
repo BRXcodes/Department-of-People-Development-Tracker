@@ -210,20 +210,27 @@
 .saf-card-status.yellow { color: #D97706; }
 .saf-card-status.red { color: #DC2626; }
 
-.saf-card-points {
+/* Per-type count chips on the card */
+.saf-card-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
   margin-right: 8px;
+  justify-content: flex-end;
 }
 
-.saf-points-badge {
-  padding: 3px 8px;
+.saf-count-chip {
+  padding: 2px 7px;
   border-radius: 20px;
-  font-size: 11.5px;
-  font-weight: 700;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid transparent;
 }
 
-.saf-points-badge.green { background: #ECFDF5; color: #059669; }
-.saf-points-badge.yellow { background: #FFFBEB; color: #D97706; }
-.saf-points-badge.red { background: #FEF2F2; color: #DC2626; }
+.saf-count-chip.green { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+.saf-count-chip.yellow { background: #FFFBEB; color: #D97706; border-color: #FDE68A; }
+.saf-count-chip.red { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
 
 .saf-card-actions {
   display: flex;
@@ -304,15 +311,6 @@
   font-style: italic;
 }
 
-.saf-incident-pts {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--gray-700);
-  background: var(--gray-100);
-  padding: 2px 7px;
-  border-radius: 4px;
-}
-
 .saf-incident-remove {
   background: none;
   border: none;
@@ -347,30 +345,31 @@
   border-color: #DC2626;
 }
 
-/* Points selector in the log modal */
-.saf-points-selector {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* Clip-type selector in the log modal */
+.saf-type-selector {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.saf-points-btn {
-  padding: 14px 8px;
+.saf-type-btn {
+  padding: 12px 14px;
   border-radius: var(--radius-sm);
   border: 1.5px solid var(--gray-200);
   background: var(--surface);
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--gray-700);
+  text-align: left;
   transition: all 0.15s;
 }
 
-.saf-points-btn:hover {
+.saf-type-btn:hover {
   border-color: var(--blue-accent);
   background: var(--blue-pale);
 }
 
-.saf-points-btn.selected {
+.saf-type-btn.selected {
   border-color: var(--blue-mid);
   background: var(--blue-pale);
   color: var(--blue-mid);
