@@ -41,7 +41,6 @@ export default function Safety({ isManager }) {
   const [filterStatus, setFilterStatus] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedId, setExpandedId] = useState(null)
-  const [importing, setImporting] = useState(false)
 
   useEffect(() => {
     loadSafety()
@@ -80,33 +79,6 @@ export default function Safety({ isManager }) {
     if (error) { console.error(error); return }
     setEmployees(prev => prev.filter(e => e.id !== id))
     setIncidents(prev => prev.filter(i => i.employee_id !== id))
-  }
-
-  // Pull everyone from the Attendance tracker who isn't already a driver here.
-  async function importFromAttendance() {
-    setImporting(true)
-    const { data: attMembers, error } = await supabase.from('attendance_members').select('id, name')
-    if (error) { console.error(error); setImporting(false); return }
-
-    const existingIds = new Set(employees.map(e => e.id))
-    const existingNames = new Set(employees.map(e => e.name.trim().toLowerCase()))
-    const toAdd = (attMembers || []).filter(
-      m => !existingIds.has(m.id) && !existingNames.has(m.name.trim().toLowerCase())
-    )
-
-    if (toAdd.length === 0) {
-      setImporting(false)
-      alert('Everyone from Attendance is already on the Safety board.')
-      return
-    }
-
-    const rows = toAdd.map(m => ({ id: m.id, name: m.name }))
-    const { error: insErr } = await supabase.from('safety_members').insert(rows)
-    if (insErr) { console.error(insErr); setImporting(false); return }
-
-    setEmployees(prev => [...prev, ...rows].sort((a, b) => a.name.localeCompare(b.name)))
-    setImporting(false)
-    alert(`Imported ${rows.length} driver${rows.length === 1 ? '' : 's'} from Attendance.`)
   }
 
   async function logClip(e) {
@@ -178,17 +150,12 @@ export default function Safety({ isManager }) {
           <p className="safety-subtitle">{stats.total} drivers · 3 of the same clip = termination</p>
         </div>
         {isManager && (
-          <div className="safety-header-actions">
-            <button className="btn btn-secondary" onClick={importFromAttendance} disabled={importing}>
-              {importing ? 'Importing...' : 'Import from Attendance'}
-            </button>
-            <button className="btn btn-primary" onClick={() => setAddModal(true)}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              Add Driver
-            </button>
-          </div>
+          <button className="btn btn-primary" onClick={() => setAddModal(true)}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add Driver
+          </button>
         )}
       </div>
 
