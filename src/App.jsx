@@ -9,6 +9,7 @@ import SlcCalendar from './components/SlcCalendar'
 import ShopManagement from './components/ShopManagement'
 import SlcEngine from './components/SlcEngine'
 import Loco from './components/Loco'
+import Safety from './components/Safety'
 import TodayTomorrow from './components/TodayTomorrow'
 import Gauntlet from './components/Gauntlet'
 import AssignModal from './components/AssignModal'
@@ -352,6 +353,8 @@ export default function App() {
           <ShopManagement isManager={isManager} />
         ) : view === 'loco' ? (
           <Loco isManager={isManager} />
+        ) : view === 'safety' ? (
+          <Safety isManager={isManager} />
         ) : view === 'engine' ? (
           isEngine ? <SlcEngine /> : null
         ) : view === 'gauntlet' ? (
