@@ -11,11 +11,14 @@ CREATE TABLE IF NOT EXISTS safety_members (
 CREATE TABLE IF NOT EXISTS safety_incidents (
   id TEXT PRIMARY KEY,
   employee_id TEXT NOT NULL REFERENCES safety_members(id) ON DELETE CASCADE,
-  points INTEGER NOT NULL DEFAULT 1,
+  type TEXT NOT NULL DEFAULT 'seatbelt', -- seatbelt | distracted | backing
   note TEXT,
   date DATE NOT NULL DEFAULT CURRENT_DATE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- If the table already existed before the type column was added, run this once:
+ALTER TABLE safety_incidents ADD COLUMN IF NOT EXISTS type TEXT NOT NULL DEFAULT 'seatbelt';
 
 CREATE INDEX IF NOT EXISTS idx_safety_incidents_employee ON safety_incidents(employee_id);
 
